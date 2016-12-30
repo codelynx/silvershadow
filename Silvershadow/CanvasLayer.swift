@@ -18,6 +18,13 @@ class CanvasLayer: Equatable {
 	
 	var device: MTLDevice? { return self.canvas?.device }
 	
+	var contentSize: CGSize? { return self.canvas?.contentSize }
+	
+	var bounds: CGRect? {
+		guard let contentSize = self.contentSize else { return nil }
+		return CGRect(0, 0, contentSize.width, contentSize.height)
+	}
+	
 	init() {
 		self.canvas = nil
 	}
@@ -32,4 +39,5 @@ class CanvasLayer: Equatable {
 	static func == (lhs: CanvasLayer, rhs: CanvasLayer) -> Bool {
 		return lhs === rhs
 	}
+	
 }

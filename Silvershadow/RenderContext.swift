@@ -29,28 +29,22 @@ struct RenderContext {
 	}
 }
 
-
 extension RenderContext {
 
-	/*
-	func withCGContext(_ closure: ((CGContext)->())) {
-		guard let mtkView = self.mtkView else { fatalError("no mtkView") }
-		let bounds = mtkView.bounds
-		#if os(iOS)
-		let scale = mtkView.window?.screen.scale ?? 1
-		#else
-		let scale: CGFloat = 1
-		#endif
-		let (width, height, bytesPerRow) = (Int(bounds.width * scale), Int(bounds.height * scale), Int(bounds.width * scale) * 4)
+	func widthCGContext(contentSize: CGSize, _ closure: ((CGContext)->())) {
+		let (width, height, bytesPerRow) = (Int(contentSize.width), Int(contentSize.height), Int(contentSize.width) * 4)
 		let colorSpace = CGColorSpaceCreateDeviceRGB()
 		let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
 		guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: bytesPerRow,
 					space: colorSpace, bitmapInfo: bitmapInfo.rawValue) else { return }
-		context.saveGState()
-		context.setFillColor(XColor.clear.cgColor)
-		context.fill(CGRect(0, 0, width, height))
-		context.restoreGState()
+		context.clear(CGRect(0, 0, width, height))
 
+		let transform = CGAffineTransform.identity
+					.translatedBy(x: 0, y: contentSize.height)
+					.scaledBy(x: 1, y: -1)
+		context.concatenate(transform)
+		context.saveGState()
+ 
 		#if os(iOS)
 		UIGraphicsPushContext(context)
 		#elseif os(macOS)
@@ -67,12 +61,10 @@ extension RenderContext {
 		NSGraphicsContext.setCurrent(savedContext)
 		#endif
 
-		guard let cgImage = context.makeImage() else { fatalError("no cgImage") }
-		if let imageTexture = self.device.texture(of: cgImage) {
-			self.render(texture: imageTexture, in: CGRect(256, 256, 1024, 512))
-		}
-		
+		context.restoreGState()
+		guard let cgImage = context.makeImage() else { fatalError("failed creating cgImage") }
+		guard let texture = self.device.texture(of: cgImage) else { fatalError("failed creating texture") }
+		self.render(texture: texture, in: Rect(0, 0, width, height))
 	}
-	*/
 
 }

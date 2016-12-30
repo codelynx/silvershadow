@@ -39,6 +39,19 @@ class SampleCanvasLayer2: CanvasLayer {
 			context.render(points: points.map { Point(x: $0.0, y: $0.1) }, texture: pointTexture, width: 32)
 		}
 	
+		if let contentSize = self.contentSize {
+			// you may use core graphics to draw and will become a texture to render
+			context.widthCGContext(contentSize: contentSize) { (context) in
+				XColor.orange.set()
+				let bezier = XBezierPath()
+				bezier.move(to: CGPoint(1024, 0))
+				bezier.line(to: CGPoint(0, 1024))
+				bezier.line(to: CGPoint(2048, 1024))
+				bezier.close()
+				bezier.lineWidth = 4
+				bezier.stroke()
+			}
+		}
 	}
 
 }
