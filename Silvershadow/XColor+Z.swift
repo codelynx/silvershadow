@@ -16,16 +16,10 @@ import Cocoa
 extension XColor {
 
 	var rgba: (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat) {
-		var r: CGFloat = 0
-		var g: CGFloat = 0
-		var b: CGFloat = 0
-		var a: CGFloat = 0
-		self.getRed(&r, green: &g, blue: &b, alpha: &a)
-		return (r, g, b, a)
+		let color = CIColor(cgColor: self.cgColor)
+		return (color.red, color.green, color.blue, color.alpha)
 	}
 
 }
-
-
 
 
