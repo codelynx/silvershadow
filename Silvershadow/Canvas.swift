@@ -26,6 +26,8 @@ import Cocoa
 
 class Canvas: Scene {
 
+	var backgroundColor: XColor = XColor.white
+
 	// master texture of canvas
 	lazy var canvasTexture: MTLTexture = {
 		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
@@ -69,22 +71,18 @@ class Canvas: Scene {
 		return self.device.makeCommandQueue()
 	}()
 
-	lazy var compositeKernel: MTLComputePipelineState = {
-		let library = self.device.newDefaultLibrary()!
-		let computePipelineDescriptor = MTLComputePipelineDescriptor()
-		computePipelineDescriptor.computeFunction = library.makeFunction(name: "composite_kernel")!
-		let kernel = try! self.device.makeComputePipelineState(descriptor: computePipelineDescriptor, options: [], reflection: nil)
-		return kernel
-	}()
-
 	override func update() {
 		let commandQueue = self.subcomandQueue
 		let canvasTexture = self.canvasTexture
 
+		let backgroundColor = XColor(cgColor: self.backgroundColor.cgColor) ?? XColor(calibratedRed: 1, green: 1, blue: 1, alpha: 1)
+		let rgba = backgroundColor.rgba
+		let (r, g, b, a) = (Double(rgba.r), Double(rgba.g), Double(rgba.b), Double(rgba.a))
+		
 		//
 		let renderPassDescriptor = MTLRenderPassDescriptor()
 		renderPassDescriptor.colorAttachments[0].texture = canvasTexture
-		renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1)
+		renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(r, g, b, a)
 		renderPassDescriptor.colorAttachments[0].storeAction = .store
 
 		// clear the canvas texture
