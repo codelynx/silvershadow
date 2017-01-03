@@ -15,13 +15,14 @@ class SampleCanvas: Canvas {
 
 	override init?(device: MTLDevice, contentSize: CGSize) {
 		super.init(device: device, contentSize: contentSize)
-		
+		/*
 		let sampleCanvasLayer1 = SampleCanvasLayer1()
 		self.addLayer(sampleCanvasLayer1)
 		
 		// having problem of compositing layers, so comment out this part for now
 		let sampleCanvasLayer2 = SampleCanvasLayer2()
 		self.addLayer(sampleCanvasLayer2)
+		*/
 	}
 
 	override func render(in context: RenderContext) {

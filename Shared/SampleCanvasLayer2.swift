@@ -1,9 +1,9 @@
 //
-//  SampleCanvasLayer2.swift
-//  Silvershadow
+//	SampleCanvasLayer2.swift
+//	Silvershadow
 //
-//  Created by Kaz Yoshikawa on 12/29/16.
-//  Copyright © 2016 Electricwoods LLC. All rights reserved.
+//	Created by Kaz Yoshikawa on 12/29/16.
+//	Copyright © 2016 Electricwoods LLC. All rights reserved.
 //
 
 import Foundation
@@ -18,7 +18,7 @@ class SampleCanvasLayer2: CanvasLayer {
 	}()
 
 	override func render(context: RenderContext) {
-		typealias Vertex =  ColorRenderer.Vertex
+		typealias Vertex =	ColorRenderer.Vertex
 		context.render(triangles: [(
 			Vertex(x: 1024, y: 512, z: 0, w: 1, r: 1, g: 0, b: 0, a: 0.5),
 			Vertex(x: 2048, y: 0, z: 0, w: 1, r: 1, g: 1, b: 0, a: 0.5),

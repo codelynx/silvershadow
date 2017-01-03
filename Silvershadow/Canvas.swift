@@ -1,9 +1,9 @@
 //
-//  Canvas.swift
-//  Silvershadow
+//	Canvas.swift
+//	Silvershadow
 //
-//  Created by Kaz Yoshikawa on 12/28/16.
-//  Copyright © 2016 Electricwoods LLC. All rights reserved.
+//	Created by Kaz Yoshikawa on 12/28/16.
+//	Copyright © 2016 Electricwoods LLC. All rights reserved.
 //
 
 import Foundation
