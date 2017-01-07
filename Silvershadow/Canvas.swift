@@ -26,8 +26,6 @@ import Cocoa
 
 class Canvas: Scene {
 
-	var backgroundColor: XColor = XColor.white
-
 	// master texture of canvas
 	lazy var canvasTexture: MTLTexture = {
 		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
@@ -56,11 +54,7 @@ class Canvas: Scene {
 		super.didMove(to: renderView)
 	}
 
-	var mipmapped: Bool {
-		return false
-	}
-
-	lazy var subtexture: MTLTexture = {
+	lazy var sublayerTexture: MTLTexture = {
 		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
 					width: Int(self.contentSize.width), height: Int(self.contentSize.height), mipmapped: self.mipmapped)
 		descriptor.usage = [.shaderRead, .renderTarget]
@@ -93,10 +87,10 @@ class Canvas: Scene {
 		commandBuffer.commit()
 
 		renderPassDescriptor.colorAttachments[0].loadAction = .load
-		let subtransform = GLKMatrix4(CGRect(origin: CGPoint.zero, size: self.contentSize).transform(to: CGRect(-1, -1, 2, 2)))
+		let subtransform = GLKMatrix4(self.transform)
 
 		// build an image per layer then flatten that image to the canvas texture
-		let subtexture = self.subtexture
+		let subtexture = self.sublayerTexture
 
 		for canvasLayer in self.canvasLayers {
 

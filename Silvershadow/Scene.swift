@@ -15,6 +15,12 @@ class Scene {
 
 	let device: MTLDevice
 	var contentSize: CGSize
+
+	var backgroundColor: XColor { return XColor.white }
+
+	var width: CGFloat { return self.contentSize.width }
+	var height: CGFloat { return self.contentSize.height }
+
 	weak var renderView: RenderView?
 
 	var bounds: CGRect {
@@ -48,6 +54,14 @@ class Scene {
 	
 	func setNeedsDisplay() {
 		self.renderView?.setNeedsDisplay()
+	}
+
+	var mipmapped: Bool {
+		return false
+	}
+
+	var transform: CGAffineTransform {
+		return CGRect(origin: CGPoint.zero, size: self.contentSize).transform(to: CGRect(-1, -1, 2, 2))
 	}
 
 	// MARK: -

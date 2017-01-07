@@ -14,6 +14,7 @@ import Cocoa
 
 import CoreGraphics
 import MetalKit
+import GLKit
 
 
 class SampleScene: Scene {
@@ -50,7 +51,7 @@ class SampleScene: Scene {
 		XBezierPath(ovalIn: CGRect(0, 0, self.bounds.width * 0.5, self.bounds.height * 0.5)).stroke()
 */
 	}
-	
+
 	override func render(in context: RenderContext) {
 		context.render(texture: self.image1Texture, in: Rect(0, 0, 2048, 1024))
 
