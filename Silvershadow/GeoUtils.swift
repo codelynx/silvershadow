@@ -387,14 +387,17 @@ func * (l: GLKMatrix4, r: GLKVector2) -> GLKVector2 {
 
 extension CGPath {
 
+	class Info {
+		var pathElements = [CGPathElement]()
+	}
+
 	var pathElements: [CGPathElement] {
-		typealias T = [CGPathElement]
-		var elements = T()
-		self.apply(info: UnsafeMutableRawPointer(&elements)) { (info, element) in
-			guard let info = UnsafeMutablePointer<T>(OpaquePointer(info)) else { return }
-			info.pointee.append(element.pointee)
+		var info = Info()
+		self.apply(info: &info) { (info, element) in
+			guard let infoPtr = UnsafeMutablePointer<Info>(OpaquePointer(info)) else { return }
+			infoPtr.pointee.pathElements.append(element.pointee)
 		}
-		return elements
+		return info.pathElements
 	}
 
 }

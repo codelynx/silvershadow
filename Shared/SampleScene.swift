@@ -78,6 +78,10 @@ class SampleScene: Scene {
 			(174.5, 614.5)
 		]
 		context.render(points: points.map { Point(x: $0.0, y: $0.1) }, texture: pointTexture, width: 32)
+
+		let path = XBezierPath(ovalIn: self.bounds.insetBy(dx: 100, dy: 100))
+		context.render(cgPath: path.cgPath, texture: pointTexture, width: 10)
+
 	}
 
 	#if os(macOS)
