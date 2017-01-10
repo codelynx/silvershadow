@@ -24,12 +24,12 @@ class VertexBuffer<T> {
 	var expand: Int
 
 
-	init(device: MTLDevice, vertices: [T], expand: Int? = nil) {
+	init(device: MTLDevice, vertices: [T], expanding: Int? = nil) {
 		self.device = device
 		self.count = vertices.count
-		self.expand = (expand ?? 4096)
+		self.expand = (expanding ?? 4096)
 		let length = MemoryLayout<T>.size * (vertices.count + self.expand)
-		self.buffer = device.makeBuffer(bytes: vertices, length: length, options: MTLResourceOptions())
+		self.buffer = device.makeBuffer(bytes: vertices, length: length, options: [.storageModeShared])
 		self.capacity = length
 	}
 
@@ -47,7 +47,7 @@ class VertexBuffer<T> {
 		}
 		else {
 			let length = self.count + vertices.count + self.expand
-			let buffer = self.device.makeBuffer(length: length, options: MTLResourceOptions())
+			let buffer = self.device.makeBuffer(length: length, options: [.storageModeShared])
 			let sourceArray = UnsafeMutablePointer<T>(OpaquePointer(self.buffer.contents()))
 			let destinationArray = UnsafeMutablePointer<T>(OpaquePointer(buffer.contents()))
 			for index in 0 ..< self.count {

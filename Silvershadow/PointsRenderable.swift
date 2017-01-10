@@ -22,8 +22,9 @@ class PointsRenderable: Renderable {
 	let device: MTLDevice
 	var texture: MTLTexture
 	var vertices: [PointVertex]
+
 	lazy var vertexBuffer: VertexBuffer<PointVertex> = {
-		return self.renderer.vertexBuffer(for: self.vertices, capacity: 4096)
+		return self.renderer.vertexBuffer(for: self.vertices, expanding: 4096)
 	}()
 
 	init?(device: MTLDevice, texture: MTLTexture, vertices: [PointVertex]) {
@@ -31,6 +32,13 @@ class PointsRenderable: Renderable {
 		self.texture = texture
 		self.vertices = vertices
 	}
+
+	init?(device: MTLDevice, texture: MTLTexture, cgPath: CGPath, width: CGFloat) {
+		self.device = device
+		self.texture = texture
+		self.vertices = PointsRenderer.vertexes(of: cgPath, width: width)
+	}
+
 	
 	func render(context: RenderContext) {
 		renderer.render(context: context, texture: texture, vertexBuffer: vertexBuffer)
@@ -42,7 +50,7 @@ class PointsRenderable: Renderable {
 			self.vertexBuffer.append(vertices)
 		}
 		else {
-			let vertexBuffer = renderer.vertexBuffer(for: self.vertices, capacity: 4096)
+			let vertexBuffer = renderer.vertexBuffer(for: self.vertices, expanding: 4096)
 			self.vertexBuffer = vertexBuffer
 		}
 	}

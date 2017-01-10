@@ -385,17 +385,51 @@ func * (l: GLKMatrix4, r: GLKVector2) -> GLKVector2 {
 }
 
 
+enum PathElement {
+    case moveToPoint(CGPoint)
+    case addLineToPoint(CGPoint)
+    case addQuadCurveToPoint(CGPoint, CGPoint)
+    case addCurveToPoint(CGPoint, CGPoint, CGPoint)
+    case closeSubpath
+}
+
 extension CGPath {
 
-	var pathElements: [CGPathElement] {
-		typealias T = [CGPathElement]
-		var elements = T()
-		self.apply(info: UnsafeMutableRawPointer(&elements)) { (info, element) in
-			guard let info = UnsafeMutablePointer<T>(OpaquePointer(info)) else { return }
-			info.pointee.append(element.pointee)
-		}
-		return elements
+	class Info {
+		var pathElements = [PathElement]()
 	}
+
+    var pathElements: [PathElement] {
+        var info = Info()
+
+
+        self.apply(info: &info) { (info, element) -> Void in
+
+            if let infoPointer = UnsafeMutablePointer<Info>(OpaquePointer(info)) {
+                switch element.pointee.type {
+                case .moveToPoint:
+                    let pt = element.pointee.points[0]
+                    infoPointer.pointee.pathElements.append(PathElement.moveToPoint(pt))
+                case .addLineToPoint:
+                    let pt = element.pointee.points[0]
+                    infoPointer.pointee.pathElements.append(PathElement.addLineToPoint(pt))
+                case .addQuadCurveToPoint:
+                    let pt1 = element.pointee.points[0]
+                    let pt2 = element.pointee.points[1]
+                    infoPointer.pointee.pathElements.append(PathElement.addQuadCurveToPoint(pt1, pt2))
+                case .addCurveToPoint:
+                    let pt1 = element.pointee.points[0]
+                    let pt2 = element.pointee.points[1]
+                    let pt3 = element.pointee.points[2]
+                    infoPointer.pointee.pathElements.append(PathElement.addCurveToPoint(pt1, pt2, pt3))
+                case .closeSubpath:
+                    infoPointer.pointee.pathElements.append(PathElement.closeSubpath)
+                }
+            }
+        }
+
+        return info.pathElements
+    }
 
 }
 
