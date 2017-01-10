@@ -76,7 +76,7 @@ class PointsRenderer: Renderer {
 		vertexDescriptor.attributes[0].bufferIndex = 0
 
 		vertexDescriptor.attributes[1].offset = MemoryLayout<Float>.size * 2
-		vertexDescriptor.attributes[1].format = .float
+		vertexDescriptor.attributes[1].format = .float2
 		vertexDescriptor.attributes[1].bufferIndex = 0
 
 		vertexDescriptor.layouts[0].stepFunction = .perVertex
@@ -96,11 +96,16 @@ class PointsRenderer: Renderer {
 		renderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
 		renderPipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
 
+		// I don't believe this but this is what it is...
+		#if os(iOS)
+		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .one
+		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .one
+		#elseif os(macOS)
 		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
 		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
+		#endif
 		renderPipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
 		renderPipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
-
 
 		return try! self.device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
 	}()
@@ -126,7 +131,6 @@ class PointsRenderer: Renderer {
 		let encoder = context.makeRenderCommandEncoder()
 		encoder.setRenderPipelineState(self.renderPipelineState)
 
-		encoder.setFrontFacing(.clockwise)
 		encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
 		encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
 

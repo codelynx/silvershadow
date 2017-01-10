@@ -13,8 +13,7 @@ float4x4 invert(float4x4 matrix);
 
 struct VertexIn {
 	float2 position [[ attribute(0) ]];
-	float width [[ attribute(1) ]];
-	float unused;
+	float2 attributes [[ attribute(1) ]];
 };
 
 struct VertexOut {
@@ -37,9 +36,9 @@ vertex VertexOut points_vertex(
 ) {
 	VertexIn inVertex = vertices[vid];
 	VertexOut outVertex;
-	
 	outVertex.position = uniforms.transform * float4(inVertex.position, 0.0, 1.0);
-	outVertex.pointSize = vertices->width * uniforms.zoomScale;
+	float pointWidth = inVertex.attributes[0];
+	outVertex.pointSize = pointWidth * uniforms.zoomScale;
 	return outVertex;
 }
 
@@ -49,8 +48,9 @@ fragment float4 points_fragment(
 	sampler colorSampler [[ sampler(0) ]],
 	float2 texcoord [[ point_coord ]]
 ) {
+	
 	float4 color = colorTexture.sample(colorSampler, texcoord);
-	if (color.a == 0.0) {
+	if (color.a < 0.1) {
 		discard_fragment();
 	}
 	return color;

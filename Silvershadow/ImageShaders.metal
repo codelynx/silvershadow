@@ -38,7 +38,6 @@ vertex VertexOut image_vertex(
 
 fragment float4 image_fragment(
 	VertexOut vertexIn [[ stage_in ]],
-	constant Uniforms & uniforms [[ buffer(0) ]],
 	texture2d<float, access::sample> colorTexture [[ texture(0) ]],
 	sampler colorSampler [[ sampler(0) ]]
 ) {

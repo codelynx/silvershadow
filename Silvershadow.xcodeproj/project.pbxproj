@@ -37,6 +37,8 @@
 		CC851CF41E1366540083268F /* SampleCanvasLayer1.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CF21E1366540083268F /* SampleCanvasLayer1.swift */; };
 		CC851CFF1E13A4100083268F /* MTLTexture+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */; };
 		CC851D001E13A4100083268F /* MTLTexture+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */; };
+		CCB11D9B1E24C65300F30482 /* MTLDevice+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */; };
+		CCB11D9C1E24C67400F30482 /* MTLDevice+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */; };
 		CCF3495B1E0F996F00EF1312 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF3495A1E0F996F00EF1312 /* AppDelegate.swift */; };
 		CCF349601E0F996F00EF1312 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CCF3495E1E0F996F00EF1312 /* Main.storyboard */; };
 		CCF349621E0F996F00EF1312 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CCF349611E0F996F00EF1312 /* Assets.xcassets */; };
@@ -98,6 +100,7 @@
 		CC851CEF1E1366170083268F /* SampleCanvas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleCanvas.swift; sourceTree = "<group>"; };
 		CC851CF21E1366540083268F /* SampleCanvasLayer1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleCanvasLayer1.swift; sourceTree = "<group>"; };
 		CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MTLTexture+Z.swift"; sourceTree = "<group>"; };
+		CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MTLDevice+Z.swift"; sourceTree = "<group>"; };
 		CCF349571E0F996F00EF1312 /* SilvershadowApp_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SilvershadowApp_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCF3495A1E0F996F00EF1312 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CCF3495F1E0F996F00EF1312 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -204,6 +207,7 @@
 				CC1F2F2C1E1151180097B223 /* ImageRenderable.swift */,
 				CC1F2F2D1E1151180097B223 /* ImageRenderer.swift */,
 				CC1F2F2E1E1151180097B223 /* ImageShaders.metal */,
+				CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */,
 				CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */,
 				CC851CD21E1282770083268F /* PointsRenderable.swift */,
 				CC851CD31E1282770083268F /* PointsRenderer.swift */,
@@ -247,6 +251,7 @@
 				CCF349531E0F996F00EF1312 /* Sources */,
 				CCF349541E0F996F00EF1312 /* Frameworks */,
 				CCF349551E0F996F00EF1312 /* Resources */,
+				CCB11D9D1E25230700F30482 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -341,6 +346,22 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		CCB11D9D1E25230700F30482 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = " find . -type f -name '*.png' -exec xattr -c {} \\;\n ";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		CCF349531E0F996F00EF1312 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -368,6 +389,7 @@
 				CCF3498B1E0F9A0300EF1312 /* CoreGraphics+Z.swift in Sources */,
 				CCF349BB1E0FBEA900EF1312 /* ColorRenderer.swift in Sources */,
 				CC851CD51E1282770083268F /* PointsRenderable.swift in Sources */,
+				CCB11D9B1E24C65300F30482 /* MTLDevice+Z.swift in Sources */,
 				CC851CF01E1366170083268F /* SampleCanvas.swift in Sources */,
 				CC851CFF1E13A4100083268F /* MTLTexture+Z.swift in Sources */,
 				CC1F2F2F1E1151180097B223 /* ImageRenderable.swift in Sources */,
@@ -407,6 +429,7 @@
 				CC1F2F321E11523C0097B223 /* ImageRenderable.swift in Sources */,
 				CC851D001E13A4100083268F /* MTLTexture+Z.swift in Sources */,
 				CCF349B51E0FABB400EF1312 /* SampleScene.swift in Sources */,
+				CCB11D9C1E24C67400F30482 /* MTLDevice+Z.swift in Sources */,
 				CC1F2F331E11523C0097B223 /* ImageRenderer.swift in Sources */,
 				CCF3498C1E0F9A0300EF1312 /* CoreGraphics+Z.swift in Sources */,
 				CCF349BC1E0FBEA900EF1312 /* ColorRenderer.swift in Sources */,

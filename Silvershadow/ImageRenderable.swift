@@ -11,33 +11,6 @@ import MetalKit
 import GLKit
 
 
-extension MTLDevice {
-
-	var textureLoader: MTKTextureLoader {
-		return MTKTextureLoader(device: self)
-	}
-
-	func texture(of image: CGImage, options: [String : NSObject]? = nil) -> MTLTexture? {
-		var _options: [String : NSObject] = [MTKTextureLoaderOptionSRGB: false as NSNumber]
-		if #available(iOS 10.0, *) {
-			_options[MTKTextureLoaderOptionOrigin] = true as NSNumber
-		}
-		if let options = options {
-			for (key, value) in options {
-				_options[key] = value
-			}
-		}
-		return try? self.textureLoader.newTexture(with: image, options: _options)
-	}
-
-	func texture(of image: XImage, options: [String : NSObject]? = nil) -> MTLTexture? {
-		guard let cgImage: CGImage = image.cgImage else { return nil }
-		return self.texture(of: cgImage, options: options)
-	}
-
-}
-
-
 //
 //	ImageNode
 //
