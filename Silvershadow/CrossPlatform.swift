@@ -1,6 +1,6 @@
 //
 //	CrossPlatform.swift
-//	Silvershadow
+//	ZKit
 //
 //	Created by Kaz Yoshikawa on 12/25/16.
 //	Copyright © 2016 Electricwoods LLC. All rights reserved.

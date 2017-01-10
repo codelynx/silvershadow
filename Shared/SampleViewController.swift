@@ -1,6 +1,6 @@
 //
 //	ViewController.swift
-//	SilvershadowApp_mac
+//	SilvershadowApp
 //
 //	Created by Kaz Yoshikawa on 12/25/16.
 //	Copyright © 2016 Electricwoods LLC. All rights reserved.
@@ -15,8 +15,10 @@ import Cocoa
 
 class SampleViewController: XViewController {
 
-	var sampleScene: SampleScene!
-	var sampleCanvas: SampleCanvas!
+	typealias SceneType = SampleScene
+//	typealias SceneType = SampleCanvas
+
+	var sampleScene: SceneType!
 
 	@IBOutlet var renderView: RenderView!
 
@@ -26,13 +28,8 @@ class SampleViewController: XViewController {
 		let device = self.renderView.device
 		let contentSize = CGSize(2048, 1024)
 
-		// either one can be uncommented not both
-
-//		self.sampleScene = SampleScene(device: device, contentSize: contentSize)
-//		self.renderView.scene = self.sampleScene
-
-		self.sampleCanvas = SampleCanvas(device: device, contentSize: contentSize)
-		self.renderView.scene = self.sampleCanvas
+		self.sampleScene = SceneType(device: device, contentSize: contentSize)
+		self.renderView.scene = self.sampleScene
 	}
 
 	#if os(macOS)

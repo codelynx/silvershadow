@@ -1,6 +1,6 @@
 //
 //	PointsRenderable.swift
-//	Metal2D
+//	Silvershadow
 //
 //	Created by Kaz Yoshikawa on 1/11/16.
 //	Copyright © 2016 Electricwoods LLC. All rights reserved.
