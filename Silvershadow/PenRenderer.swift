@@ -1,5 +1,5 @@
 //
-//	PointsRenderer.swift
+//	PenRenderer.swift
 //	Silvershadow
 //
 //	Created by Kaz Yoshikawa on 1/11/16.
@@ -11,13 +11,13 @@ import CoreGraphics
 import QuartzCore
 import GLKit
 
-typealias PointVertex = PointsRenderer.Vertex
+typealias PenVertex = PenRenderer.Vertex
 
 //
-//	PointsRenderer
+//	PenRenderer
 //
 
-class PointsRenderer: Renderer {
+class PenRenderer: Renderer {
 
 	typealias VertexType = Vertex
 
@@ -88,8 +88,8 @@ class PointsRenderer: Renderer {
 	lazy var renderPipelineState: MTLRenderPipelineState = {
 		let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
 		renderPipelineDescriptor.vertexDescriptor = self.vertexDescriptor
-		renderPipelineDescriptor.vertexFunction = self.library.makeFunction(name: "points_vertex")!
-		renderPipelineDescriptor.fragmentFunction = self.library.makeFunction(name: "points_fragment")!
+		renderPipelineDescriptor.vertexFunction = self.library.makeFunction(name: "pen_vertex")!
+		renderPipelineDescriptor.fragmentFunction = self.library.makeFunction(name: "pen_fragment")!
 
 		renderPipelineDescriptor.colorAttachments[0].pixelFormat = defaultPixelFormat
 		renderPipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
@@ -144,14 +144,6 @@ class PointsRenderer: Renderer {
 	func render(context: RenderContext, texture: MTLTexture, vertexes: [Vertex]) {
 		let vertexBuffer = self.vertexBuffer(for: vertexes)
 		self.render(context: context, texture: texture, vertexBuffer: vertexBuffer)
-	}
-
-	func render(context: RenderContext, texture: MTLTexture, points: [Point], width: Float) {
-		var vertexes = [Vertex]()
-		points.pair { (p1, p2) in
-			vertexes += self.vertexes(from: p1, to: p2, width: width)
-		}
-		self.render(context: context, texture: texture, vertexes: vertexes)
 	}
 
 	func vertexes(from: Point, to: Point, width: Float) -> [Vertex] {
@@ -235,96 +227,20 @@ class PointsRenderer: Renderer {
 		return vertexes
 	}
 
-
-
-/*
-	func render(context: RenderContext, cgPath: CGPath, texture: MTLTexture, width: CGFloat) {
-		let vertexes = PointsRenderer.vertexes(of: cgPath, width: width)
-		var startPoint: CGPoint?
-		var lastPoint: CGPoint?
-
-		for pathElement in cgPath.pathElements {
-			switch pathElement {
-			case .moveToPoint(let p1):
-				startPoint = p1
-				lastPoint = p1
-
-			case .addLineToPoint(let p1):
-				guard let p0 = lastPoint else { continue }
-				lastPoint = p1
-
-				let n = Int((p1 - p0).length)
-				for i in 0 ..< n {
-					let t = CGFloat(i) / CGFloat(n)
-					let q = p0 + (p1 - p0) * t
-					vertexes.append(Vertex(Point(q), width))
-				}
-
-			case .addQuadCurveToPoint(let p1, let p2):
-				guard let p0 = lastPoint else { continue }
-				lastPoint = p2
-
-				let n = Int((p1 - p0).length + (p2 - p1).length)
-				for i in 0 ..< n {
-					let t = CGFloat(i) / CGFloat(n)
-					let q1 = p0 + (p1 - p0) * t
-					let q2 = p1 + (p2 - p1) * t
-					let r = q1 + (q2 - q1) * t
-					vertexes.append(Vertex(Point(r), width))
-				}
-
-			case .addCurveToPoint(let p1, let p2, let p3):
-				guard let p0 = lastPoint else { continue }
-				lastPoint = p3
-
-				// http://math.stackexchange.com/questions/12186/arc-length-of-bézier-curves
-				// http://gamedev.stackexchange.com/questions/6009/bezier-curve-arc-length
-				// http://stackoverflow.com/questions/29438398/cheap-way-of-calculating-cubic-bezier-length
-
-				let chord = (p3 - p0).length
-				let est_length = (p1 - p0).length + (p2 - p1).length + (p3 - p2).length
-				let n = Int((est_length + chord) * 0.5)
-				for i in 0 ..< n {
-					let t = CGFloat(i) / CGFloat(n)
-					let q1 = p0 + (p1 - p0) * t
-					let q2 = p1 + (p2 - p1) * t
-					let q3 = p2 + (p3 - p2) * t
-					let r1 = q1 + (q2 - q1) * t
-					let r2 = q2 + (q3 - q2) * t
-					let s = r1 + (r2 - r1) * t
-					vertexes.append(Vertex(Point(s), width))
-				}
-
-			case .closeSubpath:
-				guard let p0 = lastPoint, let p1 = startPoint else { continue }
-
-				let n = Int((p1 - p0).length)
-				for i in 0 ..< n {
-					let t = CGFloat(i) / CGFloat(n)
-					let q = p0 + (p1 - p0) * t
-					vertexes.append(Vertex(Point(q), width))
-				}
-			}
-		}
+	func render(context: RenderContext, texture: MTLTexture, cgPath: CGPath, width: CGFloat) {
+		let vertexes = PenRenderer.vertexes(of: cgPath, width: width)
 		self.render(context: context, texture: texture, vertexes: vertexes)
 	}
-*/
-
 }
 
 
 extension RenderContext {
 
-	func render(vertexes: [PointVertex], texture: MTLTexture) {
-		let renderer: PointsRenderer = self.device.renderer()
+	func render(vertexes: [PenVertex], texture: MTLTexture) {
+		let renderer: PenRenderer = self.device.renderer()
 		let vertexBuffer = renderer.vertexBuffer(for: vertexes)
 		renderer.render(context: self, texture: texture, vertexBuffer: vertexBuffer)
 	}
-
-//	func render(points: [Point], texture: MTLTexture, width: Float) {
-//		let renderer: PointsRenderer = self.device.renderer()
-//		renderer.render(context: self, texture: texture, points: points, width: width)
-//	}
 
 }
 
