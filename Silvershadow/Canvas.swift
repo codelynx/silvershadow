@@ -61,9 +61,9 @@ class Canvas: Scene {
 		return self.device.makeTexture(descriptor: descriptor)
 	}()
 
-	lazy var subcomandQueue: MTLCommandQueue = {
-		return self.device.makeCommandQueue()
-	}()
+	var subcomandQueue: MTLCommandQueue {
+		return super.commandQueue!
+	}
 
 	override func update() {
 		let commandQueue = self.subcomandQueue
@@ -109,7 +109,7 @@ class Canvas: Scene {
 
 			subrenderPassDescriptor.colorAttachments[0].loadAction = .load
 			let subrenderContext = RenderContext(renderPassDescriptor: subrenderPassDescriptor,
-						commandBuffer: subcommandBuffer, transform: subtransform, zoomScale: 1)
+						commandBuffer: subcommandBuffer, contentSize: self.contentSize, transform: subtransform, zoomScale: 1)
 			canvasLayer.render(context: subrenderContext)
 
 			subcommandBuffer.commit()
@@ -119,7 +119,7 @@ class Canvas: Scene {
 
 			let transform = GLKMatrix4Identity
 			let renderContext = RenderContext(renderPassDescriptor: renderPassDescriptor,
-							commandBuffer: commandBuffer, transform: transform, zoomScale: 1)
+							commandBuffer: commandBuffer, contentSize: self.contentSize, transform: transform, zoomScale: 1)
 			renderContext.render(texture: subtexture, in: Rect(-1, -1, 2, 2))
 
 			commandBuffer.commit()

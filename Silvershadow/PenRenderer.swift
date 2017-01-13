@@ -128,17 +128,47 @@ class PenRenderer: Renderer {
 		var uniforms = Uniforms(transform: transform, zoomScale: Float(context.zoomScale))
 		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
 
-		let encoder = context.makeRenderCommandEncoder()
-		encoder.setRenderPipelineState(self.renderPipelineState)
+		let subcommandBuffer = context.makeCommandBuffer()
+		let subrenderPassDescriptor = MTLRenderPassDescriptor()
+		subrenderPassDescriptor.colorAttachments[0].texture = context.maskingTexture!
+		subrenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0)
+		subrenderPassDescriptor.colorAttachments[0].storeAction = .store
 
-		encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
-		encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
+		// clear the subtexture
+		subrenderPassDescriptor.colorAttachments[0].loadAction = .clear
+		let clearEncoder = subcommandBuffer.makeRenderCommandEncoder(descriptor: subrenderPassDescriptor)
+		clearEncoder.endEncoding()
 
-		encoder.setFragmentTexture(texture, at: 0)
-		encoder.setFragmentSamplerState(self.colorSamplerState, at: 0)
+//		let subtransform = GLKMatrix4(CGRect(origin: CGPoint.zero, size: context.contentSize).transform(to: CGRect(-1, -1, 2, 2)))
+//		subrenderPassDescriptor.colorAttachments[0].loadAction = .load
+//		let subrenderContext = RenderContext(renderPassDescriptor: subrenderPassDescriptor,
+//					commandBuffer: subcommandBuffer, transform: context.transform, zoomScale: 1)
+//		canvasLayer.render(context: subrenderContext)
 
-		encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: vertexBuffer.count)
-		encoder.endEncoding()
+		let subencoder = subcommandBuffer.makeRenderCommandEncoder(descriptor: subrenderPassDescriptor)
+		subencoder.setRenderPipelineState(self.renderPipelineState)
+
+		subencoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
+		subencoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
+
+		subencoder.setFragmentTexture(texture, at: 0)
+		subencoder.setFragmentSamplerState(self.colorSamplerState, at: 0)
+
+		subencoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: vertexBuffer.count)
+		subencoder.endEncoding()
+
+		subcommandBuffer.commit()
+		subcommandBuffer.waitUntilCompleted()
+
+		let image: NSImage! = context.maskingTexture!.image!
+
+		let renderContext = RenderContext(renderPassDescriptor: context.renderPassDescriptor,
+						commandBuffer: context.commandBuffer, contentSize: context.contentSize, transform: GLKMatrix4Identity, zoomScale: 1)
+		renderContext.render(texture: context.maskingTexture!, in: Rect(-1, -1, 2, 2))
+
+
+
+		print(image)
 	}
 
 	func render(context: RenderContext, texture: MTLTexture, vertexes: [Vertex]) {

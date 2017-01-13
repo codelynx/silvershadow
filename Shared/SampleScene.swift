@@ -45,7 +45,7 @@ class SampleScene: Scene {
 		(174.5, 614.5)
 	]
 
-	lazy var sampleStroke: PointsRenderable = {
+	lazy var samplePath: CGPath = {
 		let cgPath = CGMutablePath()
 		var lastPoint: CGPoint?
 		for point in self.samplePoints.map({ CGPoint(x: $0.0, y: $0.1) }) {
@@ -58,9 +58,10 @@ class SampleScene: Scene {
 			}
 			lastPoint = point
 		}
-		return PointsRenderable(device: self.device, texture: self.pointTexture1, cgPath: cgPath, width: 64)!
+		return cgPath
 	}()
 
+	
 
 	// MRAK: -
 
@@ -80,11 +81,25 @@ class SampleScene: Scene {
 */
 	}
 
+	lazy var maskingTexture: MTLTexture = {
+		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
+					width: Int(self.contentSize.width), height: Int(self.contentSize.height), mipmapped: self.mipmapped)
+		descriptor.usage = [.shaderRead, .shaderWrite, .renderTarget]
+		return self.device.makeTexture(descriptor: descriptor)
+	}()
+
 	override func render(in context: RenderContext) {
 
 		context.render(texture: self.image1Texture, in: Rect(0, 0, 2048, 1024))
 
-		self.sampleStroke.render(context: context)
+//		return PointsRenderable(device: self.device, texture: self.pointTexture1, cgPath: cgPath, width: 64)!
+
+		context.maskingTexture = self.maskingTexture
+
+		let penRenderer: PenRenderer = self.device.renderer()
+		penRenderer.render(context: context, texture: self.pointTexture1, cgPath: self.samplePath, width: 64)
+
+//		self.sampleStroke.render(context: context)
 
 	}
 

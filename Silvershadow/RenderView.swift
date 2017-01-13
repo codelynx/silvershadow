@@ -222,10 +222,11 @@ class RenderView: XView, MTKViewDelegate {
 		commandEncoder.endEncoding()
 	
 		// setup render context
+		let contentSize = CGSize(width: drawable.texture.width, height: drawable.texture.height)
 		let transform = GLKMatrix4(self.drawingTransform)
 		renderPassDescriptor.colorAttachments[0].loadAction = .load
 		let renderContext = RenderContext(renderPassDescriptor: renderPassDescriptor, commandBuffer: commandBuffer,
-				transform: transform, zoomScale: self.zoomScale)
+				contentSize: contentSize, transform: transform, zoomScale: self.zoomScale)
 
 		// actual rendering
 		scene.render(in: renderContext)

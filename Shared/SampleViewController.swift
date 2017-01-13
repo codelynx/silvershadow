@@ -15,8 +15,8 @@ import Cocoa
 
 class SampleViewController: XViewController {
 
-//	typealias SceneType = SampleScene
-	typealias SceneType = SampleCanvas
+	typealias SceneType = SampleScene
+//	typealias SceneType = SampleCanvas
 
 	var sampleScene: SceneType!
 
