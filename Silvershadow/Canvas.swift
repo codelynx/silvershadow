@@ -95,7 +95,7 @@ class Canvas: Scene {
 		for canvasLayer in self.canvasLayers {
 
 			let subcommandBuffer = commandQueue.makeCommandBuffer()
-			guard !canvasLayer.isHidden else { continue }
+			if canvasLayer.isHidden { continue }
 
 			let subrenderPassDescriptor = MTLRenderPassDescriptor()
 			subrenderPassDescriptor.colorAttachments[0].texture = subtexture
@@ -147,7 +147,7 @@ class Canvas: Scene {
 
 	override func render(in context: RenderContext) {
 		if let canvasVertexes = self.canvasVertexes {
-			self.canvasRenderer.renderImage(context: context, texture: self.canvasTexture, vertexBuffer: canvasVertexes)
+			self.canvasRenderer.render(context: context, texture: self.canvasTexture, vertexBuffer: canvasVertexes)
 		}
 	}
 

@@ -22,7 +22,6 @@ class RenderContext {
 	let contentSize: CGSize
 	let transform: GLKMatrix4
 	let zoomScale: CGFloat
-	var maskingTexture: MTLTexture?
 
 	var device: MTLDevice { return commandBuffer.device }
 
@@ -39,7 +38,6 @@ class RenderContext {
 		self.contentSize = contentSize
 		self.transform = transform
 		self.zoomScale = zoomScale
-		self.maskingTexture = nil
 	}
 
 	func makeCommandBuffer() -> MTLCommandBuffer {

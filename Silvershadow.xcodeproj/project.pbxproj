@@ -17,12 +17,12 @@
 		CC1F2F371E11527F0097B223 /* BlueMarble.png in Resources */ = {isa = PBXBuildFile; fileRef = CC1F2F351E1152710097B223 /* BlueMarble.png */; };
 		CC54295D1E14EF3900C1929E /* SampleCanvasLayer2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */; };
 		CC54295E1E14EF3C00C1929E /* SampleCanvasLayer2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */; };
-		CC6BE99E1E2554CA00320F7D /* PenRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6BE99C1E2554CA00320F7D /* PenRenderer.swift */; };
-		CC6BE99F1E2554CA00320F7D /* PenShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CC6BE99D1E2554CA00320F7D /* PenShaders.metal */; };
+		CC6BE99E1E2554CA00320F7D /* BrushRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6BE99C1E2554CA00320F7D /* BrushRenderer.swift */; };
+		CC6BE99F1E2554CA00320F7D /* BrushShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CC6BE99D1E2554CA00320F7D /* BrushShaders.metal */; };
 		CC6BE9A11E2555E700320F7D /* pencil1.png in Resources */ = {isa = PBXBuildFile; fileRef = CC6BE9A01E2555E700320F7D /* pencil1.png */; };
 		CC6BE9A21E2555E700320F7D /* pencil1.png in Resources */ = {isa = PBXBuildFile; fileRef = CC6BE9A01E2555E700320F7D /* pencil1.png */; };
-		CC6BE9A31E2555EF00320F7D /* PenRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6BE99C1E2554CA00320F7D /* PenRenderer.swift */; };
-		CC6BE9A41E2555EF00320F7D /* PenShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CC6BE99D1E2554CA00320F7D /* PenShaders.metal */; };
+		CC6BE9A31E2555EF00320F7D /* BrushRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6BE99C1E2554CA00320F7D /* BrushRenderer.swift */; };
+		CC6BE9A41E2555EF00320F7D /* BrushShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CC6BE99D1E2554CA00320F7D /* BrushShaders.metal */; };
 		CC851CD51E1282770083268F /* PointsRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CD21E1282770083268F /* PointsRenderable.swift */; };
 		CC851CD61E1282770083268F /* PointsRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CD21E1282770083268F /* PointsRenderable.swift */; };
 		CC851CD71E1282770083268F /* PointsRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CD31E1282770083268F /* PointsRenderer.swift */; };
@@ -96,9 +96,11 @@
 		CC1F2F2E1E1151180097B223 /* ImageShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = ImageShaders.metal; sourceTree = "<group>"; };
 		CC1F2F351E1152710097B223 /* BlueMarble.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BlueMarble.png; sourceTree = "<group>"; };
 		CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleCanvasLayer2.swift; sourceTree = "<group>"; };
-		CC6BE99C1E2554CA00320F7D /* PenRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PenRenderer.swift; sourceTree = "<group>"; };
-		CC6BE99D1E2554CA00320F7D /* PenShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = PenShaders.metal; sourceTree = "<group>"; };
+		CC6BE99C1E2554CA00320F7D /* BrushRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrushRenderer.swift; sourceTree = "<group>"; };
+		CC6BE99D1E2554CA00320F7D /* BrushShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = BrushShaders.metal; sourceTree = "<group>"; };
 		CC6BE9A01E2555E700320F7D /* pencil1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pencil1.png; sourceTree = "<group>"; };
+		CC79B8F31E2B45ED00DAFC11 /* PatternShader.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = PatternShader.metal; sourceTree = "<group>"; };
+		CC79B8F61E2B47E800DAFC11 /* PatternRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PatternRenderer.swift; sourceTree = "<group>"; };
 		CC851CD21E1282770083268F /* PointsRenderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointsRenderable.swift; sourceTree = "<group>"; };
 		CC851CD31E1282770083268F /* PointsRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = PointsRenderer.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		CC851CD41E1282770083268F /* PointsShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; lineEnding = 0; path = PointsShaders.metal; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.metal; };
@@ -218,8 +220,8 @@
 				CC1F2F2E1E1151180097B223 /* ImageShaders.metal */,
 				CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */,
 				CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */,
-				CC6BE99C1E2554CA00320F7D /* PenRenderer.swift */,
-				CC6BE99D1E2554CA00320F7D /* PenShaders.metal */,
+				CC6BE99C1E2554CA00320F7D /* BrushRenderer.swift */,
+				CC6BE99D1E2554CA00320F7D /* BrushShaders.metal */,
 				CC851CD21E1282770083268F /* PointsRenderable.swift */,
 				CC851CD31E1282770083268F /* PointsRenderer.swift */,
 				CC851CD41E1282770083268F /* PointsShaders.metal */,
@@ -234,6 +236,8 @@
 				CCF3498A1E0F9A0300EF1312 /* VertexBuffer.swift */,
 				CCF349AC1E0FA10E00EF1312 /* XColor+Z.swift */,
 				CCF349AF1E0FA19100EF1312 /* XView+Z.swift */,
+				CC79B8F31E2B45ED00DAFC11 /* PatternShader.metal */,
+				CC79B8F61E2B47E800DAFC11 /* PatternRenderer.swift */,
 			);
 			path = Silvershadow;
 			sourceTree = "<group>";
@@ -397,9 +401,9 @@
 				CCF349B01E0FA19100EF1312 /* XView+Z.swift in Sources */,
 				CCF349A11E0F9A0300EF1312 /* VertexBuffer.swift in Sources */,
 				CCF349C01E0FF1E400EF1312 /* SampleViewController.swift in Sources */,
-				CC6BE99E1E2554CA00320F7D /* PenRenderer.swift in Sources */,
+				CC6BE99E1E2554CA00320F7D /* BrushRenderer.swift in Sources */,
 				CCF3498D1E0F9A0300EF1312 /* GeoUtils.swift in Sources */,
-				CC6BE99F1E2554CA00320F7D /* PenShaders.metal in Sources */,
+				CC6BE99F1E2554CA00320F7D /* BrushShaders.metal in Sources */,
 				CCF349A41E0F9A2B00EF1312 /* CrossPlatform.swift in Sources */,
 				CCF349B41E0FABB400EF1312 /* SampleScene.swift in Sources */,
 				CCF3498B1E0F9A0300EF1312 /* CoreGraphics+Z.swift in Sources */,
@@ -439,9 +443,9 @@
 				CCF349A21E0F9A0300EF1312 /* VertexBuffer.swift in Sources */,
 				CC851CD61E1282770083268F /* PointsRenderable.swift in Sources */,
 				CCF3498E1E0F9A0300EF1312 /* GeoUtils.swift in Sources */,
-				CC6BE9A31E2555EF00320F7D /* PenRenderer.swift in Sources */,
+				CC6BE9A31E2555EF00320F7D /* BrushRenderer.swift in Sources */,
 				CC851CD81E1282770083268F /* PointsRenderer.swift in Sources */,
-				CC6BE9A41E2555EF00320F7D /* PenShaders.metal in Sources */,
+				CC6BE9A41E2555EF00320F7D /* BrushShaders.metal in Sources */,
 				CC851CDA1E1282770083268F /* PointsShaders.metal in Sources */,
 				CCF349A51E0F9A2B00EF1312 /* CrossPlatform.swift in Sources */,
 				CC1F2F321E11523C0097B223 /* ImageRenderable.swift in Sources */,

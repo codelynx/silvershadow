@@ -40,7 +40,7 @@ class ImageRenderable: Renderable {
 	}
 
 	func render(context: RenderContext) {
-		self.renderer.renderImage(context: context, texture: texture, vertexBuffer: vertexBuffer)
+		self.renderer.render(context: context, texture: texture, vertexBuffer: vertexBuffer)
 	}
 	
 }

@@ -235,6 +235,11 @@ class PointsRenderer: Renderer {
 		return vertexes
 	}
 
+	func render(context: RenderContext, cgPath: CGPath, texture: MTLTexture, width: CGFloat) {
+		let vertexes = PointsRenderer.vertexes(of: cgPath, width: width)
+		let vertexBuffer = self.vertexBuffer(for: vertexes)
+		self.render(context: context, texture: texture, vertexBuffer: vertexBuffer)
+	}
 
 
 /*
@@ -308,7 +313,7 @@ class PointsRenderer: Renderer {
 		}
 		self.render(context: context, texture: texture, vertexes: vertexes)
 	}
-*/
+	*/
 
 }
 

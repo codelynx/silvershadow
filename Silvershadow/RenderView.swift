@@ -213,7 +213,7 @@ class RenderView: XView, MTKViewDelegate {
 		let commandBuffer = commandQueue.makeCommandBuffer()
 
 		renderPassDescriptor.colorAttachments[0].texture = drawable.texture // error on simulator target
-		renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.9, 0.9, 0.9, 1)
+		renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(1.0, 1.0, 1.0, 1.0)
 		renderPassDescriptor.colorAttachments[0].loadAction = .clear
 		renderPassDescriptor.colorAttachments[0].storeAction = .store
 

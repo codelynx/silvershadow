@@ -30,9 +30,14 @@ class SampleScene: Scene {
 		return self.device.texture(of: XImage(named: "BlueMarble.png")!)!
 	}()
 
-	lazy var pointTexture1: MTLTexture = {
+	lazy var brushShapeTexture: MTLTexture = {
 		return self.device.texture(of: XImage(named: "Particle")!)!
 	}()
+
+	lazy var brushFillTexture: MTLTexture = {
+		return self.device.texture(of: XImage(named: "pencil1")!)!
+	}()
+
 
 	let samplePoints: [(CGFloat, CGFloat)] = [
 		(342.0, 611.5), (328.0, 616.0), (319.0, 616.0), (307.5, 617.5), (293.5, 619.5), (278.5, 620.5), (262.0, 621.5), (246.5, 621.5), (230.5, 621.5),
@@ -84,7 +89,7 @@ class SampleScene: Scene {
 	lazy var maskingTexture: MTLTexture = {
 		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
 					width: Int(self.contentSize.width), height: Int(self.contentSize.height), mipmapped: self.mipmapped)
-		descriptor.usage = [.shaderRead, .shaderWrite, .renderTarget]
+		descriptor.usage = [.shaderRead, .renderTarget]
 		return self.device.makeTexture(descriptor: descriptor)
 	}()
 
@@ -93,11 +98,11 @@ class SampleScene: Scene {
 		context.render(texture: self.image1Texture, in: Rect(0, 0, 2048, 1024))
 
 //		return PointsRenderable(device: self.device, texture: self.pointTexture1, cgPath: cgPath, width: 64)!
+		let pointRenderer: PointsRenderer = self.device.renderer()
+		pointRenderer.render(context: context, cgPath: self.samplePath, texture: brushShapeTexture, width: 16)
 
-		context.maskingTexture = self.maskingTexture
-
-		let penRenderer: PenRenderer = self.device.renderer()
-		penRenderer.render(context: context, texture: self.pointTexture1, cgPath: self.samplePath, width: 64)
+		let brushRenderer: BrushRenderer = self.device.renderer()
+		brushRenderer.render(context: context, masking: self.maskingTexture, brushShape: self.brushShapeTexture, brushFill: self.brushFillTexture, cgPath: self.samplePath, width: 64)
 
 //		self.sampleStroke.render(context: context)
 

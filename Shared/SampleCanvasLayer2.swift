@@ -47,10 +47,10 @@ class SampleCanvasLayer2: CanvasLayer {
 	override func render(context: RenderContext) {
 		guard let device = self.device else { return }
 	
-		if let pointTexture = self.pointTexture {
-			let renderer: PenRenderer = device.renderer()
-			renderer.render(context: context, texture: pointTexture, cgPath: self.samplePath, width: 3)
-		}
+//		if let pointTexture = self.pointTexture {
+//			let renderer: PenRenderer = device.renderer()
+//			renderer.render(context: context, texture: pointTexture, cgPath: self.samplePath, width: 3)
+//		}
 	
 		if let contentSize = self.contentSize {
 			// you may use core graphics to draw and will become a texture to render

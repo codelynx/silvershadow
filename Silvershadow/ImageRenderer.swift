@@ -123,7 +123,7 @@ class ImageRenderer: Renderer {
 	
 	// MARK: -
 
-	func renderImage(context: RenderContext, texture: MTLTexture, vertexBuffer: VertexBuffer<Vertex>) {
+	func render(context: RenderContext, texture: MTLTexture, vertexBuffer: VertexBuffer<Vertex>) {
 		let transform = context.transform
 		var uniforms = Uniforms(transform: transform)
 		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
@@ -144,6 +144,12 @@ class ImageRenderer: Renderer {
 
 		encoder.endEncoding()
 	}
+
+	func render(context: RenderContext, texture: MTLTexture, rect: Rect) {
+		let vertexes = self.vertices(for: rect)
+		guard let vertexBuffer = self.vertexBuffer(for: vertexes) else { return }
+		self.render(context: context, texture: texture, vertexBuffer: vertexBuffer)
+	}
 }
 
 
@@ -156,7 +162,7 @@ extension RenderContext {
 		let renderer = self.device.renderer() as ImageRenderer
 		let vertexes = renderer.vertices(for: rect)
 		guard let vertexBuffer = renderer.vertexBuffer(for: vertexes) else { return }
-		renderer.renderImage(context: self, texture: texture, vertexBuffer: vertexBuffer)
+		renderer.render(context: self, texture: texture, vertexBuffer: vertexBuffer)
 	}
 
 	func render(image: XImage?, in rect: Rect) {
