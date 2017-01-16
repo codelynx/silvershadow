@@ -27,7 +27,7 @@ class SampleScene: Scene {
 	}()
 
 	lazy var image1Texture: MTLTexture = {
-		return self.device.texture(of: XImage(named: "BlueMarble.png")!)!
+		return self.device.texture(of: XImage(named: "BlueMarble")!)!
 	}()
 
 	lazy var brushShapeTexture: MTLTexture = {
@@ -35,7 +35,7 @@ class SampleScene: Scene {
 	}()
 
 	lazy var brushFillTexture: MTLTexture = {
-		return self.device.texture(of: XImage(named: "pencil1")!)!
+		return self.device.texture(of: XImage(named: "Pencil")!)!
 	}()
 
 
@@ -98,8 +98,8 @@ class SampleScene: Scene {
 		context.render(texture: self.image1Texture, in: Rect(0, 0, 2048, 1024))
 
 //		return PointsRenderable(device: self.device, texture: self.pointTexture1, cgPath: cgPath, width: 64)!
-		let pointRenderer: PointsRenderer = self.device.renderer()
-		pointRenderer.render(context: context, cgPath: self.samplePath, texture: brushShapeTexture, width: 16)
+//		let pointRenderer: PointsRenderer = self.device.renderer()
+//		pointRenderer.render(context: context, cgPath: self.samplePath, texture: brushShapeTexture, width: 16)
 
 		let brushRenderer: BrushRenderer = self.device.renderer()
 		brushRenderer.render(context: context, masking: self.maskingTexture, brushShape: self.brushShapeTexture, brushFill: self.brushFillTexture, cgPath: self.samplePath, width: 64)

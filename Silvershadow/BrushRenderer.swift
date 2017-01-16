@@ -301,7 +301,7 @@ class BrushRenderer: Renderer {
 		let subcommandBuffer = context.makeCommandBuffer()
 		let subrenderPassDescriptor = MTLRenderPassDescriptor()
 		subrenderPassDescriptor.colorAttachments[0].texture = masking
-		subrenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0)
+		subrenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0) // <-- !!!
 		subrenderPassDescriptor.colorAttachments[0].storeAction = .store
 
 		// clear the subtexture
@@ -325,12 +325,13 @@ class BrushRenderer: Renderer {
 		subcommandBuffer.waitUntilCompleted()
 
 
-		let image: NSImage! = masking.image!
+//		let image: NSImage! = masking.image!
 
 		//
 		// Brush Fill
 		//
 
+	if true {
 		let commandBuffer = context.commandBuffer
 		let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: context.renderPassDescriptor)
 		
@@ -339,7 +340,8 @@ class BrushRenderer: Renderer {
 //		let (l, r, t, b) = (rect.minX, rect.maxX, rect.maxY, rect.minY)
 		let (l, r, t, b) = (Float(-1), Float(1), Float(1), Float(-1))
 
-		let (u, v) = (Float(1024) / 100.0, Float(1024) / 100.0)
+		let (u, v) = (Float(2048) / 100.0, Float(1024) / 100.0)
+//		let (u, v) = (Float(1), Float(1))
 
 //		let brushFillVetrexes = self.brushFillVertices(for: Rect(0, 0, 2024, 1024))
 		let brushFillVetrexes: [BrushFillVertex] = [
@@ -354,7 +356,7 @@ class BrushRenderer: Renderer {
 			BrushFillVertex(x: r, y: b, z: 0, w: 1, u: 1, v: 1, s: u, t: v),		// 3, c
 
 			BrushFillVertex(x: l, y: t, z: 0, w: 1, u: 0, v: 0, s: 0, t: 0),		// 1, a
-			BrushFillVertex(x: r, y: b, z: 0, w: 1, u: 1, v: 1, s: 1, t: v),		// 3, c
+			BrushFillVertex(x: r, y: b, z: 0, w: 1, u: 1, v: 1, s: u, t: v),		// 3, c
 			BrushFillVertex(x: r, y: t, z: 0, w: 1, u: 1, v: 0, s: u, t: 0),		// 4, d
 		]
 
@@ -372,17 +374,17 @@ class BrushRenderer: Renderer {
 		encoder.setFragmentSamplerState(self.brushMaskSamplerState, at: 0)
 		encoder.setFragmentSamplerState(self.brushPatternSamplerState, at: 1)
 
-		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexBuffer.count)
+		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: brushFillVertexBuffer.count)
 
 		encoder.endEncoding()
-
+	}
 		// debug
-		if false {
-			let fillTransform = GLKMatrix4Identity
-			let renderContext = RenderContext(renderPassDescriptor: context.renderPassDescriptor,
-							commandBuffer: context.commandBuffer, contentSize: context.contentSize, transform: fillTransform, zoomScale: 1)
-			renderContext.render(texture: masking, in: Rect(-1, -1, 2, 2))
-		}
+	if false {
+		let fillTransform = GLKMatrix4Identity
+		let renderContext = RenderContext(renderPassDescriptor: context.renderPassDescriptor,
+						commandBuffer: context.commandBuffer, contentSize: context.contentSize, transform: fillTransform, zoomScale: 1)
+		renderContext.render(texture: masking, in: Rect(-1, -1, 2, 2))
+	}
 //		let imageRenderer: ImageRenderer = self.device.renderer()
 //		imageRenderer.render(context: context, texture: masking, rect: Rect(0, 0, 2048, 1024))
 

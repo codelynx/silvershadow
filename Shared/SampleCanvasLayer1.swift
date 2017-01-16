@@ -15,7 +15,7 @@ class SampleCanvasLayer1: CanvasLayer {
 
 	lazy var imageRenderable: ImageRenderable? = {
 		guard let device = self.device else { return nil }
-		guard let image = XImage(named: "BlueMarble.png") else { fatalError("not found") }
+		guard let image = XImage(named: "BlueMarble") else { fatalError("not found") }
 		return ImageRenderable(device: device, image: image, frame: Rect(0, 0, 2048, 1024))!
 	}()
 

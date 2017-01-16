@@ -19,8 +19,8 @@
 		CC54295E1E14EF3C00C1929E /* SampleCanvasLayer2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */; };
 		CC6BE99E1E2554CA00320F7D /* BrushRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6BE99C1E2554CA00320F7D /* BrushRenderer.swift */; };
 		CC6BE99F1E2554CA00320F7D /* BrushShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CC6BE99D1E2554CA00320F7D /* BrushShaders.metal */; };
-		CC6BE9A11E2555E700320F7D /* pencil1.png in Resources */ = {isa = PBXBuildFile; fileRef = CC6BE9A01E2555E700320F7D /* pencil1.png */; };
-		CC6BE9A21E2555E700320F7D /* pencil1.png in Resources */ = {isa = PBXBuildFile; fileRef = CC6BE9A01E2555E700320F7D /* pencil1.png */; };
+		CC6BE9A11E2555E700320F7D /* Pencil.png in Resources */ = {isa = PBXBuildFile; fileRef = CC6BE9A01E2555E700320F7D /* Pencil.png */; };
+		CC6BE9A21E2555E700320F7D /* Pencil.png in Resources */ = {isa = PBXBuildFile; fileRef = CC6BE9A01E2555E700320F7D /* Pencil.png */; };
 		CC6BE9A31E2555EF00320F7D /* BrushRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6BE99C1E2554CA00320F7D /* BrushRenderer.swift */; };
 		CC6BE9A41E2555EF00320F7D /* BrushShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CC6BE99D1E2554CA00320F7D /* BrushShaders.metal */; };
 		CC851CD51E1282770083268F /* PointsRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CD21E1282770083268F /* PointsRenderable.swift */; };
@@ -98,7 +98,7 @@
 		CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleCanvasLayer2.swift; sourceTree = "<group>"; };
 		CC6BE99C1E2554CA00320F7D /* BrushRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrushRenderer.swift; sourceTree = "<group>"; };
 		CC6BE99D1E2554CA00320F7D /* BrushShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = BrushShaders.metal; sourceTree = "<group>"; };
-		CC6BE9A01E2555E700320F7D /* pencil1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pencil1.png; sourceTree = "<group>"; };
+		CC6BE9A01E2555E700320F7D /* Pencil.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Pencil.png; sourceTree = "<group>"; };
 		CC79B8F31E2B45ED00DAFC11 /* PatternShader.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = PatternShader.metal; sourceTree = "<group>"; };
 		CC79B8F61E2B47E800DAFC11 /* PatternRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PatternRenderer.swift; sourceTree = "<group>"; };
 		CC851CD21E1282770083268F /* PointsRenderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointsRenderable.swift; sourceTree = "<group>"; };
@@ -245,7 +245,7 @@
 		CCF349B21E0FABA200EF1312 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				CC6BE9A01E2555E700320F7D /* pencil1.png */,
+				CC6BE9A01E2555E700320F7D /* Pencil.png */,
 				CC1F2F351E1152710097B223 /* BlueMarble.png */,
 				CC851CDB1E1297380083268F /* Particle.png */,
 				CC851CEF1E1366170083268F /* SampleCanvas.swift */,
@@ -342,7 +342,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC1F2F361E1152710097B223 /* BlueMarble.png in Resources */,
-				CC6BE9A11E2555E700320F7D /* pencil1.png in Resources */,
+				CC6BE9A11E2555E700320F7D /* Pencil.png in Resources */,
 				CCF349651E0F996F00EF1312 /* LaunchScreen.storyboard in Resources */,
 				CCF349621E0F996F00EF1312 /* Assets.xcassets in Resources */,
 				CCF349601E0F996F00EF1312 /* Main.storyboard in Resources */,
@@ -355,7 +355,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CCF349751E0F999400EF1312 /* Assets.xcassets in Resources */,
-				CC6BE9A21E2555E700320F7D /* pencil1.png in Resources */,
+				CC6BE9A21E2555E700320F7D /* Pencil.png in Resources */,
 				CC1F2F371E11527F0097B223 /* BlueMarble.png in Resources */,
 				CCF349781E0F999400EF1312 /* Main.storyboard in Resources */,
 				CC851CDD1E1297380083268F /* Particle.png in Resources */,

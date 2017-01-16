@@ -14,7 +14,7 @@ import GLKit
 class SampleCanvasLayer2: CanvasLayer {
 
 	lazy var pointTexture: MTLTexture? = {
-		return self.device?.texture(of: XImage(named: "pencil1")!)!
+		return self.device?.texture(of: XImage(named: "Pencil")!)!
 	}()
 
 	let samplePoints: [(CGFloat, CGFloat)] = [

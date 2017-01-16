@@ -97,7 +97,7 @@ fragment float4 brush_fill_fragment(
 	sampler patternSampler [[ sampler(1) ]]
 ) {
 	float mask = maskTexture.sample(maskSampler, vertexIn.maskTexcoords).a;
-	float3 pattern = patternTexture.sample(patternSampler, vertexIn.patternTexcoords).rgb;
-	return float4(pattern, mask);
+	float4 pattern = patternTexture.sample(patternSampler, vertexIn.patternTexcoords);
+	return float4(pattern.rgb, pattern.a * mask);
 }
 
