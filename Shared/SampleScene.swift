@@ -30,13 +30,13 @@ class SampleScene: Scene {
 		return self.device.texture(of: XImage(named: "BlueMarble")!)!
 	}()
 
-	lazy var brushShapeTexture: MTLTexture = {
-		return self.device.texture(of: XImage(named: "Particle")!)!
-	}()
-
-	lazy var brushFillTexture: MTLTexture = {
-		return self.device.texture(of: XImage(named: "Pencil")!)!
-	}()
+//	lazy var brushShapeTexture: MTLTexture = {
+//		return self.device.texture(of: XImage(named: "Particle")!)!
+//	}()
+//
+//	lazy var brushFillTexture: MTLTexture = {
+//		return self.device.texture(of: XImage(named: "Pencil")!)!
+//	}()
 
 
 	let samplePoints: [(CGFloat, CGFloat)] = [
@@ -86,23 +86,16 @@ class SampleScene: Scene {
 */
 	}
 
-	lazy var maskingTexture: MTLTexture = {
-		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
-					width: Int(self.contentSize.width), height: Int(self.contentSize.height), mipmapped: self.mipmapped)
-		descriptor.usage = [.shaderRead, .renderTarget]
-		return self.device.makeTexture(descriptor: descriptor)
-	}()
-
 	override func render(in context: RenderContext) {
 
-		context.render(texture: self.image1Texture, in: Rect(0, 0, 2048, 1024))
+//		context.render(texture: self.image1Texture, in: Rect(0, 0, 2048, 1024))
 
 //		return PointsRenderable(device: self.device, texture: self.pointTexture1, cgPath: cgPath, width: 64)!
 //		let pointRenderer: PointsRenderer = self.device.renderer()
 //		pointRenderer.render(context: context, cgPath: self.samplePath, texture: brushShapeTexture, width: 16)
 
-		let brushRenderer: BrushRenderer = self.device.renderer()
-		brushRenderer.render(context: context, masking: self.maskingTexture, brushShape: self.brushShapeTexture, brushFill: self.brushFillTexture, cgPath: self.samplePath, width: 64)
+//		let brushRenderer: BrushRenderer = self.device.renderer()
+//		brushRenderer.render(context: context, masking: self.maskingTexture, brushShape: self.brushShapeTexture, brushFill: self.brushFillTexture, cgPath: self.samplePath, width: 64)
 
 //		self.sampleStroke.render(context: context)
 

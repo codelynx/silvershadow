@@ -13,7 +13,11 @@ import GLKit
 
 class SampleCanvasLayer2: CanvasLayer {
 
-	lazy var pointTexture: MTLTexture? = {
+	lazy var brushSapeTexture: MTLTexture? = {
+		return self.device?.texture(of: XImage(named: "Particle")!)!
+	}()
+
+	lazy var brushFilltexture: MTLTexture? = {
 		return self.device?.texture(of: XImage(named: "Pencil")!)!
 	}()
 
@@ -44,13 +48,13 @@ class SampleCanvasLayer2: CanvasLayer {
 		return cgPath
 	}
 
-	override func render(context: RenderContext) {
+	override func render(context: CanvasRenderContext) {
 		guard let device = self.device else { return }
 	
-//		if let pointTexture = self.pointTexture {
-//			let renderer: PenRenderer = device.renderer()
-//			renderer.render(context: context, texture: pointTexture, cgPath: self.samplePath, width: 3)
-//		}
+		let brushShape = self.brushSapeTexture!
+		let brushFill = self.brushFilltexture!
+		let brushRenderer: BrushRenderer = device.renderer()
+		brushRenderer.render(context: context, brushShape: brushShape, brushFill: brushFill, cgPath: self.samplePath, width: 4)
 	
 		if let contentSize = self.contentSize {
 			// you may use core graphics to draw and will become a texture to render

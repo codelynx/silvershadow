@@ -86,6 +86,8 @@ vertex BrushFillVertexOut brush_fill_vertex(
 	outVertex.position = float4(inVertex.position);
 	outVertex.maskTexcoords = inVertex.maskTexcoords;
 	outVertex.patternTexcoords = inVertex.patternTexcoords;
+//	outVertex.maskTexcoords = (uniforms.transform * float4(inVertex.maskTexcoords, 0, 1)).xy;
+//	outVertex.patternTexcoords = (uniforms.transform * float4(inVertex.patternTexcoords, 0, 1)).xy;
 	return outVertex;
 }
 

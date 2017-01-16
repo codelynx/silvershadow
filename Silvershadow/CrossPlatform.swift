@@ -134,6 +134,8 @@ extension NSImage {
 }
 #endif
 
+typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
+
 #if os(macOS)
 extension NSColor {
 
@@ -144,5 +146,24 @@ extension NSColor {
 }
 
 #endif
+
+extension XColor {
+
+	var rgba: XRGBA {
+		var (r, g, b, a) = (CGFloat(0), CGFloat(0), CGFloat(0), CGFloat(0))
+		#if os(iOS)
+		self.getRed(&r, green: &g, blue: &b, alpha: &a)
+		#elseif os(macOS)
+		let ciColor = CIColor(color: self)!
+		return (ciColor.red, ciColor.green, ciColor.blue, ciColor.alpha)
+		#endif
+		return (r, g, b, a)
+	}
+
+	convenience init(rgba: XRGBA) {
+		self.init(red: rgba.r, green: rgba.g, blue: rgba.b, alpha: rgba.a)
+	}
+
+}
 
 

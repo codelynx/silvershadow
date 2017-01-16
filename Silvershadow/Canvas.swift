@@ -61,6 +61,13 @@ class Canvas: Scene {
 		return self.device.makeTexture(descriptor: descriptor)
 	}()
 
+	lazy var maskingTexture: MTLTexture = {
+		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
+					width: Int(self.contentSize.width), height: Int(self.contentSize.height), mipmapped: self.mipmapped)
+		descriptor.usage = [.shaderRead, .renderTarget]
+		return self.device.makeTexture(descriptor: descriptor)
+	}()
+
 	var subcomandQueue: MTLCommandQueue {
 		return super.commandQueue!
 	}
@@ -69,7 +76,7 @@ class Canvas: Scene {
 		let commandQueue = self.subcomandQueue
 		let canvasTexture = self.canvasTexture
 
-		let backgroundColor = XColor(ciColor: self.backgroundColor.ciColor)
+		let backgroundColor = XColor(rgba: self.backgroundColor.rgba)
 		let rgba = backgroundColor.rgba
 		let (r, g, b, a) = (Double(rgba.r), Double(rgba.g), Double(rgba.b), Double(rgba.a))
 		
@@ -92,6 +99,11 @@ class Canvas: Scene {
 		// build an image per layer then flatten that image to the canvas texture
 		let subtexture = self.sublayerTexture
 
+
+		// reusuable brush buffer
+		var brushUniforms = BrushRenderer.Uniforms(transform: subtransform, zoomScale: 1)
+		let brushUniformsBuffer = device.makeBuffer(bytes: &brushUniforms, length: MemoryLayout<BrushRenderer.Uniforms>.size, options: MTLResourceOptions())
+
 		for canvasLayer in self.canvasLayers {
 
 			let subcommandBuffer = commandQueue.makeCommandBuffer()
@@ -108,8 +120,9 @@ class Canvas: Scene {
 			clearEncoder.endEncoding()
 
 			subrenderPassDescriptor.colorAttachments[0].loadAction = .load
-			let subrenderContext = RenderContext(renderPassDescriptor: subrenderPassDescriptor,
-						commandBuffer: subcommandBuffer, contentSize: self.contentSize, transform: subtransform, zoomScale: 1)
+			let subrenderContext = CanvasRenderContext(renderPassDescriptor: subrenderPassDescriptor,
+						commandBuffer: subcommandBuffer, contentSize: self.contentSize, transform: subtransform, zoomScale: 1,
+						masking: self.maskingTexture, brushUniformBuffer: brushUniformsBuffer)
 			canvasLayer.render(context: subrenderContext)
 
 			subcommandBuffer.commit()
@@ -158,9 +171,11 @@ class Canvas: Scene {
 	}
 
 	func bringLayer(toFront: CanvasLayer) {
+		// not yet
 	}
 	
 	func sendLayer(toBack: CanvasLayer) {
+		// not yet
 	}
 
 }

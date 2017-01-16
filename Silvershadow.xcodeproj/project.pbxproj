@@ -15,6 +15,8 @@
 		CC1F2F341E11523C0097B223 /* ImageShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CC1F2F2E1E1151180097B223 /* ImageShaders.metal */; };
 		CC1F2F361E1152710097B223 /* BlueMarble.png in Resources */ = {isa = PBXBuildFile; fileRef = CC1F2F351E1152710097B223 /* BlueMarble.png */; };
 		CC1F2F371E11527F0097B223 /* BlueMarble.png in Resources */ = {isa = PBXBuildFile; fileRef = CC1F2F351E1152710097B223 /* BlueMarble.png */; };
+		CC2679D81E2CDBCB005486A4 /* CanvasRenderContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC2679D71E2CDBCB005486A4 /* CanvasRenderContext.swift */; };
+		CC2679D91E2CDBCB005486A4 /* CanvasRenderContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC2679D71E2CDBCB005486A4 /* CanvasRenderContext.swift */; };
 		CC54295D1E14EF3900C1929E /* SampleCanvasLayer2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */; };
 		CC54295E1E14EF3C00C1929E /* SampleCanvasLayer2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */; };
 		CC6BE99E1E2554CA00320F7D /* BrushRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6BE99C1E2554CA00320F7D /* BrushRenderer.swift */; };
@@ -74,8 +76,6 @@
 		CCF349A81E0F9D9700EF1312 /* RenderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349A61E0F9D9700EF1312 /* RenderContentView.swift */; };
 		CCF349AA1E0F9F5100EF1312 /* RenderDrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349A91E0F9F5100EF1312 /* RenderDrawView.swift */; };
 		CCF349AB1E0F9F5100EF1312 /* RenderDrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349A91E0F9F5100EF1312 /* RenderDrawView.swift */; };
-		CCF349AD1E0FA10E00EF1312 /* XColor+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349AC1E0FA10E00EF1312 /* XColor+Z.swift */; };
-		CCF349AE1E0FA10E00EF1312 /* XColor+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349AC1E0FA10E00EF1312 /* XColor+Z.swift */; };
 		CCF349B01E0FA19100EF1312 /* XView+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349AF1E0FA19100EF1312 /* XView+Z.swift */; };
 		CCF349B11E0FA19100EF1312 /* XView+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349AF1E0FA19100EF1312 /* XView+Z.swift */; };
 		CCF349B41E0FABB400EF1312 /* SampleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349B31E0FABB400EF1312 /* SampleScene.swift */; };
@@ -95,6 +95,7 @@
 		CC1F2F2D1E1151180097B223 /* ImageRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ImageRenderer.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		CC1F2F2E1E1151180097B223 /* ImageShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = ImageShaders.metal; sourceTree = "<group>"; };
 		CC1F2F351E1152710097B223 /* BlueMarble.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BlueMarble.png; sourceTree = "<group>"; };
+		CC2679D71E2CDBCB005486A4 /* CanvasRenderContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasRenderContext.swift; sourceTree = "<group>"; };
 		CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleCanvasLayer2.swift; sourceTree = "<group>"; };
 		CC6BE99C1E2554CA00320F7D /* BrushRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrushRenderer.swift; sourceTree = "<group>"; };
 		CC6BE99D1E2554CA00320F7D /* BrushShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = BrushShaders.metal; sourceTree = "<group>"; };
@@ -134,7 +135,6 @@
 		CCF349A31E0F9A2B00EF1312 /* CrossPlatform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrossPlatform.swift; sourceTree = "<group>"; };
 		CCF349A61E0F9D9700EF1312 /* RenderContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RenderContentView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		CCF349A91E0F9F5100EF1312 /* RenderDrawView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RenderDrawView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		CCF349AC1E0FA10E00EF1312 /* XColor+Z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = "XColor+Z.swift"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		CCF349AF1E0FA19100EF1312 /* XView+Z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XView+Z.swift"; sourceTree = "<group>"; };
 		CCF349B31E0FABB400EF1312 /* SampleScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleScene.swift; sourceTree = "<group>"; };
 		CCF349B61E0FBEA900EF1312 /* ColorRenderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ColorRenderable.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -207,8 +207,11 @@
 		CCF3497E1E0F99C300EF1312 /* Silvershadow */ = {
 			isa = PBXGroup;
 			children = (
+				CC6BE99C1E2554CA00320F7D /* BrushRenderer.swift */,
+				CC6BE99D1E2554CA00320F7D /* BrushShaders.metal */,
 				CC851CE91E135C770083268F /* Canvas.swift */,
 				CC851CEC1E135CF30083268F /* CanvasLayer.swift */,
+				CC2679D71E2CDBCB005486A4 /* CanvasRenderContext.swift */,
 				CCF349B61E0FBEA900EF1312 /* ColorRenderable.swift */,
 				CCF349B71E0FBEA900EF1312 /* ColorRenderer.swift */,
 				CCF349B81E0FBEA900EF1312 /* ColorShaders.metal */,
@@ -220,8 +223,8 @@
 				CC1F2F2E1E1151180097B223 /* ImageShaders.metal */,
 				CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */,
 				CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */,
-				CC6BE99C1E2554CA00320F7D /* BrushRenderer.swift */,
-				CC6BE99D1E2554CA00320F7D /* BrushShaders.metal */,
+				CC79B8F61E2B47E800DAFC11 /* PatternRenderer.swift */,
+				CC79B8F31E2B45ED00DAFC11 /* PatternShader.metal */,
 				CC851CD21E1282770083268F /* PointsRenderable.swift */,
 				CC851CD31E1282770083268F /* PointsRenderer.swift */,
 				CC851CD41E1282770083268F /* PointsShaders.metal */,
@@ -234,10 +237,7 @@
 				CCF349821E0F9A0300EF1312 /* Scene.swift */,
 				CC851CDE1E12F8AD0083268F /* Sequence+Z.swift */,
 				CCF3498A1E0F9A0300EF1312 /* VertexBuffer.swift */,
-				CCF349AC1E0FA10E00EF1312 /* XColor+Z.swift */,
 				CCF349AF1E0FA19100EF1312 /* XView+Z.swift */,
-				CC79B8F31E2B45ED00DAFC11 /* PatternShader.metal */,
-				CC79B8F61E2B47E800DAFC11 /* PatternRenderer.swift */,
 			);
 			path = Silvershadow;
 			sourceTree = "<group>";
@@ -245,9 +245,9 @@
 		CCF349B21E0FABA200EF1312 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				CC6BE9A01E2555E700320F7D /* Pencil.png */,
 				CC1F2F351E1152710097B223 /* BlueMarble.png */,
 				CC851CDB1E1297380083268F /* Particle.png */,
+				CC6BE9A01E2555E700320F7D /* Pencil.png */,
 				CC851CEF1E1366170083268F /* SampleCanvas.swift */,
 				CC851CF21E1366540083268F /* SampleCanvasLayer1.swift */,
 				CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */,
@@ -387,7 +387,6 @@
 			files = (
 				CC851CEA1E135C770083268F /* Canvas.swift in Sources */,
 				CCF349951E0F9A0300EF1312 /* Renderer.swift in Sources */,
-				CCF349AD1E0FA10E00EF1312 /* XColor+Z.swift in Sources */,
 				CCF349AA1E0F9F5100EF1312 /* RenderDrawView.swift in Sources */,
 				CCF349931E0F9A0300EF1312 /* RenderContext.swift in Sources */,
 				CCF349971E0F9A0300EF1312 /* RenderView.swift in Sources */,
@@ -414,6 +413,7 @@
 				CC851CFF1E13A4100083268F /* MTLTexture+Z.swift in Sources */,
 				CC1F2F2F1E1151180097B223 /* ImageRenderable.swift in Sources */,
 				CCF3498F1E0F9A0300EF1312 /* Renderable.swift in Sources */,
+				CC2679D81E2CDBCB005486A4 /* CanvasRenderContext.swift in Sources */,
 				CCF3495B1E0F996F00EF1312 /* AppDelegate.swift in Sources */,
 				CCF349BD1E0FBEA900EF1312 /* ColorShaders.metal in Sources */,
 				CC54295D1E14EF3900C1929E /* SampleCanvasLayer2.swift in Sources */,
@@ -430,7 +430,6 @@
 				CC54295E1E14EF3C00C1929E /* SampleCanvasLayer2.swift in Sources */,
 				CC851CF41E1366540083268F /* SampleCanvasLayer1.swift in Sources */,
 				CCF349961E0F9A0300EF1312 /* Renderer.swift in Sources */,
-				CCF349AE1E0FA10E00EF1312 /* XColor+Z.swift in Sources */,
 				CC851CEE1E135CF30083268F /* CanvasLayer.swift in Sources */,
 				CCF349AB1E0F9F5100EF1312 /* RenderDrawView.swift in Sources */,
 				CCF349941E0F9A0300EF1312 /* RenderContext.swift in Sources */,
@@ -456,6 +455,7 @@
 				CCF3498C1E0F9A0300EF1312 /* CoreGraphics+Z.swift in Sources */,
 				CCF349BC1E0FBEA900EF1312 /* ColorRenderer.swift in Sources */,
 				CCF349901E0F9A0300EF1312 /* Renderable.swift in Sources */,
+				CC2679D91E2CDBCB005486A4 /* CanvasRenderContext.swift in Sources */,
 				CC851CE01E12F8AD0083268F /* Sequence+Z.swift in Sources */,
 				CCF349711E0F999400EF1312 /* AppDelegate.swift in Sources */,
 				CCF349C11E0FF1E400EF1312 /* SampleViewController.swift in Sources */,

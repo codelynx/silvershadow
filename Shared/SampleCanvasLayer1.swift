@@ -19,7 +19,7 @@ class SampleCanvasLayer1: CanvasLayer {
 		return ImageRenderable(device: device, image: image, frame: Rect(0, 0, 2048, 1024))!
 	}()
 
-	override func render(context: RenderContext) {
+	override func render(context: CanvasRenderContext) {
 		self.imageRenderable?.render(context: context)
 	}
 
