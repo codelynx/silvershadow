@@ -143,10 +143,17 @@ class BezierRenderer: Renderer {
 		renderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
 		renderPipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
 
+		// I don't believe this but this is what it is...
+		#if os(iOS)
+		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .one
+		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .one
+		#elseif os(macOS)
 		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
 		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
+		#endif
 		renderPipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
 		renderPipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
+
 
 		return try! self.device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
 	}()
