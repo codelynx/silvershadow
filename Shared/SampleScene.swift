@@ -83,7 +83,7 @@ class SampleScene: Scene {
 		context.render(texture: self.image1Texture, in: Rect(0, 0, 2048, 1024))
 
 		let renderer = self.device.renderer() as BezierRenderer
-		renderer.render(context: context, texture: pointTexture, cgPath: self.samplePath)
+		renderer.render(context: context, texture: pointTexture, cgPaths: [self.samplePath])
 	}
 
 	#if os(macOS)

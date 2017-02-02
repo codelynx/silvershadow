@@ -37,16 +37,16 @@ struct PathElement {
 };
 
 struct Vertex {
-	float2 position;
-	float2 width_unused;
+	half2 position;
+	half2 width_unused;
 
-	Vertex(float2 position, float width) {
+	Vertex(half2 position, half width) {
 		this->position = position;
-		this->width_unused = float2(width, 0.0);
+		this->width_unused = half2(width, 0.0);
 	}
 };
 
-kernel void compute_bezier_kernel(
+kernel void bezier_kernel(
 	constant PathElement* elements [[ buffer(0) ]],
 	device Vertex* outVertexes [[ buffer(1) ]],
 	uint id [[ thread_position_in_grid ]]
@@ -71,7 +71,7 @@ kernel void compute_bezier_kernel(
 			float t = float(index) / float(numberOfVertexes);  // 0.0 ... 1.0
 			float2 q = p0 + (p1 - p0) * t;
 			float w = w1 + (w2 - w1) * t;
-			Vertex v = Vertex(float2(q.x, q.y), w);
+			Vertex v = Vertex(half2(q.x, q.y), half(w));
 			outVertexes[element.vertexIndex + index] = v;
 		}
 		break;
@@ -82,7 +82,7 @@ kernel void compute_bezier_kernel(
 			float2 q2 = p1 + (p2 - p1) * t;
 			float2 r = q1 + (q2 - q1) * t;
 			float w = w1 + (w2 - w1) * t;
-			Vertex v = Vertex(float2(r.x, r.y), w);
+			Vertex v = Vertex(half2(r.x, r.y), half(w));
 			outVertexes[element.vertexIndex + index] = v;
 		}
 		break;
@@ -96,7 +96,7 @@ kernel void compute_bezier_kernel(
 			float2 r2 = q2 + (q3 - q2) * t;
 			float2 s = r1 + (r2 - r1) * t;
 			float w = w1 + (w2 - w1) * t;
-			Vertex v = Vertex(float2(s.x, s.y), w);
+			Vertex v = Vertex(half2(s.x, s.y), half(w));
 			outVertexes[element.vertexIndex + index] = v;
 		}
 		break;
@@ -104,8 +104,8 @@ kernel void compute_bezier_kernel(
 }
 
 struct VertexIn { // should be same as Vertex
-	float2 position [[ attribute(0) ]];
-	float2 width_unused [[ attribute(1) ]];
+	half2 position [[ attribute(0) ]];
+	half2 width_unused [[ attribute(1) ]];
 };
 
 struct VertexOut {

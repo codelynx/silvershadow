@@ -66,21 +66,21 @@ class BezierRenderer: Renderer {
 
 
 	struct Vertex {
-		var x: Float
-		var y: Float
-		var width: Float
-		var unused: Float = Float(0.0)
+		var x: Float16
+		var y: Float16
+		var width: Float16
+		var unused: Float16 = Float16(0.0)
 
 		init(x: Float, y: Float, width: Float) {
-			self.x = x
-			self.y = y
-			self.width = width
+			self.x = Float16(x)
+			self.y = Float16(y)
+			self.width = Float16(width)
 		}
 		
 		init(point: Point, width: Float) {
-			self.x = Float(point.x)
-			self.y = Float(point.y)
-			self.width = Float(width)
+			self.x = Float16(point.x)
+			self.y = Float16(point.y)
+			self.width = Float16(width)
 		}
 
 	}
@@ -112,7 +112,7 @@ class BezierRenderer: Renderer {
 	}
 	
 	lazy var computePipelineState: MTLComputePipelineState = {
-		let function = self.library.makeFunction(name: "compute_bezier_kernel")!
+		let function = self.library.makeFunction(name: "bezier_kernel")!
 		return try! self.device.makeComputePipelineState(function: function)
 	}()
 
@@ -161,55 +161,59 @@ class BezierRenderer: Renderer {
 	}()
 
 
-	func render(context: RenderContext, texture: MTLTexture, cgPath: CGPath) {
+	func render(context: RenderContext, texture: MTLTexture, cgPaths: [CGPath]) {
 
 		var elements = [PathElement]()
 		var vertexCount: Int = 0
 		let nan2 = Point(Float.nan, Float.nan)
 		let (w1, w2) = (32, 32)
 
-		var origin: Point?
-		var lastPoint: Point?
+		// extract PathElement
 
-		let pathElements = cgPath.pathElements
-		for pathElement in pathElements {
-			switch pathElement {
-			case .moveTo(let p1):
-				origin = Point(p1)
-				lastPoint = Point(p1)
-			case .lineTo(let p1):
-				let (p0, p1) = (lastPoint!, Point(p1))
-				let count = Int((p0 - p1).length)
-				let element = PathElement(type: .lineTo, numberOfVertexes: count, vertexIndex: vertexCount,
-							w1: w1, w2: w2, p0: p0, p1: p1, p2: nan2, p3: nan2)
-				elements.append(element)
-				vertexCount += count
-				lastPoint = p1
-			case .quadCurveTo(let p1, let p2):
-				let (p0, p1, p2) = (lastPoint!, Point(p1), Point(p2))
-				let count = Int(((p0 - p1).length + (p2 - p1).length) * sqrt(2)) // todo
-				let element = PathElement(type: .quadCurveTo, numberOfVertexes: count, vertexIndex: vertexCount,
-							w1: w1, w2: w2, p0: p0, p1: p1, p2: p2, p3: nan2)
+		for cgPath in cgPaths {
+			var origin: Point?
+			var lastPoint: Point?
 
-				elements.append(element)
-				vertexCount += count
-				lastPoint = p2
-			case .curveTo(let p1, let p2, let p3):
-				let (p0, p1, p2, p3) = (lastPoint!, Point(p1), Point(p2), Point(p3))
-				let count = Int((p0 - p1).length + (p2 - p1).length + (p3 - p2).length + (p3 - p0).length) // todo
-				let element = PathElement(type: .curveTo, numberOfVertexes: count, vertexIndex: vertexCount,
-									w1: w1, w2: w2, p0: p0, p1: p1, p2: p2, p3: p3)
-				elements.append(element)
-				vertexCount += count
-				lastPoint = p3
-			case .closeSubpath:
-				lastPoint = nil
-				origin = nil
-				break
+			let pathElements = cgPath.pathElements
+			for pathElement in pathElements {
+				switch pathElement {
+				case .moveTo(let p1):
+					origin = Point(p1)
+					lastPoint = Point(p1)
+				case .lineTo(let p1):
+					let (p0, p1) = (lastPoint!, Point(p1))
+					let count = Int((p0 - p1).length)
+					let element = PathElement(type: .lineTo, numberOfVertexes: count, vertexIndex: vertexCount,
+								w1: w1, w2: w2, p0: p0, p1: p1, p2: nan2, p3: nan2)
+					elements.append(element)
+					vertexCount += count
+					lastPoint = p1
+				case .quadCurveTo(let p1, let p2):
+					let (p0, p1, p2) = (lastPoint!, Point(p1), Point(p2))
+					let count = Int(((p0 - p1).length + (p2 - p1).length) * sqrt(2)) // todo
+					let element = PathElement(type: .quadCurveTo, numberOfVertexes: count, vertexIndex: vertexCount,
+								w1: w1, w2: w2, p0: p0, p1: p1, p2: p2, p3: nan2)
+					elements.append(element)
+					vertexCount += count
+					lastPoint = p2
+				case .curveTo(let p1, let p2, let p3):
+					let (p0, p1, p2, p3) = (lastPoint!, Point(p1), Point(p2), Point(p3))
+					let count = Int((p0 - p1).length + (p2 - p1).length + (p3 - p2).length + (p3 - p0).length) // todo
+					let element = PathElement(type: .curveTo, numberOfVertexes: count, vertexIndex: vertexCount,
+								w1: w1, w2: w2, p0: p0, p1: p1, p2: p2, p3: p3)
+					elements.append(element)
+					vertexCount += count
+					lastPoint = p3
+				case .closeSubpath:
+					lastPoint = nil
+					origin = nil
+					break
+				}
 			}
 		}
 		
-
+		// build contiguous vertexes using computing shader from PathElement
+		
 		let elementsBuffer = VertexBuffer<PathElement>(device: self.device, vertices: elements)
 		let vertexes = Array<Vertex>(repeatElement(Vertex(point: Point(0, 0), width: 0), count: Int(vertexCount)))
 		let vertexBuffer = VertexBuffer<Vertex>(device: self.device, vertices: vertexes)
@@ -221,18 +225,14 @@ class BezierRenderer: Renderer {
 			encoder.setBuffer(elementsBuffer.buffer, offset: 0, at: 0)
 			encoder.setBuffer(vertexBuffer.buffer, offset: 0, at: 1)
 			let threadgroupsPerGrid = MTLSizeMake(1, 1, 1)
-			let threadsPerThreadgroup = MTLSizeMake(pathElements.count, 1, 1)
+			let threadsPerThreadgroup = MTLSizeMake(elements.count, 1, 1)
 			encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
 			encoder.endEncoding()
 			commandBuffer.commit()
 			commandBuffer.waitUntilCompleted()
 		}
-		// 
-		for v in vertexBuffer.vertices {
-			print("v: (\(v.x), \(v.y)), w: \(v.width)")
-			break
-		}
 
+		// vertex buffer should be filled with vertexes then draw it
 
 		do {
 			let transform = context.transform
@@ -253,15 +253,6 @@ class BezierRenderer: Renderer {
 			encoder.endEncoding()
 		}
 		
-	}
-
-	func vertexes(from: Point, to: Point, width: Float) -> [Vertex] {
-		let vector = (to - from)
-		let numberOfPoints = Int(ceil(vector.length / 2))
-		let step = vector / Float(numberOfPoints)
-		return (0 ..< numberOfPoints).map {
-			Vertex(point: from + step * Float($0), width: width)
-		}
 	}
 
 }

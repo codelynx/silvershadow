@@ -22,8 +22,8 @@
 		CC78D71A1E436E0300B7C0DA /* Kernel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC78D7181E436D9F00B7C0DA /* Kernel.swift */; };
 		CC78D71C1E43832C00B7C0DA /* CGPath+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC78D71B1E43832C00B7C0DA /* CGPath+Z.swift */; };
 		CC78D71D1E43832C00B7C0DA /* CGPath+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC78D71B1E43832C00B7C0DA /* CGPath+Z.swift */; };
-		CC78D71F1E43B72300B7C0DA /* BezierKernel.metal in Sources */ = {isa = PBXBuildFile; fileRef = CC78D71E1E43B72300B7C0DA /* BezierKernel.metal */; };
-		CC78D7201E43B72300B7C0DA /* BezierKernel.metal in Sources */ = {isa = PBXBuildFile; fileRef = CC78D71E1E43B72300B7C0DA /* BezierKernel.metal */; };
+		CC78D71F1E43B72300B7C0DA /* BezierShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CC78D71E1E43B72300B7C0DA /* BezierShaders.metal */; };
+		CC78D7201E43B72300B7C0DA /* BezierShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CC78D71E1E43B72300B7C0DA /* BezierShaders.metal */; };
 		CC851CD51E1282770083268F /* PointsRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CD21E1282770083268F /* PointsRenderable.swift */; };
 		CC851CD61E1282770083268F /* PointsRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CD21E1282770083268F /* PointsRenderable.swift */; };
 		CC851CD71E1282770083268F /* PointsRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CD31E1282770083268F /* PointsRenderer.swift */; };
@@ -98,7 +98,7 @@
 		CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleCanvasLayer2.swift; sourceTree = "<group>"; };
 		CC78D7181E436D9F00B7C0DA /* Kernel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Kernel.swift; sourceTree = "<group>"; };
 		CC78D71B1E43832C00B7C0DA /* CGPath+Z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGPath+Z.swift"; sourceTree = "<group>"; };
-		CC78D71E1E43B72300B7C0DA /* BezierKernel.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = BezierKernel.metal; sourceTree = "<group>"; };
+		CC78D71E1E43B72300B7C0DA /* BezierShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = BezierShaders.metal; sourceTree = "<group>"; };
 		CC851CD21E1282770083268F /* PointsRenderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointsRenderable.swift; sourceTree = "<group>"; };
 		CC851CD31E1282770083268F /* PointsRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = PointsRenderer.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		CC851CD41E1282770083268F /* PointsShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; lineEnding = 0; path = PointsShaders.metal; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.metal; };
@@ -162,7 +162,7 @@
 		CC0664AD1E2090CA0054E445 /* Kernels */ = {
 			isa = PBXGroup;
 			children = (
-				CC78D71E1E43B72300B7C0DA /* BezierKernel.metal */,
+				CC78D71E1E43B72300B7C0DA /* BezierShaders.metal */,
 				CCADFADD1E211EBB00ECB9D0 /* BezierRenderer.swift */,
 				CC78D7181E436D9F00B7C0DA /* Kernel.swift */,
 			);
@@ -379,7 +379,7 @@
 				CC851CD91E1282770083268F /* PointsShaders.metal in Sources */,
 				CC851CDF1E12F8AD0083268F /* Sequence+Z.swift in Sources */,
 				CC851CED1E135CF30083268F /* CanvasLayer.swift in Sources */,
-				CC78D71F1E43B72300B7C0DA /* BezierKernel.metal in Sources */,
+				CC78D71F1E43B72300B7C0DA /* BezierShaders.metal in Sources */,
 				CCF349A71E0F9D9700EF1312 /* RenderContentView.swift in Sources */,
 				CC851CF31E1366540083268F /* SampleCanvasLayer1.swift in Sources */,
 				CCE0395C1E434E2E00B58AFA /* Float16.swift in Sources */,
@@ -422,7 +422,7 @@
 				CCF349981E0F9A0300EF1312 /* RenderView.swift in Sources */,
 				CC851CF11E1366170083268F /* SampleCanvas.swift in Sources */,
 				CCF349921E0F9A0300EF1312 /* Scene.swift in Sources */,
-				CC78D7201E43B72300B7C0DA /* BezierKernel.metal in Sources */,
+				CC78D7201E43B72300B7C0DA /* BezierShaders.metal in Sources */,
 				CC851CEB1E135C770083268F /* Canvas.swift in Sources */,
 				CCF349A81E0F9D9700EF1312 /* RenderContentView.swift in Sources */,
 				CCF349B11E0FA19100EF1312 /* XView+Z.swift in Sources */,
