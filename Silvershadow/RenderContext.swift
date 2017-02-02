@@ -27,6 +27,10 @@ struct RenderContext {
 	func makeRenderCommandEncoder() -> MTLRenderCommandEncoder {
 		return self.commandBuffer.makeRenderCommandEncoder(descriptor: self.renderPassDescriptor)
 	}
+	
+	func makeCommandBuffer() -> MTLCommandBuffer {
+		return self.commandBuffer.commandQueue.makeCommandBuffer()
+	}
 }
 
 extension RenderContext {

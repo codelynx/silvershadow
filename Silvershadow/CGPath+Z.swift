@@ -34,15 +34,11 @@ import CoreGraphics
 //
 
 public enum PathElement {
-	case moveToPoint(CGPoint)
-	case addLineToPoint(CGPoint)
-	case addQuadCurveToPoint(CGPoint, CGPoint)
-	case addCurveToPoint(CGPoint, CGPoint, CGPoint)
+	case moveTo(CGPoint)
+	case lineTo(CGPoint)
+	case quadCurveTo(CGPoint, CGPoint)
+	case curveTo(CGPoint, CGPoint, CGPoint)
 	case closeSubpath
-}
-
-internal class Info {
-	var pathElements = [PathElement]()
 }
 
 
@@ -52,36 +48,40 @@ internal class Info {
 
 public extension CGPath {
 
+	private class Elements {
+		var pathElements = [PathElement]()
+	}
+
 	var pathElements: [PathElement] {
-		var info = Info()
+		var elements = Elements()
 
-
-		self.apply(info: &info) { (info, element) -> Void in
+		self.apply(info: &elements) { (info, element) -> Void in
 		
-			if let infoPointer = UnsafeMutablePointer<Info>(OpaquePointer(info)) {
+			if let infoPointer = UnsafeMutablePointer<Elements>(OpaquePointer(info)) {
 				switch element.pointee.type {
 				case .moveToPoint:
 					let pt = element.pointee.points[0]
-					infoPointer.pointee.pathElements.append(PathElement.moveToPoint(pt))
+					infoPointer.pointee.pathElements.append(PathElement.moveTo(pt))
 				case .addLineToPoint:
 					let pt = element.pointee.points[0]
-					infoPointer.pointee.pathElements.append(PathElement.addLineToPoint(pt))
+					infoPointer.pointee.pathElements.append(PathElement.lineTo(pt))
 				case .addQuadCurveToPoint:
 					let pt1 = element.pointee.points[0]
 					let pt2 = element.pointee.points[1]
-					infoPointer.pointee.pathElements.append(PathElement.addQuadCurveToPoint(pt1, pt2))
+					infoPointer.pointee.pathElements.append(PathElement.quadCurveTo(pt1, pt2))
 				case .addCurveToPoint:
 					let pt1 = element.pointee.points[0]
 					let pt2 = element.pointee.points[1]
 					let pt3 = element.pointee.points[2]
-					infoPointer.pointee.pathElements.append(PathElement.addCurveToPoint(pt1, pt2, pt3))
+					infoPointer.pointee.pathElements.append(PathElement.curveTo(pt1, pt2, pt3))
 				case .closeSubpath:
 					infoPointer.pointee.pathElements.append(PathElement.closeSubpath)
 				}
 			}
 		}
 
-		return info.pathElements
+		let pathelements = elements.pathElements
+		return pathelements
 	}
 
 }
@@ -92,13 +92,13 @@ public extension CGPath {
 
 public func == (lhs: PathElement, rhs: PathElement) -> Bool {
 	switch (lhs, rhs) {
-	case (.moveToPoint(let a), .moveToPoint(let b)):
+	case (.moveTo(let a), .moveTo(let b)):
 		return a == b
-	case (.addLineToPoint(let a), .addLineToPoint(let b)):
+	case (.lineTo(let a), .lineTo(let b)):
 		return a == b
-	case (.addQuadCurveToPoint(let a1, let a2), .addQuadCurveToPoint(let b1, let b2)):
+	case (.quadCurveTo(let a1, let a2), .quadCurveTo(let b1, let b2)):
 		return a1.equalTo(b1) && a2.equalTo(b2)
-	case (.addCurveToPoint(let a1, let a2, let a3), .addCurveToPoint(let b1, let b2, let b3)):
+	case (.curveTo(let a1, let a2, let a3), .curveTo(let b1, let b2, let b3)):
 		return a1 == b1 && a2 == b2 && a3 == b3
 	case (.closeSubpath, .closeSubpath):
 		return true

@@ -69,7 +69,7 @@ class Canvas: Scene {
 		let commandQueue = self.subcomandQueue
 		let canvasTexture = self.canvasTexture
 
-		let backgroundColor = XColor(cgColor: self.backgroundColor.cgColor) ?? XColor(calibratedRed: 1, green: 1, blue: 1, alpha: 1)
+		let backgroundColor = XColor(rgba: self.backgroundColor.rgba)
 		let rgba = backgroundColor.rgba
 		let (r, g, b, a) = (Double(rgba.r), Double(rgba.g), Double(rgba.b), Double(rgba.a))
 		
