@@ -66,10 +66,11 @@ class Canvas: Scene {
 	}()
 
 	override func update() {
+		print("\(#function)")
 		let commandQueue = self.subcomandQueue
 		let canvasTexture = self.canvasTexture
 
-		let backgroundColor = XColor(ciColor: self.backgroundColor.ciColor)
+		let backgroundColor = XColor(rgba: self.backgroundColor.rgba)
 		let rgba = backgroundColor.rgba
 		let (r, g, b, a) = (Double(rgba.r), Double(rgba.g), Double(rgba.b), Double(rgba.a))
 		
@@ -79,35 +80,25 @@ class Canvas: Scene {
 		renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(r, g, b, a)
 		renderPassDescriptor.colorAttachments[0].storeAction = .store
 
-		// clear the canvas texture
-		let commandBuffer = commandQueue.makeCommandBuffer()
-		renderPassDescriptor.colorAttachments[0].loadAction = .clear
-		let clearEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
-		clearEncoder.endEncoding()
-		commandBuffer.commit()
-
 		renderPassDescriptor.colorAttachments[0].loadAction = .load
 		let subtransform = GLKMatrix4(self.transform)
 
 		// build an image per layer then flatten that image to the canvas texture
 		let subtexture = self.sublayerTexture
 
+		let subrenderPassDescriptor = MTLRenderPassDescriptor()
+		subrenderPassDescriptor.colorAttachments[0].texture = subtexture
+		subrenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0)
+		subrenderPassDescriptor.colorAttachments[0].loadAction = .clear
+		subrenderPassDescriptor.colorAttachments[0].storeAction = .store
+
 		for canvasLayer in self.canvasLayers {
 
+			if canvasLayer.isHidden { continue }
 			let subcommandBuffer = commandQueue.makeCommandBuffer()
-			guard !canvasLayer.isHidden else { continue }
 
-			let subrenderPassDescriptor = MTLRenderPassDescriptor()
-			subrenderPassDescriptor.colorAttachments[0].texture = subtexture
-			subrenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0)
-			subrenderPassDescriptor.colorAttachments[0].storeAction = .store
+			// render a layer
 
-			// clear the subtexture
-			subrenderPassDescriptor.colorAttachments[0].loadAction = .clear
-			let clearEncoder = subcommandBuffer.makeRenderCommandEncoder(descriptor: subrenderPassDescriptor)
-			clearEncoder.endEncoding()
-
-			subrenderPassDescriptor.colorAttachments[0].loadAction = .load
 			let subrenderContext = RenderContext(renderPassDescriptor: subrenderPassDescriptor,
 						commandBuffer: subcommandBuffer, transform: subtransform, zoomScale: 1)
 			canvasLayer.render(context: subrenderContext)
@@ -117,6 +108,8 @@ class Canvas: Scene {
 
 			let commandBuffer = commandQueue.makeCommandBuffer()
 
+			// flatten image
+
 			let transform = GLKMatrix4Identity
 			let renderContext = RenderContext(renderPassDescriptor: renderPassDescriptor,
 							commandBuffer: commandBuffer, transform: transform, zoomScale: 1)
@@ -125,6 +118,7 @@ class Canvas: Scene {
 			commandBuffer.commit()
 			commandBuffer.waitUntilCompleted()
 
+			subrenderPassDescriptor.colorAttachments[0].loadAction = .load
 		}
 
 		// drawing in offscreen (canvasTexture) is done,

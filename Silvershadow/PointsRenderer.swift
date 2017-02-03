@@ -170,11 +170,11 @@ class PointsRenderer: Renderer {
 
 		for pathElement in cgPath.pathElements {
 			switch pathElement {
-			case .moveToPoint(let p1):
+			case .moveTo(let p1):
 				startPoint = p1
 				lastPoint = p1
 
-			case .addLineToPoint(let p1):
+			case .lineTo(let p1):
 				guard let p0 = lastPoint else { continue }
 				lastPoint = p1
 
@@ -185,7 +185,7 @@ class PointsRenderer: Renderer {
 					vertexes.append(Vertex(Point(q), Float(width)))
 				}
 
-			case .addQuadCurveToPoint(let p1, let p2):
+			case .quadCurveTo(let p1, let p2):
 				guard let p0 = lastPoint else { continue }
 				lastPoint = p2
 
@@ -198,7 +198,7 @@ class PointsRenderer: Renderer {
 					vertexes.append(Vertex(Point(r), Float(width)))
 				}
 
-			case .addCurveToPoint(let p1, let p2, let p3):
+			case .curveTo(let p1, let p2, let p3):
 				guard let p0 = lastPoint else { continue }
 				lastPoint = p3
 

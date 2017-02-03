@@ -17,6 +17,13 @@
 		CC1F2F371E11527F0097B223 /* BlueMarble.png in Resources */ = {isa = PBXBuildFile; fileRef = CC1F2F351E1152710097B223 /* BlueMarble.png */; };
 		CC54295D1E14EF3900C1929E /* SampleCanvasLayer2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */; };
 		CC54295E1E14EF3C00C1929E /* SampleCanvasLayer2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */; };
+		CC78D7171E436BF100B7C0DA /* Float16.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCE0395B1E434E2D00B58AFA /* Float16.swift */; };
+		CC78D7191E436D9F00B7C0DA /* Kernel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC78D7181E436D9F00B7C0DA /* Kernel.swift */; };
+		CC78D71A1E436E0300B7C0DA /* Kernel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC78D7181E436D9F00B7C0DA /* Kernel.swift */; };
+		CC78D71C1E43832C00B7C0DA /* CGPath+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC78D71B1E43832C00B7C0DA /* CGPath+Z.swift */; };
+		CC78D71D1E43832C00B7C0DA /* CGPath+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC78D71B1E43832C00B7C0DA /* CGPath+Z.swift */; };
+		CC78D71F1E43B72300B7C0DA /* BezierShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CC78D71E1E43B72300B7C0DA /* BezierShaders.metal */; };
+		CC78D7201E43B72300B7C0DA /* BezierShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CC78D71E1E43B72300B7C0DA /* BezierShaders.metal */; };
 		CC851CD51E1282770083268F /* PointsRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CD21E1282770083268F /* PointsRenderable.swift */; };
 		CC851CD61E1282770083268F /* PointsRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CD21E1282770083268F /* PointsRenderable.swift */; };
 		CC851CD71E1282770083268F /* PointsRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CD31E1282770083268F /* PointsRenderer.swift */; };
@@ -39,6 +46,9 @@
 		CC851D001E13A4100083268F /* MTLTexture+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */; };
 		CCB11D9B1E24C65300F30482 /* MTLDevice+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */; };
 		CCB11D9C1E24C67400F30482 /* MTLDevice+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */; };
+		CCADFADE1E211EBB00ECB9D0 /* BezierRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCADFADD1E211EBB00ECB9D0 /* BezierRenderer.swift */; };
+		CCADFADF1E211EBB00ECB9D0 /* BezierRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCADFADD1E211EBB00ECB9D0 /* BezierRenderer.swift */; };
+		CCE0395C1E434E2E00B58AFA /* Float16.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCE0395B1E434E2D00B58AFA /* Float16.swift */; };
 		CCF3495B1E0F996F00EF1312 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF3495A1E0F996F00EF1312 /* AppDelegate.swift */; };
 		CCF349601E0F996F00EF1312 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CCF3495E1E0F996F00EF1312 /* Main.storyboard */; };
 		CCF349621E0F996F00EF1312 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CCF349611E0F996F00EF1312 /* Assets.xcassets */; };
@@ -68,8 +78,6 @@
 		CCF349A81E0F9D9700EF1312 /* RenderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349A61E0F9D9700EF1312 /* RenderContentView.swift */; };
 		CCF349AA1E0F9F5100EF1312 /* RenderDrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349A91E0F9F5100EF1312 /* RenderDrawView.swift */; };
 		CCF349AB1E0F9F5100EF1312 /* RenderDrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349A91E0F9F5100EF1312 /* RenderDrawView.swift */; };
-		CCF349AD1E0FA10E00EF1312 /* XColor+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349AC1E0FA10E00EF1312 /* XColor+Z.swift */; };
-		CCF349AE1E0FA10E00EF1312 /* XColor+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349AC1E0FA10E00EF1312 /* XColor+Z.swift */; };
 		CCF349B01E0FA19100EF1312 /* XView+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349AF1E0FA19100EF1312 /* XView+Z.swift */; };
 		CCF349B11E0FA19100EF1312 /* XView+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349AF1E0FA19100EF1312 /* XView+Z.swift */; };
 		CCF349B41E0FABB400EF1312 /* SampleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF349B31E0FABB400EF1312 /* SampleScene.swift */; };
@@ -90,6 +98,9 @@
 		CC1F2F2E1E1151180097B223 /* ImageShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = ImageShaders.metal; sourceTree = "<group>"; };
 		CC1F2F351E1152710097B223 /* BlueMarble.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BlueMarble.png; sourceTree = "<group>"; };
 		CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleCanvasLayer2.swift; sourceTree = "<group>"; };
+		CC78D7181E436D9F00B7C0DA /* Kernel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Kernel.swift; sourceTree = "<group>"; };
+		CC78D71B1E43832C00B7C0DA /* CGPath+Z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGPath+Z.swift"; sourceTree = "<group>"; };
+		CC78D71E1E43B72300B7C0DA /* BezierShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = BezierShaders.metal; sourceTree = "<group>"; };
 		CC851CD21E1282770083268F /* PointsRenderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointsRenderable.swift; sourceTree = "<group>"; };
 		CC851CD31E1282770083268F /* PointsRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = PointsRenderer.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		CC851CD41E1282770083268F /* PointsShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; lineEnding = 0; path = PointsShaders.metal; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.metal; };
@@ -101,6 +112,8 @@
 		CC851CF21E1366540083268F /* SampleCanvasLayer1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleCanvasLayer1.swift; sourceTree = "<group>"; };
 		CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MTLTexture+Z.swift"; sourceTree = "<group>"; };
 		CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MTLDevice+Z.swift"; sourceTree = "<group>"; };
+		CCADFADD1E211EBB00ECB9D0 /* BezierRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BezierRenderer.swift; sourceTree = "<group>"; };
+		CCE0395B1E434E2D00B58AFA /* Float16.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Float16.swift; sourceTree = "<group>"; };
 		CCF349571E0F996F00EF1312 /* SilvershadowApp_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SilvershadowApp_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCF3495A1E0F996F00EF1312 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CCF3495F1E0F996F00EF1312 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -123,7 +136,6 @@
 		CCF349A31E0F9A2B00EF1312 /* CrossPlatform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrossPlatform.swift; sourceTree = "<group>"; };
 		CCF349A61E0F9D9700EF1312 /* RenderContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RenderContentView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		CCF349A91E0F9F5100EF1312 /* RenderDrawView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RenderDrawView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		CCF349AC1E0FA10E00EF1312 /* XColor+Z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = "XColor+Z.swift"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		CCF349AF1E0FA19100EF1312 /* XView+Z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XView+Z.swift"; sourceTree = "<group>"; };
 		CCF349B31E0FABB400EF1312 /* SampleScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleScene.swift; sourceTree = "<group>"; };
 		CCF349B61E0FBEA900EF1312 /* ColorRenderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ColorRenderable.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -150,6 +162,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CC0664AD1E2090CA0054E445 /* Kernels */ = {
+			isa = PBXGroup;
+			children = (
+				CC78D71E1E43B72300B7C0DA /* BezierShaders.metal */,
+				CCADFADD1E211EBB00ECB9D0 /* BezierRenderer.swift */,
+				CC78D7181E436D9F00B7C0DA /* Kernel.swift */,
+			);
+			name = Kernels;
+			sourceTree = "<group>";
+		};
 		CCF3494C1E0F994000EF1312 = {
 			isa = PBXGroup;
 			children = (
@@ -198,16 +220,19 @@
 			children = (
 				CC851CE91E135C770083268F /* Canvas.swift */,
 				CC851CEC1E135CF30083268F /* CanvasLayer.swift */,
+				CC78D71B1E43832C00B7C0DA /* CGPath+Z.swift */,
 				CCF349B61E0FBEA900EF1312 /* ColorRenderable.swift */,
 				CCF349B71E0FBEA900EF1312 /* ColorRenderer.swift */,
 				CCF349B81E0FBEA900EF1312 /* ColorShaders.metal */,
 				CCF3497F1E0F9A0300EF1312 /* CoreGraphics+Z.swift */,
 				CCF349A31E0F9A2B00EF1312 /* CrossPlatform.swift */,
+				CCE0395B1E434E2D00B58AFA /* Float16.swift */,
 				CCF349801E0F9A0300EF1312 /* GeoUtils.swift */,
 				CC1F2F2C1E1151180097B223 /* ImageRenderable.swift */,
 				CC1F2F2D1E1151180097B223 /* ImageRenderer.swift */,
 				CC1F2F2E1E1151180097B223 /* ImageShaders.metal */,
 				CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */,
+				CC0664AD1E2090CA0054E445 /* Kernels */,
 				CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */,
 				CC851CD21E1282770083268F /* PointsRenderable.swift */,
 				CC851CD31E1282770083268F /* PointsRenderer.swift */,
@@ -221,7 +246,6 @@
 				CCF349821E0F9A0300EF1312 /* Scene.swift */,
 				CC851CDE1E12F8AD0083268F /* Sequence+Z.swift */,
 				CCF3498A1E0F9A0300EF1312 /* VertexBuffer.swift */,
-				CCF349AC1E0FA10E00EF1312 /* XColor+Z.swift */,
 				CCF349AF1E0FA19100EF1312 /* XView+Z.swift */,
 			);
 			path = Silvershadow;
@@ -369,7 +393,6 @@
 			files = (
 				CC851CEA1E135C770083268F /* Canvas.swift in Sources */,
 				CCF349951E0F9A0300EF1312 /* Renderer.swift in Sources */,
-				CCF349AD1E0FA10E00EF1312 /* XColor+Z.swift in Sources */,
 				CCF349AA1E0F9F5100EF1312 /* RenderDrawView.swift in Sources */,
 				CCF349931E0F9A0300EF1312 /* RenderContext.swift in Sources */,
 				CCF349971E0F9A0300EF1312 /* RenderView.swift in Sources */,
@@ -377,9 +400,12 @@
 				CC851CD91E1282770083268F /* PointsShaders.metal in Sources */,
 				CC851CDF1E12F8AD0083268F /* Sequence+Z.swift in Sources */,
 				CC851CED1E135CF30083268F /* CanvasLayer.swift in Sources */,
+				CC78D71F1E43B72300B7C0DA /* BezierShaders.metal in Sources */,
 				CCF349A71E0F9D9700EF1312 /* RenderContentView.swift in Sources */,
 				CC851CF31E1366540083268F /* SampleCanvasLayer1.swift in Sources */,
+				CCE0395C1E434E2E00B58AFA /* Float16.swift in Sources */,
 				CC1F2F311E1151180097B223 /* ImageShaders.metal in Sources */,
+				CCADFADE1E211EBB00ECB9D0 /* BezierRenderer.swift in Sources */,
 				CCF349B01E0FA19100EF1312 /* XView+Z.swift in Sources */,
 				CCF349A11E0F9A0300EF1312 /* VertexBuffer.swift in Sources */,
 				CCF349C01E0FF1E400EF1312 /* SampleViewController.swift in Sources */,
@@ -390,10 +416,12 @@
 				CCF349BB1E0FBEA900EF1312 /* ColorRenderer.swift in Sources */,
 				CC851CD51E1282770083268F /* PointsRenderable.swift in Sources */,
 				CCB11D9B1E24C65300F30482 /* MTLDevice+Z.swift in Sources */,
+				CC78D7191E436D9F00B7C0DA /* Kernel.swift in Sources */,
 				CC851CF01E1366170083268F /* SampleCanvas.swift in Sources */,
 				CC851CFF1E13A4100083268F /* MTLTexture+Z.swift in Sources */,
 				CC1F2F2F1E1151180097B223 /* ImageRenderable.swift in Sources */,
 				CCF3498F1E0F9A0300EF1312 /* Renderable.swift in Sources */,
+				CC78D71C1E43832C00B7C0DA /* CGPath+Z.swift in Sources */,
 				CCF3495B1E0F996F00EF1312 /* AppDelegate.swift in Sources */,
 				CCF349BD1E0FBEA900EF1312 /* ColorShaders.metal in Sources */,
 				CC54295D1E14EF3900C1929E /* SampleCanvasLayer2.swift in Sources */,
@@ -410,18 +438,19 @@
 				CC54295E1E14EF3C00C1929E /* SampleCanvasLayer2.swift in Sources */,
 				CC851CF41E1366540083268F /* SampleCanvasLayer1.swift in Sources */,
 				CCF349961E0F9A0300EF1312 /* Renderer.swift in Sources */,
-				CCF349AE1E0FA10E00EF1312 /* XColor+Z.swift in Sources */,
 				CC851CEE1E135CF30083268F /* CanvasLayer.swift in Sources */,
 				CCF349AB1E0F9F5100EF1312 /* RenderDrawView.swift in Sources */,
 				CCF349941E0F9A0300EF1312 /* RenderContext.swift in Sources */,
 				CCF349981E0F9A0300EF1312 /* RenderView.swift in Sources */,
 				CC851CF11E1366170083268F /* SampleCanvas.swift in Sources */,
 				CCF349921E0F9A0300EF1312 /* Scene.swift in Sources */,
+				CC78D7201E43B72300B7C0DA /* BezierShaders.metal in Sources */,
 				CC851CEB1E135C770083268F /* Canvas.swift in Sources */,
 				CCF349A81E0F9D9700EF1312 /* RenderContentView.swift in Sources */,
 				CCF349B11E0FA19100EF1312 /* XView+Z.swift in Sources */,
 				CCF349A21E0F9A0300EF1312 /* VertexBuffer.swift in Sources */,
 				CC851CD61E1282770083268F /* PointsRenderable.swift in Sources */,
+				CCADFADF1E211EBB00ECB9D0 /* BezierRenderer.swift in Sources */,
 				CCF3498E1E0F9A0300EF1312 /* GeoUtils.swift in Sources */,
 				CC851CD81E1282770083268F /* PointsRenderer.swift in Sources */,
 				CC851CDA1E1282770083268F /* PointsShaders.metal in Sources */,
@@ -430,10 +459,13 @@
 				CC851D001E13A4100083268F /* MTLTexture+Z.swift in Sources */,
 				CCF349B51E0FABB400EF1312 /* SampleScene.swift in Sources */,
 				CCB11D9C1E24C67400F30482 /* MTLDevice+Z.swift in Sources */,
+				CC78D71A1E436E0300B7C0DA /* Kernel.swift in Sources */,
+				CC78D7171E436BF100B7C0DA /* Float16.swift in Sources */,
 				CC1F2F331E11523C0097B223 /* ImageRenderer.swift in Sources */,
 				CCF3498C1E0F9A0300EF1312 /* CoreGraphics+Z.swift in Sources */,
 				CCF349BC1E0FBEA900EF1312 /* ColorRenderer.swift in Sources */,
 				CCF349901E0F9A0300EF1312 /* Renderable.swift in Sources */,
+				CC78D71D1E43832C00B7C0DA /* CGPath+Z.swift in Sources */,
 				CC851CE01E12F8AD0083268F /* Sequence+Z.swift in Sources */,
 				CCF349711E0F999400EF1312 /* AppDelegate.swift in Sources */,
 				CCF349C11E0FF1E400EF1312 /* SampleViewController.swift in Sources */,
