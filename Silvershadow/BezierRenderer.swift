@@ -118,6 +118,7 @@ class BezierRenderer: Renderer {
 
 	var vertexDescriptor: MTLVertexDescriptor {
 		let vertexDescriptor = MTLVertexDescriptor()
+
 		vertexDescriptor.attributes[0].offset = 0
 		vertexDescriptor.attributes[0].format = .half2
 		vertexDescriptor.attributes[0].bufferIndex = 0
@@ -154,7 +155,6 @@ class BezierRenderer: Renderer {
 		renderPipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
 		renderPipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
 
-
 		return try! self.device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
 	}()
 
@@ -169,6 +169,7 @@ class BezierRenderer: Renderer {
 
 
 	func render(context: RenderContext, texture: MTLTexture, cgPaths: [CGPath]) {
+		guard cgPaths.count > 0 else { return }
 
 		var elements = [PathElement]()
 		var vertexCount: Int = 0

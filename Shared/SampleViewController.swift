@@ -28,11 +28,11 @@ class SampleViewController: XViewController {
 
 		// either one can be uncommented not both
 
-		self.sampleScene = SampleScene(device: device, contentSize: contentSize)
-		self.renderView.scene = self.sampleScene
+//		self.sampleScene = SampleScene(device: device, contentSize: contentSize)
+//		self.renderView.scene = self.sampleScene
 
-//		self.sampleCanvas = SampleCanvas(device: device, contentSize: contentSize)
-//		self.renderView.scene = self.sampleCanvas
+		self.sampleCanvas = SampleCanvas(device: device, contentSize: contentSize)
+		self.renderView.scene = self.sampleCanvas
 	}
 
 	#if os(macOS)
