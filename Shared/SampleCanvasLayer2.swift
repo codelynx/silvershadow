@@ -17,7 +17,9 @@ class SampleCanvasLayer2: CanvasLayer {
 		return self.device?.texture(of: XImage(named: "Particle")!)!
 	}()
 
-	var strokePaths = [CGPath]()
+	lazy var strokePaths: [CGPath] = {
+		return [self.samplePath(CGAffineTransform.identity)]
+	}()
 
 	var samplePoints: [(CGFloat, CGFloat)] = [
 		(342.0, 611.5), (328.0, 616.0), (319.0, 616.0), (307.5, 617.5), (293.5, 619.5), (278.5, 620.5), (262.0, 621.5), (246.5, 621.5), (230.5, 621.5),

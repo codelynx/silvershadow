@@ -14,6 +14,7 @@ import simd
 
 
 
+
 class BezierRenderer: Renderer {
 
 	typealias VertexType = Vertex
@@ -26,13 +27,13 @@ class BezierRenderer: Renderer {
 		case curveTo = 4
 	};
 
-	struct PathElement {
+	struct BezierPathElement {
 		var type: UInt8					// 0
 		var unused1: UInt8				// 1
 		var unused2: UInt8				// 2
 		var unused3: UInt8				// 3
 
-		var numberOfVertexes: UInt16		// 4
+		var numberOfVertexes: UInt16	// 4
 		var vertexIndex: UInt16			// 6
 
 		var width1: UInt16				// 8
@@ -168,99 +169,134 @@ class BezierRenderer: Renderer {
 	}()
 
 
+	private typealias LineSegment = (type: ElementType, length: CGFloat, p0: CGPoint, p1: CGPoint, p2: CGPoint, p3: CGPoint)
+
+	private func lineSegments(cgPaths: [CGPath]) -> [LineSegment] {
+		let nan2 = CGPoint(CGFloat.nan, CGFloat.nan)
+	
+		return cgPaths.map { (cgPath) -> [LineSegment] in
+
+			var origin: CGPoint?
+			var lastPoint: CGPoint?
+
+			return cgPath.pathElements.flatMap { (pathElement) -> LineSegment? in
+				switch pathElement {
+				case .moveTo(let p1):
+					origin = p1
+					lastPoint = p1
+				case .lineTo(let p1):
+					guard let p0 = lastPoint else { return nil }
+					let length = (p0 - p1).length
+					lastPoint = p1
+					return (.lineTo, length, p0, p1, nan2, nan2)
+				case .quadCurveTo(let p1, let p2):
+					guard let p0 = lastPoint else { return nil }
+					let length = ((p0 - p1).length + (p2 - p1).length) * sqrt(2) // todo
+					lastPoint = p2
+					return (.quadCurveTo, length, p0, p1, p2, nan2)
+				case .curveTo(let p1, let p2, let p3):
+					guard let p0 = lastPoint else { return nil }
+					let length = (p0 - p1).length + (p2 - p1).length + (p3 - p2).length + (p3 - p0).length // todo
+					lastPoint = p3
+					return (.curveTo, length, p0, p1, p2, p3)
+				case .closeSubpath:
+					guard let p0 = lastPoint, let p1 = origin else { return nil }
+					let length = (p0 - p1).length
+					lastPoint = nil
+					origin = nil
+					return (.lineTo, length, p0, p1, nan2, nan2)
+				}
+				return nil
+			}
+
+		}
+		.flatMap { $0 }
+	}
+
+
 	func render(context: RenderContext, texture: MTLTexture, cgPaths: [CGPath]) {
 		guard cgPaths.count > 0 else { return }
 
-		var elements = [PathElement]()
-		var vertexCount: Int = 0
-		let nan2 = Point(Float.nan, Float.nan)
+		let vertexCapacity = 10_000
+		var elementsArray = [[BezierPathElement]]()
 		let (w1, w2) = (32, 32)
 
-		// extract PathElement
+		let segments = self.lineSegments(cgPaths: cgPaths)
+		let totalLength = segments.reduce(CGFloat(0)) { (total, value) in return total + value.length }
+		print("totalLength=\(totalLength)")
 
-		for cgPath in cgPaths {
-			var origin: Point?
-			var lastPoint: Point?
+		var elements = [BezierPathElement]()
+		var vertexCount: Int = 0
 
-			let pathElements = cgPath.pathElements
-			for pathElement in pathElements {
-				switch pathElement {
-				case .moveTo(let p1):
-					origin = Point(p1)
-					lastPoint = Point(p1)
-				case .lineTo(let p1):
-					let (p0, p1) = (lastPoint!, Point(p1))
-					let count = Int((p0 - p1).length)
-					let element = PathElement(type: .lineTo, numberOfVertexes: count, vertexIndex: vertexCount,
-								w1: w1, w2: w2, p0: p0, p1: p1, p2: nan2, p3: nan2)
-					elements.append(element)
-					vertexCount += count
-					lastPoint = p1
-				case .quadCurveTo(let p1, let p2):
-					let (p0, p1, p2) = (lastPoint!, Point(p1), Point(p2))
-					let count = Int(((p0 - p1).length + (p2 - p1).length) * sqrt(2)) // todo
-					let element = PathElement(type: .quadCurveTo, numberOfVertexes: count, vertexIndex: vertexCount,
-								w1: w1, w2: w2, p0: p0, p1: p1, p2: p2, p3: nan2)
-					elements.append(element)
-					vertexCount += count
-					lastPoint = p2
-				case .curveTo(let p1, let p2, let p3):
-					let (p0, p1, p2, p3) = (lastPoint!, Point(p1), Point(p2), Point(p3))
-					let count = Int((p0 - p1).length + (p2 - p1).length + (p3 - p2).length + (p3 - p0).length) // todo
-					let element = PathElement(type: .curveTo, numberOfVertexes: count, vertexIndex: vertexCount,
-								w1: w1, w2: w2, p0: p0, p1: p1, p2: p2, p3: p3)
-					elements.append(element)
-					vertexCount += count
-					lastPoint = p3
-				case .closeSubpath:
-					lastPoint = nil
-					origin = nil
-					break
-				}
+		// due to limited memory resource, all vertexes may not be able to render at a time, but on the other hand, it should not render segment
+		// by segment because of performance.  Following code sprits line segments by vertex buffer's capacity.
+
+		for segment in segments {
+			let count = Int(segment.length / 2)
+			if vertexCount + count > vertexCapacity {
+				elementsArray.append(elements)
+				elements = [BezierPathElement]()
+				vertexCount = 0
 			}
+			let element = BezierPathElement(type: segment.type, numberOfVertexes: count, vertexIndex: vertexCount, w1: w1, w2: w2,
+					p0: Point(segment.p0), p1: Point(segment.p1), p2: Point(segment.p2), p3: Point(segment.p3))
+			elements.append(element)
+			vertexCount += count
 		}
-		
-		// build contiguous vertexes using computing shader from PathElement
-		
-		let elementsBuffer = VertexBuffer<PathElement>(device: self.device, vertices: elements)
-		let vertexes = Array<Vertex>(repeatElement(Vertex(point: Point(0, 0), width: 0), count: Int(vertexCount)))
-		let vertexBuffer = VertexBuffer<Vertex>(device: self.device, vertices: vertexes)
+		if elements.count > 0 {
+			elementsArray.append(elements)
+		}
 
-		do {
+
+		// now, elements are sprited 
+
+		for (index, elements) in elementsArray.enumerated() {
+			print("pass = \(index)")
+
 			let commandBuffer = context.makeCommandBuffer()
-			let encoder = commandBuffer.makeComputeCommandEncoder()
-			encoder.setComputePipelineState(self.computePipelineState)
-			encoder.setBuffer(elementsBuffer.buffer, offset: 0, at: 0)
-			encoder.setBuffer(vertexBuffer.buffer, offset: 0, at: 1)
-			let threadgroupsPerGrid = MTLSizeMake(elements.count, 1, 1)
-			let threadsPerThreadgroup = MTLSizeMake(1, 1, 1)
-			encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
-			encoder.endEncoding()
+
+			// build contiguous vertexes using computing shader from PathElement
+			
+			let elementsBuffer = VertexBuffer<BezierPathElement>(device: self.device, vertices: elements)
+			let vertexes = Array<Vertex>(repeatElement(Vertex(point: Point(0, 0), width: 0), count: Int(vertexCount)))
+			let vertexBuffer = VertexBuffer<Vertex>(device: self.device, vertices: vertexes)
+
+			do {
+				let encoder = commandBuffer.makeComputeCommandEncoder()
+				encoder.setComputePipelineState(self.computePipelineState)
+				encoder.setBuffer(elementsBuffer.buffer, offset: 0, at: 0)
+				encoder.setBuffer(vertexBuffer.buffer, offset: 0, at: 1)
+				let threadgroupsPerGrid = MTLSizeMake(elements.count, 1, 1)
+				let threadsPerThreadgroup = MTLSizeMake(1, 1, 1)
+				encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+				encoder.endEncoding()
+			}
+
+			// vertex buffer should be filled with vertexes then draw it
+
+			do {
+				let transform = context.transform
+				var uniforms = Uniforms(transform: transform, zoomScale: Float(context.zoomScale))
+				let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
+
+				let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: context.renderPassDescriptor)
+				encoder.setRenderPipelineState(self.renderPipelineState)
+
+				encoder.setFrontFacing(.clockwise)
+				encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
+				encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
+
+				encoder.setFragmentTexture(texture, at: 0)
+				encoder.setFragmentSamplerState(self.colorSamplerState, at: 0)
+
+				encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: vertexBuffer.count)
+				encoder.endEncoding()
+			}
+
 			commandBuffer.commit()
 			commandBuffer.waitUntilCompleted()
 		}
 
-		// vertex buffer should be filled with vertexes then draw it
-
-		do {
-			let transform = context.transform
-			var uniforms = Uniforms(transform: transform, zoomScale: Float(context.zoomScale))
-			let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
-
-			let encoder = context.makeRenderCommandEncoder()
-			encoder.setRenderPipelineState(self.renderPipelineState)
-
-			encoder.setFrontFacing(.clockwise)
-			encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
-			encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
-
-			encoder.setFragmentTexture(texture, at: 0)
-			encoder.setFragmentSamplerState(self.colorSamplerState, at: 0)
-
-			encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: vertexBuffer.count)
-			encoder.endEncoding()
-		}
-		
 	}
 
 }
