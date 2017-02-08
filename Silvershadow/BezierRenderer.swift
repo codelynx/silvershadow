@@ -168,7 +168,6 @@ class BezierRenderer: Renderer {
 		return self.device.makeSamplerState(descriptor: samplerDescriptor)
 	}()
 
-
 	private typealias LineSegment = (type: ElementType, length: CGFloat, p0: CGPoint, p1: CGPoint, p2: CGPoint, p3: CGPoint)
 
 	private func lineSegments(cgPaths: [CGPath]) -> [LineSegment] {
@@ -250,6 +249,10 @@ class BezierRenderer: Renderer {
 
 		// now, elements are sprited 
 
+		let transform = context.transform
+		var uniforms = Uniforms(transform: transform, zoomScale: Float(context.zoomScale))
+		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
+
 		for (index, elements) in elementsArray.enumerated() {
 			print("pass = \(index)")
 
@@ -275,9 +278,6 @@ class BezierRenderer: Renderer {
 			// vertex buffer should be filled with vertexes then draw it
 
 			do {
-				let transform = context.transform
-				var uniforms = Uniforms(transform: transform, zoomScale: Float(context.zoomScale))
-				let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
 
 				let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: context.renderPassDescriptor)
 				encoder.setRenderPipelineState(self.renderPipelineState)
