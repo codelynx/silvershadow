@@ -216,8 +216,8 @@ class BezierRenderer: Renderer {
 	func render(context: RenderContext, texture: MTLTexture, cgPaths: [CGPath]) {
 		guard cgPaths.count > 0 else { return }
 
-		let vertexCapacity = 10_000
-		let elementsCapacity = 1_000
+		let vertexCapacity = 40_000
+		let elementsCapacity = 4_000
 		var elementsArray = [[BezierPathElement]]()
 		let (w1, w2) = (32, 32)
 
@@ -227,21 +227,24 @@ class BezierRenderer: Renderer {
 
 		var elements = [BezierPathElement]()
 		var vertexCount: Int = 0
+		var elementCount: Int = 0
 
 		// due to limited memory resource, all vertexes may not be able to render at a time, but on the other hand, it should not render segment
 		// by segment because of performance.  Following code sprits line segments by vertex buffer's capacity.
 
 		for segment in segments {
 			let count = Int(segment.length / 2)
-			if vertexCount + count > vertexCapacity {
+			if vertexCount + count > vertexCapacity || elementCount + 1 > elementsCapacity {
 				elementsArray.append(elements)
 				elements = [BezierPathElement]()
 				vertexCount = 0
+				elementCount = 0
 			}
 			let element = BezierPathElement(type: segment.type, numberOfVertexes: count, vertexIndex: vertexCount, w1: w1, w2: w2,
 					p0: Point(segment.p0), p1: Point(segment.p1), p2: Point(segment.p2), p3: Point(segment.p3))
 			elements.append(element)
 			vertexCount += count
+			elementCount += 1
 		}
 		if elements.count > 0 {
 			elementsArray.append(elements)
@@ -254,11 +257,19 @@ class BezierRenderer: Renderer {
 		var uniforms = Uniforms(transform: transform, zoomScale: Float(context.zoomScale))
 		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
 
-		let elementsBuffer = device.makeBuffer(length: MemoryLayout<BezierPathElement>.size * elementsCapacity, options: [.storageModeShared])
-		let vertexBuffer = device.makeBuffer(length: MemoryLayout<Vertex>.size * vertexCapacity, options: [.storageModePrivate])
+		// double buffer technique
+		let elementsBuffers: [MTLBuffer] = [
+				device.makeBuffer(length: MemoryLayout<BezierPathElement>.size * elementsCapacity, options: [.storageModeShared]),
+				device.makeBuffer(length: MemoryLayout<BezierPathElement>.size * elementsCapacity, options: [.storageModeShared])
+		]
+		let vertexBuffers: [MTLBuffer] = [
+			device.makeBuffer(length: MemoryLayout<Vertex>.size * vertexCapacity, options: [.storageModePrivate]),
+			device.makeBuffer(length: MemoryLayout<Vertex>.size * vertexCapacity, options: [.storageModePrivate])
+		]
+
 
 		for (index, elements) in elementsArray.enumerated() {
-			print("pass = \(index)")
+			let bufferIndex = index % 2 // double buffer
 
 			let commandBuffer = context.makeCommandBuffer()
 
@@ -267,12 +278,12 @@ class BezierRenderer: Renderer {
 			do {
 				let encoder = commandBuffer.makeComputeCommandEncoder()
 				encoder.setComputePipelineState(self.computePipelineState)
-				let destinationArray = UnsafeMutablePointer<BezierPathElement>(OpaquePointer(elementsBuffer.contents()))
+				let destinationArray = UnsafeMutablePointer<BezierPathElement>(OpaquePointer(elementsBuffers[bufferIndex].contents()))
 				for index in 0 ..< elements.count {
 					destinationArray[index] = elements[index]
 				}
-				encoder.setBuffer(elementsBuffer, offset: 0, at: 0)
-				encoder.setBuffer(vertexBuffer, offset: 0, at: 1)
+				encoder.setBuffer(elementsBuffers[bufferIndex], offset: 0, at: 0)
+				encoder.setBuffer(vertexBuffers[bufferIndex], offset: 0, at: 1)
 				let threadgroupsPerGrid = MTLSizeMake(elements.count, 1, 1)
 				let threadsPerThreadgroup = MTLSizeMake(1, 1, 1)
 				encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
@@ -288,7 +299,7 @@ class BezierRenderer: Renderer {
 				encoder.setRenderPipelineState(self.renderPipelineState)
 
 				encoder.setFrontFacing(.clockwise)
-				encoder.setVertexBuffer(vertexBuffer, offset: 0, at: 0)
+				encoder.setVertexBuffer(vertexBuffers[bufferIndex], offset: 0, at: 0)
 				encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
 
 				encoder.setFragmentTexture(texture, at: 0)
@@ -299,7 +310,7 @@ class BezierRenderer: Renderer {
 			}
 
 			commandBuffer.commit()
-			commandBuffer.waitUntilCompleted()
+//			commandBuffer.waitUntilCompleted()
 		}
 
 	}
