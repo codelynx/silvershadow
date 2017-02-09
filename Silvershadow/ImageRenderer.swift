@@ -123,11 +123,24 @@ class ImageRenderer: Renderer {
 	
 	// MARK: -
 
+	// prepare triple reusable buffers for avoid race condition
+	lazy var uniformTripleBuffer: [MTLBuffer] = {
+		return [
+			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared]),
+			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared]),
+			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared])
+		]
+	}()
+	
+	var uniformBufferIndex = 0
+
 	func renderImage(context: RenderContext, texture: MTLTexture, vertexBuffer: VertexBuffer<Vertex>) {
-		let transform = context.transform
-		var uniforms = Uniforms(transform: transform)
-		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
-		
+		defer { uniformBufferIndex = (uniformBufferIndex + 1) % uniformTripleBuffer.count }
+
+		let uniformsBuffer = uniformTripleBuffer[uniformBufferIndex]
+		let uniformsBufferPtr = UnsafeMutablePointer<Uniforms>(OpaquePointer(uniformsBuffer.contents()))
+		uniformsBufferPtr.pointee.transform = context.transform
+
 		let encoder = context.makeRenderCommandEncoder()
 		
 		encoder.setRenderPipelineState(self.renderPipelineState)
