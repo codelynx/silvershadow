@@ -189,7 +189,7 @@ class PointsRenderer: Renderer {
 				guard let p0 = lastPoint else { continue }
 				lastPoint = p2
 
-				let n = Int((p1 - p0).length + (p2 - p1).length)
+				let n = Int(ceil(CGPath.quadraticCurveLength(p0, p1, p2)))
 				for i in 0 ..< n {
 					let t = CGFloat(i) / CGFloat(n)
 					let q1 = p0 + (p1 - p0) * t
@@ -202,13 +202,7 @@ class PointsRenderer: Renderer {
 				guard let p0 = lastPoint else { continue }
 				lastPoint = p3
 
-				// http://math.stackexchange.com/questions/12186/arc-length-of-bézier-curves
-				// http://gamedev.stackexchange.com/questions/6009/bezier-curve-arc-length
-				// http://stackoverflow.com/questions/29438398/cheap-way-of-calculating-cubic-bezier-length
-
-				let chord = (p3 - p0).length
-				let est_length = (p1 - p0).length + (p2 - p1).length + (p3 - p2).length
-				let n = Int((est_length + chord) * 0.5)
+				let n = Int(ceil(CGPath.approximateCubicCurveLength(p0, p1, p2, p3)))
 				for i in 0 ..< n {
 					let t = CGFloat(i) / CGFloat(n)
 					let q1 = p0 + (p1 - p0) * t
@@ -234,81 +228,6 @@ class PointsRenderer: Renderer {
 		
 		return vertexes
 	}
-
-
-
-/*
-	func render(context: RenderContext, cgPath: CGPath, texture: MTLTexture, width: CGFloat) {
-		let vertexes = PointsRenderer.vertexes(of: cgPath, width: width)
-		var startPoint: CGPoint?
-		var lastPoint: CGPoint?
-
-		for pathElement in cgPath.pathElements {
-			switch pathElement {
-			case .moveToPoint(let p1):
-				startPoint = p1
-				lastPoint = p1
-
-			case .addLineToPoint(let p1):
-				guard let p0 = lastPoint else { continue }
-				lastPoint = p1
-
-				let n = Int((p1 - p0).length)
-				for i in 0 ..< n {
-					let t = CGFloat(i) / CGFloat(n)
-					let q = p0 + (p1 - p0) * t
-					vertexes.append(Vertex(Point(q), width))
-				}
-
-			case .addQuadCurveToPoint(let p1, let p2):
-				guard let p0 = lastPoint else { continue }
-				lastPoint = p2
-
-				let n = Int((p1 - p0).length + (p2 - p1).length)
-				for i in 0 ..< n {
-					let t = CGFloat(i) / CGFloat(n)
-					let q1 = p0 + (p1 - p0) * t
-					let q2 = p1 + (p2 - p1) * t
-					let r = q1 + (q2 - q1) * t
-					vertexes.append(Vertex(Point(r), width))
-				}
-
-			case .addCurveToPoint(let p1, let p2, let p3):
-				guard let p0 = lastPoint else { continue }
-				lastPoint = p3
-
-				// http://math.stackexchange.com/questions/12186/arc-length-of-bézier-curves
-				// http://gamedev.stackexchange.com/questions/6009/bezier-curve-arc-length
-				// http://stackoverflow.com/questions/29438398/cheap-way-of-calculating-cubic-bezier-length
-
-				let chord = (p3 - p0).length
-				let est_length = (p1 - p0).length + (p2 - p1).length + (p3 - p2).length
-				let n = Int((est_length + chord) * 0.5)
-				for i in 0 ..< n {
-					let t = CGFloat(i) / CGFloat(n)
-					let q1 = p0 + (p1 - p0) * t
-					let q2 = p1 + (p2 - p1) * t
-					let q3 = p2 + (p3 - p2) * t
-					let r1 = q1 + (q2 - q1) * t
-					let r2 = q2 + (q3 - q2) * t
-					let s = r1 + (r2 - r1) * t
-					vertexes.append(Vertex(Point(s), width))
-				}
-
-			case .closeSubpath:
-				guard let p0 = lastPoint, let p1 = startPoint else { continue }
-
-				let n = Int((p1 - p0).length)
-				for i in 0 ..< n {
-					let t = CGFloat(i) / CGFloat(n)
-					let q = p0 + (p1 - p0) * t
-					vertexes.append(Vertex(Point(q), width))
-				}
-			}
-		}
-		self.render(context: context, texture: texture, vertexes: vertexes)
-	}
-*/
 
 }
 

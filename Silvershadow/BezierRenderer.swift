@@ -190,12 +190,12 @@ class BezierRenderer: Renderer {
 					return (.lineTo, length, p0, p1, nan2, nan2)
 				case .quadCurveTo(let p1, let p2):
 					guard let p0 = lastPoint else { return nil }
-					let length = ((p0 - p1).length + (p2 - p1).length) * sqrt(2) // todo
+					let length = CGPath.quadraticCurveLength(p0, p1, p2)
 					lastPoint = p2
 					return (.quadCurveTo, length, p0, p1, p2, nan2)
 				case .curveTo(let p1, let p2, let p3):
 					guard let p0 = lastPoint else { return nil }
-					let length = (p0 - p1).length + (p2 - p1).length + (p3 - p2).length + (p3 - p0).length // todo
+					let length = CGPath.approximateCubicCurveLength(p0, p1, p2, p3)
 					lastPoint = p3
 					return (.curveTo, length, p0, p1, p2, p3)
 				case .closeSubpath:
