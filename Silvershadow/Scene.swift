@@ -16,7 +16,7 @@ class Scene {
 	let device: MTLDevice
 	var contentSize: CGSize
 
-	var backgroundColor: XColor { return XColor.white }
+	var backgroundColor: XColor = XColor.white
 
 	var width: CGFloat { return self.contentSize.width }
 	var height: CGFloat { return self.contentSize.height }

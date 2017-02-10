@@ -117,6 +117,12 @@ class ColorRenderer: Renderer {
 			Vertex(x: r, y: t, z: 0, w: 1, r: _r, g: _g, b: _b, a: _a),
 		]
 	}
+
+	func render(context: RenderContext, rect: Rect, color: XColor) {
+		guard let vertexBuffer = self.vertexBuffer(for: self.vertices(for: rect, color: color)) else { return }
+		render(context: context, vertexBuffer: vertexBuffer)
+	}
+
 }
 
 
