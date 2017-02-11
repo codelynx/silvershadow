@@ -128,7 +128,7 @@ extension CGPath {
 		let C_2 = 2 * sqrt(C)
 		let BA = B / A_2
 		let L = (A_32 * Sabc + A_2 * B * (Sabc - C_2) + (4 * C * A - B * B) * log((2 * A_2 + BA + Sabc) / (BA + C_2))) / (4 * A_32)
-		return L
+		return L.isNaN ? 0 : L
 	}
 
 	static func approximateCubicCurveLength(_ p0: CGPoint, _ p1: CGPoint, _ p2: CGPoint, _ p3: CGPoint) -> CGFloat {
