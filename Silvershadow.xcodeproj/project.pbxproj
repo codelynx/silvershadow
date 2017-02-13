@@ -48,6 +48,8 @@
 		CC851CF41E1366540083268F /* SampleCanvasLayer1.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CF21E1366540083268F /* SampleCanvasLayer1.swift */; };
 		CC851CFF1E13A4100083268F /* MTLTexture+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */; };
 		CC851D001E13A4100083268F /* MTLTexture+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */; };
+		CC8D58F41E523F2600BD42A1 /* test.png in Resources */ = {isa = PBXBuildFile; fileRef = CC8D58F31E523F2600BD42A1 /* test.png */; };
+		CC8D58F51E523F2600BD42A1 /* test.png in Resources */ = {isa = PBXBuildFile; fileRef = CC8D58F31E523F2600BD42A1 /* test.png */; };
 		CCADFADE1E211EBB00ECB9D0 /* BezierRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCADFADD1E211EBB00ECB9D0 /* BezierRenderer.swift */; };
 		CCADFADF1E211EBB00ECB9D0 /* BezierRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCADFADD1E211EBB00ECB9D0 /* BezierRenderer.swift */; };
 		CCB11D9B1E24C65300F30482 /* MTLDevice+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */; };
@@ -118,6 +120,7 @@
 		CC851CEF1E1366170083268F /* SampleCanvas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleCanvas.swift; sourceTree = "<group>"; };
 		CC851CF21E1366540083268F /* SampleCanvasLayer1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleCanvasLayer1.swift; sourceTree = "<group>"; };
 		CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MTLTexture+Z.swift"; sourceTree = "<group>"; };
+		CC8D58F31E523F2600BD42A1 /* test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test.png; sourceTree = "<group>"; };
 		CCADFADD1E211EBB00ECB9D0 /* BezierRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BezierRenderer.swift; sourceTree = "<group>"; };
 		CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MTLDevice+Z.swift"; sourceTree = "<group>"; };
 		CCE0395B1E434E2D00B58AFA /* Float16.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Float16.swift; sourceTree = "<group>"; };
@@ -266,6 +269,7 @@
 				CC1F2F351E1152710097B223 /* BlueMarble.png */,
 				CC851CDB1E1297380083268F /* Particle.png */,
 				CC0FD5EF1E4BA73000D3970A /* Pencil.png */,
+				CC8D58F31E523F2600BD42A1 /* test.png */,
 				CC851CEF1E1366170083268F /* SampleCanvas.swift */,
 				CC851CF21E1366540083268F /* SampleCanvasLayer1.swift */,
 				CC54295C1E14EF3900C1929E /* SampleCanvasLayer2.swift */,
@@ -361,6 +365,7 @@
 			files = (
 				CC0FD5ED1E4BA65A00D3970A /* Particle-b.png in Resources */,
 				CC1F2F361E1152710097B223 /* BlueMarble.png in Resources */,
+				CC8D58F41E523F2600BD42A1 /* test.png in Resources */,
 				CCF349651E0F996F00EF1312 /* LaunchScreen.storyboard in Resources */,
 				CC0FD5F01E4BA73000D3970A /* Pencil.png in Resources */,
 				CC0FD5EE1E4BA65A00D3970A /* Particle-w.png in Resources */,
@@ -379,6 +384,7 @@
 				CC1F2F371E11527F0097B223 /* BlueMarble.png in Resources */,
 				CCF349781E0F999400EF1312 /* Main.storyboard in Resources */,
 				CC851CDD1E1297380083268F /* Particle.png in Resources */,
+				CC8D58F51E523F2600BD42A1 /* test.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -138,9 +138,15 @@ fragment float4 bezier_fragment(
 	VertexOut vertexIn [[ stage_in ]],
 	texture2d<float, access::sample> colorTexture [[ texture(0) ]],
 	sampler colorSampler [[ sampler(0) ]],
+
+	texture2d<float, access::sample> brushTexture [[ texture(1) ]],
+	sampler brushSampler [[ sampler(1) ]],
+	
 	float2 texcoord [[ point_coord ]]
 ) {
-	float4 color = colorTexture.sample(colorSampler, texcoord);
+	float4 color1 = colorTexture.sample(colorSampler, texcoord);
+	float4 color2 = brushTexture.sample(brushSampler, float2(vertexIn.position.xy) + texcoord);
+	float4 color = float4(color2.rgb, color1.a);
 //	color.g = 0;
 //	color.b = 0;
 	if (color.a == 0.0) {

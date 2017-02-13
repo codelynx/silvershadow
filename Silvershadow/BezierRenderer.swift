@@ -168,6 +168,15 @@ class BezierRenderer: Renderer {
 		return self.device.makeSamplerState(descriptor: samplerDescriptor)
 	}()
 
+	lazy var brushSamplerState: MTLSamplerState = {
+		let samplerDescriptor = MTLSamplerDescriptor()
+		samplerDescriptor.minFilter = .nearest
+		samplerDescriptor.magFilter = .linear
+		samplerDescriptor.sAddressMode = .repeat
+		samplerDescriptor.tAddressMode = .repeat
+		return self.device.makeSamplerState(descriptor: samplerDescriptor)
+	}()
+
 	private typealias LineSegment = (type: ElementType, length: CGFloat, p0: CGPoint, p1: CGPoint, p2: CGPoint, p3: CGPoint)
 
 	private func lineSegments(cgPaths: [CGPath]) -> [LineSegment] {
@@ -212,6 +221,9 @@ class BezierRenderer: Renderer {
 		.flatMap { $0 }
 	}
 
+	lazy var brushSapeTexture: MTLTexture? = {
+		return self.device.texture(of: XImage(named: "test")!)!
+	}()
 
 	func render(context: RenderContext, texture: MTLTexture, cgPaths: [CGPath]) {
 		guard cgPaths.count > 0 else { return }
@@ -268,6 +280,8 @@ class BezierRenderer: Renderer {
 		]
 		assert(elementsDoubleBuffers.count == vertexDoubleBuffers.count)
 
+		let brushSapeTexture = self.brushSapeTexture
+
 		for (index, elements) in elementsArray.enumerated() {
 
 			let bufferIndex = index % vertexDoubleBuffers.count // double buffer
@@ -304,6 +318,9 @@ class BezierRenderer: Renderer {
 
 				encoder.setFragmentTexture(texture, at: 0)
 				encoder.setFragmentSamplerState(self.colorSamplerState, at: 0)
+
+				encoder.setFragmentTexture(brushSapeTexture, at: 1)
+				encoder.setFragmentSamplerState(self.brushSamplerState, at: 1)
 
 				encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: Int(vertexCount))
 				encoder.endEncoding()
