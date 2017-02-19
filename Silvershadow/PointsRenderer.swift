@@ -119,8 +119,8 @@ class PointsRenderer: Renderer {
 		return self.device.makeSamplerState(descriptor: samplerDescriptor)
 	}()
 	
-	func vertexBuffer(for vertices: [Vertex], expanding: Int = 4096) -> VertexBuffer<Vertex> {
-		return VertexBuffer<Vertex>(device: self.device, vertices: vertices, expanding: expanding)
+	func vertexBuffer(for vertices: [Vertex], capacity: Int? = nil) -> VertexBuffer<Vertex> {
+		return VertexBuffer<Vertex>(device: self.device, vertices: vertices, capacity: capacity)
 	}
 
 	func render(context: RenderContext, texture: MTLTexture, vertexBuffer: VertexBuffer<Vertex>) {
