@@ -107,7 +107,7 @@ class Canvas: Scene {
 			// render a layer
 
 			let subrenderContext = RenderCanvasContext(renderPassDescriptor: subrenderPassDescriptor,
-						commandBuffer: subcommandBuffer, transform: subtransform, zoomScale: 1, shadingTexture: self.shadingTexture)
+						commandBuffer: subcommandBuffer, transform: subtransform, zoomScale: 1, bounds: self.bounds, shadingTexture: self.shadingTexture)
 			canvasLayer.render(context: subrenderContext)
 
 			subcommandBuffer.commit()

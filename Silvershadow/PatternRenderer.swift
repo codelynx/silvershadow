@@ -12,13 +12,12 @@ import Metal
 import MetalKit
 import GLKit
 
-typealias ImageVertex = ImageRenderer.Vertex
 
 //
 //	ImageRenderer
 //
 
-class ImageRenderer: Renderer {
+class PatternRenderer: Renderer {
 
 	typealias VertexType = Vertex
 
@@ -30,8 +29,8 @@ class ImageRenderer: Renderer {
 
 	struct Uniforms {
 		var transform: GLKMatrix4
+		var inversedTransform: GLKMatrix4
 	}
-
 
 	let device: MTLDevice
 	
@@ -78,8 +77,8 @@ class ImageRenderer: Renderer {
 	lazy var renderPipelineState: MTLRenderPipelineState = {
 		let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
 		renderPipelineDescriptor.vertexDescriptor = self.vertexDescriptor
-		renderPipelineDescriptor.vertexFunction = self.library.makeFunction(name: "image_vertex")!
-		renderPipelineDescriptor.fragmentFunction = self.library.makeFunction(name: "image_fragment")!
+		renderPipelineDescriptor.vertexFunction = self.library.makeFunction(name: "pattern_vertex")!
+		renderPipelineDescriptor.fragmentFunction = self.library.makeFunction(name: "pattern_fragment")!
 
 		renderPipelineDescriptor.colorAttachments[0].pixelFormat = defaultPixelFormat
 		renderPipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
@@ -95,7 +94,16 @@ class ImageRenderer: Renderer {
 		return try! self.device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
 	}()
 
-	lazy var colorSamplerState: MTLSamplerState = {
+	lazy var shadingSamplerState: MTLSamplerState = {
+		let samplerDescriptor = MTLSamplerDescriptor()
+		samplerDescriptor.minFilter = .nearest
+		samplerDescriptor.magFilter = .linear
+		samplerDescriptor.sAddressMode = .repeat
+		samplerDescriptor.tAddressMode = .repeat
+		return self.device.makeSamplerState(descriptor: samplerDescriptor)
+	}()
+
+	lazy var patternSamplerState: MTLSamplerState = {
 		let samplerDescriptor = MTLSamplerDescriptor()
 		samplerDescriptor.minFilter = .nearest
 		samplerDescriptor.magFilter = .linear
@@ -134,12 +142,13 @@ class ImageRenderer: Renderer {
 	
 	var uniformBufferIndex = 0
 
-	func renderImage(context: RenderContext, texture: MTLTexture, vertexBuffer: VertexBuffer<Vertex>) {
+	func renderPattern(context: RenderContext, shadingTexture: MTLTexture, patternTexture: MTLTexture, vertexBuffer: VertexBuffer<Vertex>) {
 		defer { uniformBufferIndex = (uniformBufferIndex + 1) % uniformTripleBuffer.count }
 
 		let uniformsBuffer = uniformTripleBuffer[uniformBufferIndex]
 		let uniformsBufferPtr = UnsafeMutablePointer<Uniforms>(OpaquePointer(uniformsBuffer.contents()))
 		uniformsBufferPtr.pointee.transform = context.transform
+		uniformsBufferPtr.pointee.inversedTransform = context.transform.invert
 
 		let encoder = context.makeRenderCommandEncoder()
 		
@@ -150,8 +159,11 @@ class ImageRenderer: Renderer {
 		encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
 		encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
 
-		encoder.setFragmentTexture(texture, at: 0)
-		encoder.setFragmentSamplerState(self.colorSamplerState, at: 0)
+		encoder.setFragmentTexture(shadingTexture, at: 0)
+		encoder.setFragmentTexture(patternTexture, at: 1)
+		encoder.setFragmentSamplerState(self.shadingSamplerState, at: 0)
+		encoder.setFragmentSamplerState(self.patternSamplerState, at: 1)
+		encoder.setFragmentBuffer(uniformsBuffer, offset: 0, at: 0)
 
 		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexBuffer.count)
 
@@ -159,8 +171,10 @@ class ImageRenderer: Renderer {
 	}
 }
 
-
+/*
 extension RenderContext {
+
+	typealias Vertex = ColorRenderer.VertexType
 
 	func render(texture: MTLTexture?, in rect: Rect) {
 		guard let texture = texture else { return }
@@ -178,4 +192,5 @@ extension RenderContext {
 	}
 
 }
+*/
 

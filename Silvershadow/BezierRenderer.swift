@@ -9,6 +9,7 @@
 import Foundation
 import CoreGraphics
 import QuartzCore
+import MetalKit
 import GLKit
 import simd
 
@@ -142,17 +143,17 @@ class BezierRenderer: Renderer {
 
 		renderPipelineDescriptor.colorAttachments[0].pixelFormat = defaultPixelFormat
 		renderPipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
-		renderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
+		renderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = .subtract
 		renderPipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
 
 		// I don't believe this but this is what it is...
-		#if os(iOS)
+//		#if os(iOS)
 		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .one
 		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .one
-		#elseif os(macOS)
-		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
-		#endif
+//		#elseif os(macOS)
+//		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+//		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
+//		#endif
 		renderPipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
 		renderPipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
 
@@ -221,11 +222,15 @@ class BezierRenderer: Renderer {
 		.flatMap { $0 }
 	}
 
-	lazy var brushSapeTexture: MTLTexture? = {
-		return self.device.texture(of: XImage(named: "test")!)!
+	lazy var brushSapeTexture: MTLTexture! = {
+		return self.device.texture(of: XImage(named: "Particle")!)!
 	}()
 
-	func render(context: RenderContext, brushTexture: MTLTexture, cgPaths: [CGPath]) {
+	lazy var brushPatternTexture: MTLTexture! = {
+		return self.device.texture(of: XImage(named: "PencilTexture-2")!)!
+	}()
+
+	func render(context: RenderCanvasContext, brushTexture: MTLTexture, cgPaths: [CGPath]) {
 		guard cgPaths.count > 0 else { return }
 
 		let vertexCapacity = 40_000
@@ -282,6 +287,12 @@ class BezierRenderer: Renderer {
 
 		let brushSapeTexture = self.brushSapeTexture
 
+		let shadingRenderPassDescriptor = MTLRenderPassDescriptor()
+		shadingRenderPassDescriptor.colorAttachments[0].texture = context.shadingTexture
+		shadingRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0)
+		shadingRenderPassDescriptor.colorAttachments[0].loadAction = .clear
+		shadingRenderPassDescriptor.colorAttachments[0].storeAction = .store
+
 		for (index, elements) in elementsArray.enumerated() {
 
 			let bufferIndex = index % vertexDoubleBuffers.count // double buffer
@@ -309,7 +320,7 @@ class BezierRenderer: Renderer {
 			do {
 				let vertexCount = elements.map { $0.numberOfVertexes }.reduce (0, +)
 
-				let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: context.renderPassDescriptor)
+				let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: shadingRenderPassDescriptor)
 				encoder.setRenderPipelineState(self.renderPipelineState)
 
 				encoder.setFrontFacing(.clockwise)
@@ -327,9 +338,17 @@ class BezierRenderer: Renderer {
 			}
 
 			commandBuffer.commit()
-//			commandBuffer.waitUntilCompleted()
+			commandBuffer.waitUntilCompleted()
+			shadingRenderPassDescriptor.colorAttachments[0].loadAction = .load
 		}
 
+		let image1 = context.shadingTexture.image! as NSImage
+
+
+		let renderer = context.device.renderer() as PatternRenderer
+		let vertexes = renderer.vertices(for: context.bounds)
+		guard let vertexBuffer = renderer.vertexBuffer(for: vertexes) else { return }
+		renderer.renderPattern(context: context, shadingTexture: context.shadingTexture, patternTexture: self.brushPatternTexture, vertexBuffer: vertexBuffer)
 	}
 
 }

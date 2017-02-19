@@ -57,6 +57,16 @@
 		CCB11D9B1E24C65300F30482 /* MTLDevice+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */; };
 		CCB11D9C1E24C67400F30482 /* MTLDevice+Z.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */; };
 		CCE0395C1E434E2E00B58AFA /* Float16.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCE0395B1E434E2D00B58AFA /* Float16.swift */; };
+		CCE9FE2C1E5953FC002603BC /* PatternShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CCE9FE2B1E5953FC002603BC /* PatternShaders.metal */; };
+		CCE9FE2D1E5953FC002603BC /* PatternShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CCE9FE2B1E5953FC002603BC /* PatternShaders.metal */; };
+		CCE9FE2E1E595544002603BC /* Particle-w.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0FD5EC1E4BA65A00D3970A /* Particle-w.png */; };
+		CCE9FE2F1E595547002603BC /* Particle-b.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0FD5EB1E4BA65A00D3970A /* Particle-b.png */; };
+		CCE9FE311E595F2B002603BC /* PatternRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCE9FE301E595F2B002603BC /* PatternRenderer.swift */; };
+		CCE9FE321E595F2B002603BC /* PatternRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCE9FE301E595F2B002603BC /* PatternRenderer.swift */; };
+		CCE9FE341E596A3F002603BC /* PencilTexture-2.png in Resources */ = {isa = PBXBuildFile; fileRef = CCE9FE331E596A3F002603BC /* PencilTexture-2.png */; };
+		CCE9FE351E596A3F002603BC /* PencilTexture-2.png in Resources */ = {isa = PBXBuildFile; fileRef = CCE9FE331E596A3F002603BC /* PencilTexture-2.png */; };
+		CCE9FE371E596A51002603BC /* PencilTexture-1.png in Resources */ = {isa = PBXBuildFile; fileRef = CCE9FE361E596A51002603BC /* PencilTexture-1.png */; };
+		CCE9FE381E596A51002603BC /* PencilTexture-1.png in Resources */ = {isa = PBXBuildFile; fileRef = CCE9FE361E596A51002603BC /* PencilTexture-1.png */; };
 		CCF3495B1E0F996F00EF1312 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF3495A1E0F996F00EF1312 /* AppDelegate.swift */; };
 		CCF349601E0F996F00EF1312 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CCF3495E1E0F996F00EF1312 /* Main.storyboard */; };
 		CCF349621E0F996F00EF1312 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CCF349611E0F996F00EF1312 /* Assets.xcassets */; };
@@ -127,6 +137,10 @@
 		CCADFADD1E211EBB00ECB9D0 /* BezierRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BezierRenderer.swift; sourceTree = "<group>"; };
 		CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MTLDevice+Z.swift"; sourceTree = "<group>"; };
 		CCE0395B1E434E2D00B58AFA /* Float16.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Float16.swift; sourceTree = "<group>"; };
+		CCE9FE2B1E5953FC002603BC /* PatternShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = PatternShaders.metal; sourceTree = "<group>"; };
+		CCE9FE301E595F2B002603BC /* PatternRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PatternRenderer.swift; sourceTree = "<group>"; };
+		CCE9FE331E596A3F002603BC /* PencilTexture-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "PencilTexture-2.png"; sourceTree = "<group>"; };
+		CCE9FE361E596A51002603BC /* PencilTexture-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "PencilTexture-1.png"; sourceTree = "<group>"; };
 		CCF349571E0F996F00EF1312 /* SilvershadowApp_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SilvershadowApp_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCF3495A1E0F996F00EF1312 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CCF3495F1E0F996F00EF1312 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -244,16 +258,18 @@
 				CC1F2F2C1E1151180097B223 /* ImageRenderable.swift */,
 				CC1F2F2D1E1151180097B223 /* ImageRenderer.swift */,
 				CC1F2F2E1E1151180097B223 /* ImageShaders.metal */,
-				CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */,
 				CC0664AD1E2090CA0054E445 /* Kernels */,
+				CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */,
 				CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */,
+				CCE9FE301E595F2B002603BC /* PatternRenderer.swift */,
+				CCE9FE2B1E5953FC002603BC /* PatternShaders.metal */,
 				CC851CD21E1282770083268F /* PointsRenderable.swift */,
 				CC851CD31E1282770083268F /* PointsRenderer.swift */,
 				CC851CD41E1282770083268F /* PointsShaders.metal */,
 				CCF349811E0F9A0300EF1312 /* Renderable.swift */,
+				CC50D76B1E593F67005A069B /* RenderCanvasContext.swift */,
 				CCF349A61E0F9D9700EF1312 /* RenderContentView.swift */,
 				CCF349831E0F9A0300EF1312 /* RenderContext.swift */,
-				CC50D76B1E593F67005A069B /* RenderCanvasContext.swift */,
 				CCF349A91E0F9F5100EF1312 /* RenderDrawView.swift */,
 				CCF349841E0F9A0300EF1312 /* Renderer.swift */,
 				CCF349851E0F9A0300EF1312 /* RenderView.swift */,
@@ -273,6 +289,8 @@
 				CC1F2F351E1152710097B223 /* BlueMarble.png */,
 				CC851CDB1E1297380083268F /* Particle.png */,
 				CC0FD5EF1E4BA73000D3970A /* Pencil.png */,
+				CCE9FE361E596A51002603BC /* PencilTexture-1.png */,
+				CCE9FE331E596A3F002603BC /* PencilTexture-2.png */,
 				CC8D58F31E523F2600BD42A1 /* test.png */,
 				CC851CEF1E1366170083268F /* SampleCanvas.swift */,
 				CC851CF21E1366540083268F /* SampleCanvasLayer1.swift */,
@@ -374,8 +392,10 @@
 				CC0FD5F01E4BA73000D3970A /* Pencil.png in Resources */,
 				CC0FD5EE1E4BA65A00D3970A /* Particle-w.png in Resources */,
 				CCF349621E0F996F00EF1312 /* Assets.xcassets in Resources */,
+				CCE9FE341E596A3F002603BC /* PencilTexture-2.png in Resources */,
 				CCF349601E0F996F00EF1312 /* Main.storyboard in Resources */,
 				CC851CDC1E1297380083268F /* Particle.png in Resources */,
+				CCE9FE371E596A51002603BC /* PencilTexture-1.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -385,9 +405,13 @@
 			files = (
 				CCF349751E0F999400EF1312 /* Assets.xcassets in Resources */,
 				CC0FD5F11E4BA73000D3970A /* Pencil.png in Resources */,
+				CCE9FE351E596A3F002603BC /* PencilTexture-2.png in Resources */,
 				CC1F2F371E11527F0097B223 /* BlueMarble.png in Resources */,
+				CCE9FE2E1E595544002603BC /* Particle-w.png in Resources */,
+				CCE9FE2F1E595547002603BC /* Particle-b.png in Resources */,
 				CCF349781E0F999400EF1312 /* Main.storyboard in Resources */,
 				CC851CDD1E1297380083268F /* Particle.png in Resources */,
+				CCE9FE381E596A51002603BC /* PencilTexture-1.png in Resources */,
 				CC8D58F51E523F2600BD42A1 /* test.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -417,6 +441,7 @@
 			files = (
 				CC851CEA1E135C770083268F /* Canvas.swift in Sources */,
 				CCF349951E0F9A0300EF1312 /* Renderer.swift in Sources */,
+				CCE9FE2C1E5953FC002603BC /* PatternShaders.metal in Sources */,
 				CCF349AA1E0F9F5100EF1312 /* RenderDrawView.swift in Sources */,
 				CCF349931E0F9A0300EF1312 /* RenderContext.swift in Sources */,
 				CCF349971E0F9A0300EF1312 /* RenderView.swift in Sources */,
@@ -451,6 +476,7 @@
 				CCF349BD1E0FBEA900EF1312 /* ColorShaders.metal in Sources */,
 				CC54295D1E14EF3900C1929E /* SampleCanvasLayer2.swift in Sources */,
 				CC1F2F301E1151180097B223 /* ImageRenderer.swift in Sources */,
+				CCE9FE311E595F2B002603BC /* PatternRenderer.swift in Sources */,
 				CCF349B91E0FBEA900EF1312 /* ColorRenderable.swift in Sources */,
 				CC851CD71E1282770083268F /* PointsRenderer.swift in Sources */,
 			);
@@ -462,6 +488,7 @@
 			files = (
 				CC54295E1E14EF3C00C1929E /* SampleCanvasLayer2.swift in Sources */,
 				CC851CF41E1366540083268F /* SampleCanvasLayer1.swift in Sources */,
+				CCE9FE2D1E5953FC002603BC /* PatternShaders.metal in Sources */,
 				CCF349961E0F9A0300EF1312 /* Renderer.swift in Sources */,
 				CC851CEE1E135CF30083268F /* CanvasLayer.swift in Sources */,
 				CCF349AB1E0F9F5100EF1312 /* RenderDrawView.swift in Sources */,
@@ -496,6 +523,7 @@
 				CCF349711E0F999400EF1312 /* AppDelegate.swift in Sources */,
 				CCF349C11E0FF1E400EF1312 /* SampleViewController.swift in Sources */,
 				CCF349BE1E0FBEA900EF1312 /* ColorShaders.metal in Sources */,
+				CCE9FE321E595F2B002603BC /* PatternRenderer.swift in Sources */,
 				CC1F2F341E11523C0097B223 /* ImageShaders.metal in Sources */,
 				CCF349BA1E0FBEA900EF1312 /* ColorRenderable.swift in Sources */,
 			);
