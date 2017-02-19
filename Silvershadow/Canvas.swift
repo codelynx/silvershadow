@@ -68,6 +68,14 @@ class Canvas: Scene {
 		return self.device.makeTexture(descriptor: descriptor)
 	}()
 
+	lazy var brushSapeTexture: MTLTexture! = {
+		return self.device.texture(of: XImage(named: "Particle")!)!
+	}()
+
+	lazy var brushPatternTexture: MTLTexture! = {
+		return self.device.texture(of: XImage(named: "test")!)!
+	}()
+
 	lazy var subcomandQueue: MTLCommandQueue = {
 		return self.device.makeCommandQueue()
 	}()
@@ -107,7 +115,8 @@ class Canvas: Scene {
 			// render a layer
 
 			let subrenderContext = RenderCanvasContext(renderPassDescriptor: subrenderPassDescriptor,
-						commandBuffer: subcommandBuffer, transform: subtransform, zoomScale: 1, bounds: self.bounds, shadingTexture: self.shadingTexture)
+						commandBuffer: subcommandBuffer, transform: subtransform, zoomScale: 1, bounds: self.bounds, shadingTexture: self.shadingTexture,
+						brushShape: self.brushSapeTexture, brushPattern: self.brushPatternTexture)
 			canvasLayer.render(context: subrenderContext)
 
 			subcommandBuffer.commit()
@@ -125,7 +134,7 @@ class Canvas: Scene {
 			commandBuffer.commit()
 			commandBuffer.waitUntilCompleted()
 
-			subrenderPassDescriptor.colorAttachments[0].loadAction = .load
+//			subrenderPassDescriptor.colorAttachments[0].loadAction = .load
 		}
 
 		// drawing in offscreen (canvasTexture) is done,

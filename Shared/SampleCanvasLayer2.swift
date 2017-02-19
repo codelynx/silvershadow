@@ -59,7 +59,7 @@ class SampleCanvasLayer2: CanvasLayer {
 		let bezierRenderer = device.renderer() as BezierRenderer
 
 		print("SampleCanvasLayer2: render(), cgPaths=\(strokePaths.count)")
-		bezierRenderer.render(context: context, brushTexture: brushShape, cgPaths: strokePaths)
+		bezierRenderer.render(context: context, cgPaths: strokePaths)
 	}
 
 }

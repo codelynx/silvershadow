@@ -160,7 +160,7 @@ class BezierRenderer: Renderer {
 		return try! self.device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
 	}()
 
-	lazy var colorSamplerState: MTLSamplerState = {
+	lazy var shapeSamplerState: MTLSamplerState = {
 		let samplerDescriptor = MTLSamplerDescriptor()
 		samplerDescriptor.minFilter = .nearest
 		samplerDescriptor.magFilter = .linear
@@ -169,7 +169,7 @@ class BezierRenderer: Renderer {
 		return self.device.makeSamplerState(descriptor: samplerDescriptor)
 	}()
 
-	lazy var brushSamplerState: MTLSamplerState = {
+	lazy var patternSamplerState: MTLSamplerState = {
 		let samplerDescriptor = MTLSamplerDescriptor()
 		samplerDescriptor.minFilter = .nearest
 		samplerDescriptor.magFilter = .linear
@@ -222,15 +222,7 @@ class BezierRenderer: Renderer {
 		.flatMap { $0 }
 	}
 
-	lazy var brushSapeTexture: MTLTexture! = {
-		return self.device.texture(of: XImage(named: "Particle")!)!
-	}()
-
-	lazy var brushPatternTexture: MTLTexture! = {
-		return self.device.texture(of: XImage(named: "PencilTexture-2")!)!
-	}()
-
-	func render(context: RenderCanvasContext, brushTexture: MTLTexture, cgPaths: [CGPath]) {
+	func render(context: RenderCanvasContext, cgPaths: [CGPath]) {
 		guard cgPaths.count > 0 else { return }
 
 		let vertexCapacity = 40_000
@@ -285,7 +277,7 @@ class BezierRenderer: Renderer {
 		]
 		assert(elementsDoubleBuffers.count == vertexDoubleBuffers.count)
 
-		let brushSapeTexture = self.brushSapeTexture
+		// Now shading brush stroke on shadingTexture
 
 		let shadingRenderPassDescriptor = MTLRenderPassDescriptor()
 		shadingRenderPassDescriptor.colorAttachments[0].texture = context.shadingTexture
@@ -327,28 +319,26 @@ class BezierRenderer: Renderer {
 				encoder.setVertexBuffer(vertexDoubleBuffers[bufferIndex], offset: 0, at: 0)
 				encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
 
-				encoder.setFragmentTexture(brushTexture, at: 0)
-				encoder.setFragmentSamplerState(self.colorSamplerState, at: 0)
+				encoder.setFragmentTexture(context.brushShape, at: 0)
+				encoder.setFragmentSamplerState(self.shapeSamplerState, at: 0)
 
-				encoder.setFragmentTexture(brushSapeTexture, at: 1)
-				encoder.setFragmentSamplerState(self.brushSamplerState, at: 1)
+				encoder.setFragmentTexture(context.brushPattern, at: 1)
+				encoder.setFragmentSamplerState(self.patternSamplerState, at: 1)
 
 				encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: Int(vertexCount))
 				encoder.endEncoding()
 			}
 
 			commandBuffer.commit()
-			commandBuffer.waitUntilCompleted()
+			commandBuffer.waitUntilCompleted() // can we remove this?
 			shadingRenderPassDescriptor.colorAttachments[0].loadAction = .load
 		}
-
-		let image1 = context.shadingTexture.image! as NSImage
 
 
 		let renderer = context.device.renderer() as PatternRenderer
 		let vertexes = renderer.vertices(for: context.bounds)
 		guard let vertexBuffer = renderer.vertexBuffer(for: vertexes) else { return }
-		renderer.renderPattern(context: context, shadingTexture: context.shadingTexture, patternTexture: self.brushPatternTexture, vertexBuffer: vertexBuffer)
+		renderer.renderPattern(context: context, vertexBuffer: vertexBuffer)
 	}
 
 }

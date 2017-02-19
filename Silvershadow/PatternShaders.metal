@@ -25,7 +25,8 @@ struct VertexOut {
 
 struct Uniforms {
 	float4x4 transform;
-	float4x4 inversedTransform;
+	float2 contentSize;
+	float2 patternSize;
 };
 
 vertex VertexOut pattern_vertex(
@@ -50,7 +51,8 @@ fragment float4 pattern_fragment(
 ) {
 
 	float4 a = shadingTexture.sample(shadingSampler, fragmentIn.texcoords).a;
-	float4 patternColor = patternTexture.sample(patternSampler, (fragmentIn.position * uniforms.transform * 16).xy);
+	float2 ratio = uniforms.contentSize / uniforms.patternSize;
+	float4 patternColor = patternTexture.sample(patternSampler, (fragmentIn.position * uniforms.transform).xy * ratio);
 	float4 color = patternColor * a;
 	return color;
 }

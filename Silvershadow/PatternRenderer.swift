@@ -11,6 +11,7 @@ import CoreGraphics
 import Metal
 import MetalKit
 import GLKit
+import simd
 
 
 //
@@ -29,7 +30,8 @@ class PatternRenderer: Renderer {
 
 	struct Uniforms {
 		var transform: GLKMatrix4
-		var inversedTransform: GLKMatrix4
+		var contentSize: float2
+		var patternSize: float2
 	}
 
 	let device: MTLDevice
@@ -90,7 +92,6 @@ class PatternRenderer: Renderer {
 		renderPipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
 		renderPipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
 
-
 		return try! self.device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
 	}()
 
@@ -142,13 +143,14 @@ class PatternRenderer: Renderer {
 	
 	var uniformBufferIndex = 0
 
-	func renderPattern(context: RenderContext, shadingTexture: MTLTexture, patternTexture: MTLTexture, vertexBuffer: VertexBuffer<Vertex>) {
+	func renderPattern(context: RenderCanvasContext, vertexBuffer: VertexBuffer<Vertex>) {
 		defer { uniformBufferIndex = (uniformBufferIndex + 1) % uniformTripleBuffer.count }
 
 		let uniformsBuffer = uniformTripleBuffer[uniformBufferIndex]
 		let uniformsBufferPtr = UnsafeMutablePointer<Uniforms>(OpaquePointer(uniformsBuffer.contents()))
 		uniformsBufferPtr.pointee.transform = context.transform
-		uniformsBufferPtr.pointee.inversedTransform = context.transform.invert
+		uniformsBufferPtr.pointee.contentSize = float2(context.bounds.size.width, context.bounds.size.height)
+		uniformsBufferPtr.pointee.patternSize = float2(Float(context.brushPattern.width), Float(context.brushPattern.height))
 
 		let encoder = context.makeRenderCommandEncoder()
 		
@@ -159,8 +161,8 @@ class PatternRenderer: Renderer {
 		encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
 		encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
 
-		encoder.setFragmentTexture(shadingTexture, at: 0)
-		encoder.setFragmentTexture(patternTexture, at: 1)
+		encoder.setFragmentTexture(context.shadingTexture, at: 0)
+		encoder.setFragmentTexture(context.brushPattern, at: 1)
 		encoder.setFragmentSamplerState(self.shadingSamplerState, at: 0)
 		encoder.setFragmentSamplerState(self.patternSamplerState, at: 1)
 		encoder.setFragmentBuffer(uniformsBuffer, offset: 0, at: 0)
@@ -170,27 +172,4 @@ class PatternRenderer: Renderer {
 		encoder.endEncoding()
 	}
 }
-
-/*
-extension RenderContext {
-
-	typealias Vertex = ColorRenderer.VertexType
-
-	func render(texture: MTLTexture?, in rect: Rect) {
-		guard let texture = texture else { return }
-		let renderer = self.device.renderer() as ImageRenderer
-		let vertexes = renderer.vertices(for: rect)
-		guard let vertexBuffer = renderer.vertexBuffer(for: vertexes) else { return }
-		renderer.renderImage(context: self, texture: texture, vertexBuffer: vertexBuffer)
-	}
-
-	func render(image: XImage?, in rect: Rect) {
-		guard let image = image else { return }
-		let device = self.device
-		guard let texture = device.texture(of: image) else { return }
-		self.render(texture: texture, in: rect)
-	}
-
-}
-*/
 
