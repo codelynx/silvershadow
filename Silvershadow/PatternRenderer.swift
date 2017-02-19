@@ -132,7 +132,9 @@ class PatternRenderer: Renderer {
 	
 	// MARK: -
 
+
 	// prepare triple reusable buffers for avoid race condition
+
 	lazy var uniformTripleBuffer: [MTLBuffer] = {
 		return [
 			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared]),
@@ -141,16 +143,34 @@ class PatternRenderer: Renderer {
 		]
 	}()
 	
-	var uniformBufferIndex = 0
+	let rectangularVertexCount = 6
 
-	func renderPattern(context: RenderCanvasContext, vertexBuffer: VertexBuffer<Vertex>) {
-		defer { uniformBufferIndex = (uniformBufferIndex + 1) % uniformTripleBuffer.count }
+	lazy var rectVertexTripleBuffer: [MTLBuffer] = {
+		let count = self.rectangularVertexCount
+		return [
+			self.device.makeBuffer(length: MemoryLayout<Vertex>.size * count, options: [.storageModeShared]),
+			self.device.makeBuffer(length: MemoryLayout<Vertex>.size * count, options: [.storageModeShared]),
+			self.device.makeBuffer(length: MemoryLayout<Vertex>.size * count, options: [.storageModeShared])
+		]
+	}()
+	
+	var tripleBufferIndex = 0
 
-		let uniformsBuffer = uniformTripleBuffer[uniformBufferIndex]
+	func renderPattern(context: RenderCanvasContext, in rect: Rect) {
+		defer { tripleBufferIndex = (tripleBufferIndex + 1) % uniformTripleBuffer.count }
+
+		let uniformsBuffer = uniformTripleBuffer[tripleBufferIndex]
 		let uniformsBufferPtr = UnsafeMutablePointer<Uniforms>(OpaquePointer(uniformsBuffer.contents()))
 		uniformsBufferPtr.pointee.transform = context.transform
 		uniformsBufferPtr.pointee.contentSize = float2(context.bounds.size.width, context.bounds.size.height)
 		uniformsBufferPtr.pointee.patternSize = float2(Float(context.brushPattern.width), Float(context.brushPattern.height))
+
+		let vertexes = self.vertices(for: rect)
+		assert(vertexes.count == rectangularVertexCount)
+		let vertexBuffer = rectVertexTripleBuffer[tripleBufferIndex]
+		let vertexArrayPtr = UnsafeMutablePointer<Vertex>(OpaquePointer(vertexBuffer.contents()))
+		let vertexArray = UnsafeMutableBufferPointer<Vertex>(start: vertexArrayPtr, count: vertexes.count)
+		(0 ..< vertexes.count).forEach { vertexArray[$0] = vertexes[$0] }
 
 		let encoder = context.makeRenderCommandEncoder()
 		
@@ -158,7 +178,7 @@ class PatternRenderer: Renderer {
 
 		encoder.setFrontFacing(.clockwise)
 //		commandEncoder.setCullMode(.back)
-		encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
+		encoder.setVertexBuffer(vertexBuffer, offset: 0, at: 0)
 		encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
 
 		encoder.setFragmentTexture(context.shadingTexture, at: 0)
@@ -167,7 +187,7 @@ class PatternRenderer: Renderer {
 		encoder.setFragmentSamplerState(self.patternSamplerState, at: 1)
 		encoder.setFragmentBuffer(uniformsBuffer, offset: 0, at: 0)
 
-		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexBuffer.count)
+		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexes.count)
 
 		encoder.endEncoding()
 	}

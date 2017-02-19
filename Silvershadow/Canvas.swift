@@ -157,7 +157,7 @@ class Canvas: Scene {
 
 	override func render(in context: RenderContext) {
 		if let canvasVertexes = self.canvasVertexes {
-			self.canvasRenderer.renderImage(context: context, texture: self.canvasTexture, vertexBuffer: canvasVertexes)
+			self.canvasRenderer.renderImage(context: context, texture: self.canvasTexture, in: Rect(self.bounds))
 		}
 	}
 

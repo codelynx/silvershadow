@@ -131,15 +131,30 @@ class ImageRenderer: Renderer {
 			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared])
 		]
 	}()
+
+	let rectangularVertexCount = 6
+
+	lazy var rectangularVertexTripleBuffer: [VertexBuffer<Vertex>] = {
+		let count = self.rectangularVertexCount
+		return [
+			VertexBuffer<Vertex>(device: self.device, vertices: [], capacity: count),
+			VertexBuffer<Vertex>(device: self.device, vertices: [], capacity: count),
+			VertexBuffer<Vertex>(device: self.device, vertices: [], capacity: count)
+		]
+	}()
 	
-	var uniformBufferIndex = 0
+	var tripleBufferIndex = 0
 
-	func renderImage(context: RenderContext, texture: MTLTexture, vertexBuffer: VertexBuffer<Vertex>) {
-		defer { uniformBufferIndex = (uniformBufferIndex + 1) % uniformTripleBuffer.count }
+	func renderImage(context: RenderContext, texture: MTLTexture, in rect: Rect) {
+		defer { tripleBufferIndex = (tripleBufferIndex + 1) % uniformTripleBuffer.count }
 
-		let uniformsBuffer = uniformTripleBuffer[uniformBufferIndex]
+		let uniformsBuffer = uniformTripleBuffer[tripleBufferIndex]
 		let uniformsBufferPtr = UnsafeMutablePointer<Uniforms>(OpaquePointer(uniformsBuffer.contents()))
 		uniformsBufferPtr.pointee.transform = context.transform
+
+		let vertices = self.vertices(for: rect)
+		let vertexBuffer = rectangularVertexTripleBuffer[tripleBufferIndex]
+		vertexBuffer.set(vertices)
 
 		let encoder = context.makeRenderCommandEncoder()
 		
@@ -165,9 +180,7 @@ extension RenderContext {
 	func render(texture: MTLTexture?, in rect: Rect) {
 		guard let texture = texture else { return }
 		let renderer = self.device.renderer() as ImageRenderer
-		let vertexes = renderer.vertices(for: rect)
-		guard let vertexBuffer = renderer.vertexBuffer(for: vertexes) else { return }
-		renderer.renderImage(context: self, texture: texture, vertexBuffer: vertexBuffer)
+		renderer.renderImage(context: self, texture: texture, in: rect)
 	}
 
 	func render(image: XImage?, in rect: Rect) {

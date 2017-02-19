@@ -330,15 +330,13 @@ class BezierRenderer: Renderer {
 			}
 
 			commandBuffer.commit()
-			commandBuffer.waitUntilCompleted() // can we remove this?
+			//commandBuffer.waitUntilCompleted() // can we remove this?
 			shadingRenderPassDescriptor.colorAttachments[0].loadAction = .load
 		}
 
 
 		let renderer = context.device.renderer() as PatternRenderer
-		let vertexes = renderer.vertices(for: context.bounds)
-		guard let vertexBuffer = renderer.vertexBuffer(for: vertexes) else { return }
-		renderer.renderPattern(context: context, vertexBuffer: vertexBuffer)
+		renderer.renderPattern(context: context, in: context.bounds)
 	}
 
 }
