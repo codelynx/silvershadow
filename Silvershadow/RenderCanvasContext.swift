@@ -15,8 +15,14 @@ class RenderCanvasContext: RenderContext {
 
 	var bounds: Rect
 	var shadingTexture: MTLTexture
-	var brushShape: MTLTexture
-	var brushPattern: MTLTexture
+
+	lazy var brushShape: MTLTexture = {
+		return self.device.texture(of: XImage(named: "Particle")!)!
+	}()
+
+	lazy var brushPattern: MTLTexture = {
+		return self.device.texture(of: XImage(named: "test")!)!
+	}()
 
 	init(
 		renderPassDescriptor: MTLRenderPassDescriptor,
@@ -24,14 +30,10 @@ class RenderCanvasContext: RenderContext {
 		transform: GLKMatrix4,
 		zoomScale: CGFloat,
 		bounds: CGRect,
-		shadingTexture: MTLTexture,
-		brushShape: MTLTexture,
-		brushPattern: MTLTexture
+		shadingTexture: MTLTexture
 	) {
 		self.bounds = Rect(bounds)
 		self.shadingTexture = shadingTexture
-		self.brushShape = brushShape
-		self.brushPattern = brushPattern
 		super.init(renderPassDescriptor: renderPassDescriptor, commandBuffer: commandBuffer, transform: transform, zoomScale: zoomScale)
 	}
 

@@ -38,12 +38,14 @@ class Canvas: Scene {
 		return self.device.renderer()
 	}()
 
-	lazy var canvasVertexes: VertexBuffer<ImageVertex>? = {
-		let size = Size(Float(self.contentSize.width), Float(self.contentSize.height))
-		return self.canvasRenderer.vertexBuffer(for: Rect(0, 0, size.width, size.height))
-	}()
-
 	fileprivate (set) var canvasLayers: [CanvasLayer]
+	
+	var overlayCanvasLayer: CanvasLayer? {
+		didSet {
+			overlayCanvasLayer?.canvas = self
+			self.setNeedsDisplay()
+		}
+	}
 
 	override init?(device: MTLDevice, contentSize: CGSize) {
 		self.canvasLayers = [CanvasLayer]()
@@ -66,14 +68,6 @@ class Canvas: Scene {
 					width: Int(self.contentSize.width), height: Int(self.contentSize.height), mipmapped: self.mipmapped)
 		descriptor.usage = [.shaderRead, .renderTarget]
 		return self.device.makeTexture(descriptor: descriptor)
-	}()
-
-	lazy var brushSapeTexture: MTLTexture! = {
-		return self.device.texture(of: XImage(named: "Particle")!)!
-	}()
-
-	lazy var brushPatternTexture: MTLTexture! = {
-		return self.device.texture(of: XImage(named: "test")!)!
 	}()
 
 	lazy var subcomandQueue: MTLCommandQueue = {
@@ -115,8 +109,7 @@ class Canvas: Scene {
 			// render a layer
 
 			let subrenderContext = RenderCanvasContext(renderPassDescriptor: subrenderPassDescriptor,
-						commandBuffer: subcommandBuffer, transform: subtransform, zoomScale: 1, bounds: self.bounds, shadingTexture: self.shadingTexture,
-						brushShape: self.brushSapeTexture, brushPattern: self.brushPatternTexture)
+						commandBuffer: subcommandBuffer, transform: subtransform, zoomScale: 1, bounds: self.bounds, shadingTexture: self.shadingTexture)
 			canvasLayer.render(context: subrenderContext)
 
 			subcommandBuffer.commit()
@@ -156,9 +149,34 @@ class Canvas: Scene {
 	}
 
 	override func render(in context: RenderContext) {
-		if let canvasVertexes = self.canvasVertexes {
-			self.canvasRenderer.renderImage(context: context, texture: self.canvasTexture, in: Rect(self.bounds))
-		}
+
+		// build rendering overlay canvas layer
+
+		let commandBuffer = context.commandBuffer
+		guard let overlayCanvasLayer = self.overlayCanvasLayer else { return }
+		print("render: \(overlayCanvasLayer.name)")
+		let subtexture = self.sublayerTexture
+		let subtransform = GLKMatrix4(self.transform)
+
+		let subrenderPassDescriptor = MTLRenderPassDescriptor()
+		subrenderPassDescriptor.colorAttachments[0].texture = subtexture
+		subrenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0)
+		subrenderPassDescriptor.colorAttachments[0].loadAction = .clear
+		subrenderPassDescriptor.colorAttachments[0].storeAction = .store
+
+		let subrenderContext = RenderCanvasContext(renderPassDescriptor: subrenderPassDescriptor,
+					commandBuffer: commandBuffer, transform: subtransform, zoomScale: 1, bounds: self.bounds,
+					shadingTexture: self.shadingTexture)
+		overlayCanvasLayer.render(context: subrenderContext)
+
+		// render canvas texture
+
+		self.canvasRenderer.renderImage(context: context, texture: self.canvasTexture, in: Rect(self.bounds))
+
+		// render overlay canvas layer
+		
+		context.render(texture: subtexture, in: Rect(self.bounds))
+		
 	}
 
 	func addLayer(_ layer: CanvasLayer) {
@@ -168,9 +186,11 @@ class Canvas: Scene {
 	}
 
 	func bringLayer(toFront: CanvasLayer) {
+		assert(false, "not yet")
 	}
 	
 	func sendLayer(toBack: CanvasLayer) {
+		assert(false, "not yet")
 	}
 
 }

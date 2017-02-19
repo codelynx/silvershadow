@@ -30,6 +30,13 @@ class SampleCanvas: Canvas {
 		super.render(in: context)
 	}
 
+	override func didMove(to renderView: RenderView) {
+		super.didMove(to: renderView)
+		self.overlayCanvasLayer = interactiveLayer
+		
+		self.interactiveLayer.name = "overlay"
+		self.drawingLayer.name = "drawing"
+	}
 
 	#if os(macOS)
 	var activePath: CGMutablePath?

@@ -13,6 +13,8 @@ import GLKit
 
 class CanvasLayer: Equatable {
 
+	var name: String?
+
 	weak var canvas: Canvas?
 	var isHidden: Bool = false
 	
