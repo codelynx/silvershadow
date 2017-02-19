@@ -17,11 +17,11 @@ class SampleCanvasLayer2: CanvasLayer {
 		return self.device?.texture(of: XImage(named: "Particle")!)!
 	}()
 
-	lazy var brushFilltexture: MTLTexture? = {
-		return self.device?.texture(of: XImage(named: "Pencil")!)!
+	lazy var strokePaths: [CGPath] = {
+		return [self.samplePath(CGAffineTransform.identity)]
 	}()
 
-	let samplePoints: [(CGFloat, CGFloat)] = [
+	var samplePoints: [(CGFloat, CGFloat)] = [
 		(342.0, 611.5), (328.0, 616.0), (319.0, 616.0), (307.5, 617.5), (293.5, 619.5), (278.5, 620.5), (262.0, 621.5), (246.5, 621.5), (230.5, 621.5),
 		(212.0, 619.5), (195.0, 615.5), (179.5, 610.0), (165.0, 603.0), (151.0, 595.0), (138.0, 585.5), (127.0, 575.0), (117.0, 564.0), (109.0, 552.0),
 		(103.0, 539.5), (100.0, 526.5), (99.5, 511.0), (100.0, 492.5), (107.0, 474.5), (118.5, 453.5), (132.0, 434.0), (149.0, 415.5), (169.5, 396.5),
@@ -31,11 +31,15 @@ class SampleCanvasLayer2: CanvasLayer {
 		(333.0, 642.5), (308.5, 644.0), (286.5, 644.5), (263.5, 644.5), (241.5, 642.5), (221.5, 637.0), (204.5, 631.5), (191.5, 625.5), (181.5, 621.0),
 		(174.5, 614.5)
 	]
+	
+	func samplePoints(_ transform: CGAffineTransform) -> [CGPoint] {
+		return self.samplePoints.map { CGPoint(x: $0.0, y: $0.1).applying(transform) }
+	}
 
-	var samplePath: CGPath {
+	func samplePath(_ transform: CGAffineTransform) -> CGPath {
 		let cgPath = CGMutablePath()
 		var lastPoint: CGPoint?
-		for point in self.samplePoints.map({ CGPoint(x: $0.0, y: $0.1) }) {
+		for point in self.samplePoints(transform) {
 			if let lastPoint = lastPoint {
 				let midPoint = (lastPoint + point) * 0.5
 				cgPath.addQuadCurve(to: midPoint, control: lastPoint)
@@ -48,27 +52,14 @@ class SampleCanvasLayer2: CanvasLayer {
 		return cgPath
 	}
 
-	override func render(context: CanvasRenderContext) {
+	override func render(context: RenderCanvasContext) {
 		guard let device = self.device else { return }
 	
 		let brushShape = self.brushSapeTexture!
-		let brushFill = self.brushFilltexture!
-		let brushRenderer: BrushRenderer = device.renderer()
-		brushRenderer.render(context: context, brushShape: brushShape, brushFill: brushFill, cgPath: self.samplePath, width: 4)
-	
-		if let contentSize = self.contentSize {
-			// you may use core graphics to draw and will become a texture to render
-			context.widthCGContext(contentSize: contentSize) { (context) in
-				XColor.orange.set()
-				let bezier = XBezierPath()
-				bezier.move(to: CGPoint(1024, 0))
-				bezier.line(to: CGPoint(0, 1024))
-				bezier.line(to: CGPoint(2048, 1024))
-				bezier.close()
-				bezier.lineWidth = 4
-				bezier.stroke()
-			}
-		}
+		let bezierRenderer = device.renderer() as BezierRenderer
+
+		print("SampleCanvasLayer2: render(), cgPaths=\(strokePaths.count)")
+		bezierRenderer.render(context: context, cgPaths: strokePaths)
 	}
 
 }

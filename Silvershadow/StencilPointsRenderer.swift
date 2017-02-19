@@ -1,5 +1,5 @@
 //
-//	PointsRenderer.swift
+//	StencilPointsRenderer.swift
 //	Silvershadow
 //
 //	Created by Kaz Yoshikawa on 1/11/16.
@@ -11,13 +11,13 @@ import CoreGraphics
 import QuartzCore
 import GLKit
 
-typealias PointVertex = PointsRenderer.Vertex
+typealias StencilPointVertex = StencilPointsRenderer.Vertex
 
 //
 //	PointsRenderer
 //
 
-class PointsRenderer: Renderer {
+class StencilPointsRenderer: Renderer {
 
 	typealias VertexType = Vertex
 
@@ -35,7 +35,7 @@ class PointsRenderer: Renderer {
 			self.width = width
 		}
 		
-		init(_ point: Point, _ width: Float) {
+		init(point: Point, width: Float) {
 			self.x = point.x
 			self.y = point.y
 			self.width = width
@@ -76,7 +76,7 @@ class PointsRenderer: Renderer {
 		vertexDescriptor.attributes[0].bufferIndex = 0
 
 		vertexDescriptor.attributes[1].offset = MemoryLayout<Float>.size * 2
-		vertexDescriptor.attributes[1].format = .float2
+		vertexDescriptor.attributes[1].format = .float
 		vertexDescriptor.attributes[1].bufferIndex = 0
 
 		vertexDescriptor.layouts[0].stepFunction = .perVertex
@@ -89,25 +89,43 @@ class PointsRenderer: Renderer {
 		let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
 		renderPipelineDescriptor.vertexDescriptor = self.vertexDescriptor
 		renderPipelineDescriptor.vertexFunction = self.library.makeFunction(name: "points_vertex")!
-		renderPipelineDescriptor.fragmentFunction = self.library.makeFunction(name: "points_fragment")!
+		renderPipelineDescriptor.fragmentFunction = nil //self.library.makeFunction(name: "points_fragment")!
+		renderPipelineDescriptor.stencilAttachmentPixelFormat = .stencil8
 
+//		renderPipelineDescriptor.colorAttachments[0].
 		renderPipelineDescriptor.colorAttachments[0].pixelFormat = defaultPixelFormat
-		renderPipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
-		renderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
-		renderPipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
-
-		// I don't believe this but this is what it is...
-		#if os(iOS)
-		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .one
-		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .one
-		#elseif os(macOS)
-		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
-		#endif
-		renderPipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
-		renderPipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
+		renderPipelineDescriptor.colorAttachments[0].isBlendingEnabled = false
+//		renderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
+//		renderPipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
+//
+//		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+//		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
+//		renderPipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+//		renderPipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
 
 		return try! self.device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
+	}()
+
+	lazy var stencilDescriptor: MTLStencilDescriptor = {
+		let descriptor = MTLStencilDescriptor()
+		descriptor.stencilCompareFunction = .equal
+		descriptor.stencilFailureOperation = .keep
+		descriptor.depthFailureOperation = .keep
+		descriptor.depthStencilPassOperation = .keep
+		return descriptor
+	}()
+
+	lazy var depthStencilDescriptor: MTLDepthStencilDescriptor = {
+		let descriptor = MTLDepthStencilDescriptor()
+		descriptor.depthCompareFunction = .less
+		descriptor.isDepthWriteEnabled = true
+		descriptor.backFaceStencil = self.stencilDescriptor
+		descriptor.frontFaceStencil = self.stencilDescriptor
+		return descriptor
+	}()
+
+	lazy var depthStencilPipelineState: MTLDepthStencilState? = {
+		return self.device.makeDepthStencilState(descriptor: self.depthStencilDescriptor)
 	}()
 
 	lazy var colorSamplerState: MTLSamplerState = {
@@ -119,8 +137,8 @@ class PointsRenderer: Renderer {
 		return self.device.makeSamplerState(descriptor: samplerDescriptor)
 	}()
 	
-	func vertexBuffer(for vertices: [Vertex], capacity: Int? = nil) -> VertexBuffer<Vertex> {
-		return VertexBuffer<Vertex>(device: self.device, vertices: vertices, capacity: capacity)
+	func vertexBuffer(for vertices: [Vertex], capacity: Int = 4096) -> VertexBuffer<Vertex> {
+		return VertexBuffer<Vertex>(device: self.device, vertices: vertices, expand: capacity)
 	}
 
 	func render(context: RenderContext, texture: MTLTexture, vertexBuffer: VertexBuffer<Vertex>) {
@@ -130,7 +148,9 @@ class PointsRenderer: Renderer {
 
 		let encoder = context.makeRenderCommandEncoder()
 		encoder.setRenderPipelineState(self.renderPipelineState)
+		encoder.setDepthStencilState(self.depthStencilPipelineState)
 
+		encoder.setFrontFacing(.clockwise)
 		encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
 		encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
 
@@ -159,74 +179,8 @@ class PointsRenderer: Renderer {
 		let numberOfPoints = Int(ceil(vector.length / 2))
 		let step = vector / Float(numberOfPoints)
 		return (0 ..< numberOfPoints).map {
-			Vertex(from + step * Float($0), width)
+			Vertex(point: from + step * Float($0), width: width)
 		}
-	}
-
-	class func vertexes(of cgPath: CGPath, width: CGFloat) -> [Vertex] {
-		var vertexes = [Vertex]()
-		var startPoint: CGPoint?
-		var lastPoint: CGPoint?
-
-		for pathElement in cgPath.pathElements {
-			switch pathElement {
-			case .moveTo(let p1):
-				startPoint = p1
-				lastPoint = p1
-
-			case .lineTo(let p1):
-				guard let p0 = lastPoint else { continue }
-				lastPoint = p1
-
-				let n = Int((p1 - p0).length)
-				for i in 0 ..< n {
-					let t = CGFloat(i) / CGFloat(n)
-					let q = p0 + (p1 - p0) * t
-					vertexes.append(Vertex(Point(q), Float(width)))
-				}
-
-			case .quadCurveTo(let p1, let p2):
-				guard let p0 = lastPoint else { continue }
-				lastPoint = p2
-
-				let n = Int(ceil(CGPath.quadraticCurveLength(p0, p1, p2)))
-				for i in 0 ..< n {
-					let t = CGFloat(i) / CGFloat(n)
-					let q1 = p0 + (p1 - p0) * t
-					let q2 = p1 + (p2 - p1) * t
-					let r = q1 + (q2 - q1) * t
-					vertexes.append(Vertex(Point(r), Float(width)))
-				}
-
-			case .curveTo(let p1, let p2, let p3):
-				guard let p0 = lastPoint else { continue }
-				lastPoint = p3
-
-				let n = Int(ceil(CGPath.approximateCubicCurveLength(p0, p1, p2, p3)))
-				for i in 0 ..< n {
-					let t = CGFloat(i) / CGFloat(n)
-					let q1 = p0 + (p1 - p0) * t
-					let q2 = p1 + (p2 - p1) * t
-					let q3 = p2 + (p3 - p2) * t
-					let r1 = q1 + (q2 - q1) * t
-					let r2 = q2 + (q3 - q2) * t
-					let s = r1 + (r2 - r1) * t
-					vertexes.append(Vertex(Point(s), Float(width)))
-				}
-
-			case .closeSubpath:
-				guard let p0 = lastPoint, let p1 = startPoint else { continue }
-
-				let n = Int((p1 - p0).length)
-				for i in 0 ..< n {
-					let t = CGFloat(i) / CGFloat(n)
-					let q = p0 + (p1 - p0) * t
-					vertexes.append(Vertex(Point(q), Float(width)))
-				}
-			}
-		}
-		
-		return vertexes
 	}
 
 }
@@ -234,6 +188,7 @@ class PointsRenderer: Renderer {
 
 extension RenderContext {
 
+	/*
 	func render(vertexes: [PointVertex], texture: MTLTexture) {
 		let renderer: PointsRenderer = self.device.renderer()
 		let vertexBuffer = renderer.vertexBuffer(for: vertexes)
@@ -244,6 +199,7 @@ extension RenderContext {
 		let renderer: PointsRenderer = self.device.renderer()
 		renderer.render(context: self, texture: texture, points: points, width: width)
 	}
+	*/
 
 }
 

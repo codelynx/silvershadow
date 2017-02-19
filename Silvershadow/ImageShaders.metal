@@ -1,6 +1,6 @@
 //
 //	ImageShaders.metal
-//	Silvershadow
+//	SilverShadow
 //
 //	Created by Kaz Yoshikawa on 12/22/15.
 //	Copyright © 2016 Electricwoods LLC. All rights reserved.
@@ -21,7 +21,7 @@ struct VertexOut {
 };
 
 struct Uniforms {
-	float4x4 modelViewProjectionMatrix;
+	float4x4 transform;
 };
 
 vertex VertexOut image_vertex(
@@ -31,7 +31,7 @@ vertex VertexOut image_vertex(
 ) {
 	VertexOut outVertex;
 	VertexIn inVertex = vertices[vid];
-	outVertex.position = uniforms.modelViewProjectionMatrix * float4(inVertex.position);
+	outVertex.position = uniforms.transform * float4(inVertex.position);
 	outVertex.texcoords = inVertex.texcoords;
 	return outVertex;
 }

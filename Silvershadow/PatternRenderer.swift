@@ -1,21 +1,18 @@
 //
-//  PatternRenderer.swift
-//  Silvershadow
+//	ImageRenderer.swift
+//	Silvershadow
 //
-//  Created by Kaz Yoshikawa on 1/15/17.
-//  Copyright © 2017 Electricwoods LLC. All rights reserved.
+//	Created by Kaz Yoshikawa on 12/22/15.
+//	Copyright © 2016 Electricwoods LLC. All rights reserved.
 //
-
-import Foundation
-
 
 import Foundation
 import CoreGraphics
 import Metal
 import MetalKit
 import GLKit
+import simd
 
-typealias PatternVertex = PatternRenderer.BrushFillVertex
 
 //
 //	ImageRenderer
@@ -23,18 +20,19 @@ typealias PatternVertex = PatternRenderer.BrushFillVertex
 
 class PatternRenderer: Renderer {
 
-	typealias VertexType = BrushFillVertex
+	typealias VertexType = Vertex
 
 	// MARK: -
 
-	struct BrushFillVertex {
-		var x, y, z, w, u, v, s, t: Float
+	struct Vertex {
+		var x, y, z, w, u, v: Float
 	}
 
-	struct BrushFillUniforms {
+	struct Uniforms {
 		var transform: GLKMatrix4
+		var contentSize: float2
+		var patternSize: float2
 	}
-
 
 	let device: MTLDevice
 	
@@ -43,7 +41,7 @@ class PatternRenderer: Renderer {
 		self.device = device
 	}
 
-	func vertices(for rect: Rect) -> [BrushFillVertex] {
+	func vertices(for rect: Rect) -> [Vertex] {
 		let (l, r, t, b) = (rect.minX, rect.maxX, rect.maxY, rect.minY)
 
 		//	vertex	(y)		texture	(v)
@@ -53,38 +51,34 @@ class PatternRenderer: Renderer {
 		//
 
 		return [
-			BrushFillVertex(x: l, y: t, z: 0, w: 1, u: 0, v: 0, s: 0, t: 0),		// 1, a
-			BrushFillVertex(x: l, y: b, z: 0, w: 1, u: 0, v: 1, s: 0, t: 4),		// 2, b
-			BrushFillVertex(x: r, y: b, z: 0, w: 1, u: 1, v: 1, s: 4, t: 4),		// 3, c
+			Vertex(x: l, y: t, z: 0, w: 1, u: 0, v: 0),		// 1, a
+			Vertex(x: l, y: b, z: 0, w: 1, u: 0, v: 1),		// 2, b
+			Vertex(x: r, y: b, z: 0, w: 1, u: 1, v: 1),		// 3, c
 
-			BrushFillVertex(x: l, y: t, z: 0, w: 1, u: 0, v: 0, s: 0, t: 0),		// 1, a
-			BrushFillVertex(x: r, y: b, z: 0, w: 1, u: 1, v: 1, s: 4, t: 4),		// 3, c
-			BrushFillVertex(x: r, y: t, z: 0, w: 1, u: 1, v: 0, s: 4, t: 0),		// 4, d
+			Vertex(x: l, y: t, z: 0, w: 1, u: 0, v: 0),		// 1, a
+			Vertex(x: r, y: b, z: 0, w: 1, u: 1, v: 1),		// 3, c
+			Vertex(x: r, y: t, z: 0, w: 1, u: 1, v: 0),		// 4, d
 		]
 	}
 
-	var brushFillVertexDescriptor: MTLVertexDescriptor {
+	var vertexDescriptor: MTLVertexDescriptor {
 		let vertexDescriptor = MTLVertexDescriptor()
 		vertexDescriptor.attributes[0].offset = 0
 		vertexDescriptor.attributes[0].format = .float4
 		vertexDescriptor.attributes[0].bufferIndex = 0
 
-		vertexDescriptor.attributes[1].offset = MemoryLayout<Float>.size * 4
+		vertexDescriptor.attributes[1].offset = 0
 		vertexDescriptor.attributes[1].format = .float2
 		vertexDescriptor.attributes[1].bufferIndex = 0
-
-		vertexDescriptor.attributes[2].offset = MemoryLayout<Float>.size * 6
-		vertexDescriptor.attributes[2].format = .float2
-		vertexDescriptor.attributes[2].bufferIndex = 0
 		
 		vertexDescriptor.layouts[0].stepFunction = .perVertex
-		vertexDescriptor.layouts[0].stride = MemoryLayout<BrushFillVertex>.size
+		vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.size
 		return vertexDescriptor
 	}
 
-	lazy var brushFillRenderPipelineState: MTLRenderPipelineState = {
+	lazy var renderPipelineState: MTLRenderPipelineState = {
 		let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
-		renderPipelineDescriptor.vertexDescriptor = self.brushFillVertexDescriptor
+		renderPipelineDescriptor.vertexDescriptor = self.vertexDescriptor
 		renderPipelineDescriptor.vertexFunction = self.library.makeFunction(name: "pattern_vertex")!
 		renderPipelineDescriptor.fragmentFunction = self.library.makeFunction(name: "pattern_fragment")!
 
@@ -98,11 +92,10 @@ class PatternRenderer: Renderer {
 		renderPipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
 		renderPipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
 
-
 		return try! self.device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
 	}()
 
-	lazy var brushMaskSamplerState: MTLSamplerState = {
+	lazy var shadingSamplerState: MTLSamplerState = {
 		let samplerDescriptor = MTLSamplerDescriptor()
 		samplerDescriptor.minFilter = .nearest
 		samplerDescriptor.magFilter = .linear
@@ -111,7 +104,7 @@ class PatternRenderer: Renderer {
 		return self.device.makeSamplerState(descriptor: samplerDescriptor)
 	}()
 
-	lazy var brushPatternSamplerState: MTLSamplerState = {
+	lazy var patternSamplerState: MTLSamplerState = {
 		let samplerDescriptor = MTLSamplerDescriptor()
 		samplerDescriptor.minFilter = .nearest
 		samplerDescriptor.magFilter = .linear
@@ -120,12 +113,12 @@ class PatternRenderer: Renderer {
 		return self.device.makeSamplerState(descriptor: samplerDescriptor)
 	}()
 
-	func vertexBuffer(for vertices: [BrushFillVertex]) -> VertexBuffer<BrushFillVertex>? {
-		return VertexBuffer<BrushFillVertex>(device: device, vertices: vertices)
+	func vertexBuffer(for vertices: [Vertex]) -> VertexBuffer<Vertex>? {
+		return VertexBuffer<Vertex>(device: device, vertices: vertices)
 	}
 
-	func vertexBuffer(for rect: Rect) -> VertexBuffer<BrushFillVertex>? {
-		return VertexBuffer<BrushFillVertex>(device: device, vertices: self.vertices(for: rect))
+	func vertexBuffer(for rect: Rect) -> VertexBuffer<Vertex>? {
+		return VertexBuffer<Vertex>(device: device, vertices: self.vertices(for: rect))
 	}
 	
 	func texture(of image: XImage) -> MTLTexture? {
@@ -139,37 +132,64 @@ class PatternRenderer: Renderer {
 	
 	// MARK: -
 
-	func render(context: RenderContext, masking: MTLTexture, pattern: MTLTexture, vertexBuffer: VertexBuffer<BrushFillVertex>) {
-		let transform = context.transform
-		var uniforms = BrushFillUniforms(transform: transform)
-		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<BrushFillUniforms>.size, options: MTLResourceOptions())
-		
+
+	// prepare triple reusable buffers for avoid race condition
+
+	lazy var uniformTripleBuffer: [MTLBuffer] = {
+		return [
+			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared]),
+			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared]),
+			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared])
+		]
+	}()
+	
+	let rectangularVertexCount = 6
+
+	lazy var rectVertexTripleBuffer: [MTLBuffer] = {
+		let count = self.rectangularVertexCount
+		return [
+			self.device.makeBuffer(length: MemoryLayout<Vertex>.size * count, options: [.storageModeShared]),
+			self.device.makeBuffer(length: MemoryLayout<Vertex>.size * count, options: [.storageModeShared]),
+			self.device.makeBuffer(length: MemoryLayout<Vertex>.size * count, options: [.storageModeShared])
+		]
+	}()
+	
+	var tripleBufferIndex = 0
+
+	func renderPattern(context: RenderCanvasContext, in rect: Rect) {
+		defer { tripleBufferIndex = (tripleBufferIndex + 1) % uniformTripleBuffer.count }
+
+		let uniformsBuffer = uniformTripleBuffer[tripleBufferIndex]
+		let uniformsBufferPtr = UnsafeMutablePointer<Uniforms>(OpaquePointer(uniformsBuffer.contents()))
+		uniformsBufferPtr.pointee.transform = context.transform
+		uniformsBufferPtr.pointee.contentSize = float2(context.bounds.size.width, context.bounds.size.height)
+		uniformsBufferPtr.pointee.patternSize = float2(Float(context.brushPattern.width), Float(context.brushPattern.height))
+
+		let vertexes = self.vertices(for: rect)
+		assert(vertexes.count == rectangularVertexCount)
+		let vertexBuffer = rectVertexTripleBuffer[tripleBufferIndex]
+		let vertexArrayPtr = UnsafeMutablePointer<Vertex>(OpaquePointer(vertexBuffer.contents()))
+		let vertexArray = UnsafeMutableBufferPointer<Vertex>(start: vertexArrayPtr, count: vertexes.count)
+		(0 ..< vertexes.count).forEach { vertexArray[$0] = vertexes[$0] }
+
 		let encoder = context.makeRenderCommandEncoder()
 		
-		encoder.setRenderPipelineState(self.brushFillRenderPipelineState)
+		encoder.setRenderPipelineState(self.renderPipelineState)
 
 		encoder.setFrontFacing(.clockwise)
 //		commandEncoder.setCullMode(.back)
-		encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
+		encoder.setVertexBuffer(vertexBuffer, offset: 0, at: 0)
 		encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
 
-		encoder.setFragmentTexture(masking, at: 0)
-		encoder.setFragmentTexture(pattern, at: 1)
-		encoder.setFragmentSamplerState(self.brushMaskSamplerState, at: 0)
-		encoder.setFragmentSamplerState(self.brushPatternSamplerState, at: 1)
+		encoder.setFragmentTexture(context.shadingTexture, at: 0)
+		encoder.setFragmentTexture(context.brushPattern, at: 1)
+		encoder.setFragmentSamplerState(self.shadingSamplerState, at: 0)
+		encoder.setFragmentSamplerState(self.patternSamplerState, at: 1)
+		encoder.setFragmentBuffer(uniformsBuffer, offset: 0, at: 0)
 
-		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexBuffer.count)
+		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexes.count)
 
 		encoder.endEncoding()
 	}
-
-	func render(context: RenderContext, masking: MTLTexture, pattern: MTLTexture) {
-		let vertexBuffer = self.vertexBuffer(for: Rect(0, 0, 2048, 1024))!
-//		let vertexBuffer = self.vertexBuffer(for: Rect(-1024, -512, 2048, 1024))!
-		self.render(context: context, masking: masking, pattern: pattern, vertexBuffer: vertexBuffer)
-	}
-
 }
-
-
 
