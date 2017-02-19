@@ -52,14 +52,14 @@ class SampleCanvasLayer2: CanvasLayer {
 		return cgPath
 	}
 
-	override func render(context: RenderContext) {
+	override func render(context: RenderCanvasContext) {
 		guard let device = self.device else { return }
 	
 		let brushShape = self.brushSapeTexture!
 		let bezierRenderer = device.renderer() as BezierRenderer
 
 		print("SampleCanvasLayer2: render(), cgPaths=\(strokePaths.count)")
-		bezierRenderer.render(context: context, texture: brushShape, cgPaths: strokePaths)
+		bezierRenderer.render(context: context, brushTexture: brushShape, cgPaths: strokePaths)
 	}
 
 }

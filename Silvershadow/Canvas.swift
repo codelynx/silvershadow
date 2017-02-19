@@ -61,6 +61,13 @@ class Canvas: Scene {
 		return self.device.makeTexture(descriptor: descriptor)
 	}()
 
+	lazy var shadingTexture: MTLTexture = {
+		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
+					width: Int(self.contentSize.width), height: Int(self.contentSize.height), mipmapped: self.mipmapped)
+		descriptor.usage = [.shaderRead, .renderTarget]
+		return self.device.makeTexture(descriptor: descriptor)
+	}()
+
 	lazy var subcomandQueue: MTLCommandQueue = {
 		return self.device.makeCommandQueue()
 	}()
@@ -99,8 +106,8 @@ class Canvas: Scene {
 
 			// render a layer
 
-			let subrenderContext = RenderContext(renderPassDescriptor: subrenderPassDescriptor,
-						commandBuffer: subcommandBuffer, transform: subtransform, zoomScale: 1)
+			let subrenderContext = RenderCanvasContext(renderPassDescriptor: subrenderPassDescriptor,
+						commandBuffer: subcommandBuffer, transform: subtransform, zoomScale: 1, shadingTexture: self.shadingTexture)
 			canvasLayer.render(context: subrenderContext)
 
 			subcommandBuffer.commit()

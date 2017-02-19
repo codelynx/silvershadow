@@ -225,7 +225,7 @@ class BezierRenderer: Renderer {
 		return self.device.texture(of: XImage(named: "test")!)!
 	}()
 
-	func render(context: RenderContext, texture: MTLTexture, cgPaths: [CGPath]) {
+	func render(context: RenderContext, brushTexture: MTLTexture, cgPaths: [CGPath]) {
 		guard cgPaths.count > 0 else { return }
 
 		let vertexCapacity = 40_000
@@ -316,7 +316,7 @@ class BezierRenderer: Renderer {
 				encoder.setVertexBuffer(vertexDoubleBuffers[bufferIndex], offset: 0, at: 0)
 				encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
 
-				encoder.setFragmentTexture(texture, at: 0)
+				encoder.setFragmentTexture(brushTexture, at: 0)
 				encoder.setFragmentSamplerState(self.colorSamplerState, at: 0)
 
 				encoder.setFragmentTexture(brushSapeTexture, at: 1)
