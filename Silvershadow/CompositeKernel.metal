@@ -10,7 +10,7 @@
 #include <metal_texture>
 using namespace metal;
 
-
+/*
 kernel void composite_kernel(
 		texture2d<float, access::read> source [[texture(0)]],
 		texture2d<float, access::read_write> destination [[texture(1)]],
@@ -25,4 +25,4 @@ kernel void composite_kernel(
 	composite.a = (src.a * src.a) + (dst.a * (1.0f - src.a));
 	destination.write(composite, gid);
 }
-
+*/

@@ -13,6 +13,8 @@ import GLKit
 
 class CanvasLayer: Equatable {
 
+	var name: String?
+
 	weak var canvas: Canvas?
 	var isHidden: Bool = false
 	
@@ -33,12 +35,11 @@ class CanvasLayer: Equatable {
 		self.canvas = canvas
 	}
 
-	func render(context: CanvasRenderContext) {
+	func render(context: RenderCanvasContext) {
 	}
 
 	static func == (lhs: CanvasLayer, rhs: CanvasLayer) -> Bool {
 		return lhs === rhs
 	}
-	
 	
 }

@@ -212,8 +212,10 @@ class RenderView: XView, MTKViewDelegate {
 
 		let commandBuffer = commandQueue.makeCommandBuffer()
 
+		let rgba = self.scene?.backgroundColor.rgba ?? XRGBA(0.9, 0.9, 0.9, 1.0)
+		let clearColor = MTLClearColorMake(Double(rgba.r), Double(rgba.g), Double(rgba.b), Double(rgba.a))
 		renderPassDescriptor.colorAttachments[0].texture = drawable.texture // error on simulator target
-		renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(1.0, 1.0, 1.0, 1.0)
+		renderPassDescriptor.colorAttachments[0].clearColor = clearColor
 		renderPassDescriptor.colorAttachments[0].loadAction = .clear
 		renderPassDescriptor.colorAttachments[0].storeAction = .store
 
@@ -222,11 +224,10 @@ class RenderView: XView, MTKViewDelegate {
 		commandEncoder.endEncoding()
 	
 		// setup render context
-		let contentSize = CGSize(width: drawable.texture.width, height: drawable.texture.height)
 		let transform = GLKMatrix4(self.drawingTransform)
 		renderPassDescriptor.colorAttachments[0].loadAction = .load
 		let renderContext = RenderContext(renderPassDescriptor: renderPassDescriptor, commandBuffer: commandBuffer,
-				contentSize: contentSize, transform: transform, zoomScale: self.zoomScale)
+				transform: transform, zoomScale: self.zoomScale)
 
 		// actual rendering
 		scene.render(in: renderContext)

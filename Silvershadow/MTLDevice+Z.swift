@@ -25,8 +25,7 @@ extension MTLDevice {
 			options[MTKTextureLoaderOptionOrigin] = true as NSNumber
 		}
 		let texture = try? self.textureLoader.newTexture(with: image, options: options)
-		print("texture= \(texture!.pixelFormat.rawValue)")
-//		assert(texture!.pixelFormat == .bgra8Unorm)
+		assert(texture!.pixelFormat == .bgra8Unorm)
 		return texture
 	}
 

@@ -1,6 +1,6 @@
 //
 //	CrossPlatform.swift
-//	ZKit
+//	Silvershadow
 //
 //	Created by Kaz Yoshikawa on 12/25/16.
 //	Copyright © 2016 Electricwoods LLC. All rights reserved.
@@ -165,5 +165,3 @@ extension XColor {
 	}
 
 }
-
-
