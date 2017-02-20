@@ -48,7 +48,14 @@ class Scene {
 		if self.beingUpdated == false {
 			self.beingUpdated = true
 			DispatchQueue.main.async {
-				self.update()
+				if let semaphore = self.renderView?.semaphore {
+					semaphore.wait()
+					defer { semaphore.signal() }
+					self.update()
+				}
+				else {
+					self.update()
+				}
 				self.beingUpdated = false
 			}
 		}

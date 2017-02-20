@@ -288,7 +288,7 @@ class BezierRenderer: Renderer {
 		for (index, elements) in elementsArray.enumerated() {
 
 			let bufferIndex = index % vertexDoubleBuffers.count // double buffer
-			let commandBuffer = context.makeCommandBuffer()
+			let commandBuffer = context.commandBuffer
 
 			// build contiguous vertexes using computing shader from PathElement
 			
@@ -329,8 +329,6 @@ class BezierRenderer: Renderer {
 				encoder.endEncoding()
 			}
 
-			commandBuffer.commit()
-			//commandBuffer.waitUntilCompleted() // can we remove this?
 			shadingRenderPassDescriptor.colorAttachments[0].loadAction = .load
 		}
 

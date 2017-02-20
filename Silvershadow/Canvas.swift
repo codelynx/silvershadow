@@ -101,21 +101,20 @@ class Canvas: Scene {
 		subrenderPassDescriptor.colorAttachments[0].loadAction = .clear
 		subrenderPassDescriptor.colorAttachments[0].storeAction = .store
 
+		let commandBuffer = commandQueue.makeCommandBuffer()
+
 		for canvasLayer in self.canvasLayers {
 
 			if canvasLayer.isHidden { continue }
-			let subcommandBuffer = commandQueue.makeCommandBuffer()
 
 			// render a layer
 
-			let subrenderContext = RenderCanvasContext(renderPassDescriptor: subrenderPassDescriptor,
-						commandBuffer: subcommandBuffer, transform: subtransform, zoomScale: 1, bounds: self.bounds, shadingTexture: self.shadingTexture)
+			let subrenderContext = RenderCanvasContext(
+						renderPassDescriptor: subrenderPassDescriptor,
+						commandBuffer: commandBuffer, transform: subtransform, zoomScale: 1, bounds: self.bounds,
+						shadingTexture: self.shadingTexture)
 			canvasLayer.render(context: subrenderContext)
 
-			subcommandBuffer.commit()
-			subcommandBuffer.waitUntilCompleted()
-
-			let commandBuffer = commandQueue.makeCommandBuffer()
 
 			// flatten image
 
@@ -124,11 +123,10 @@ class Canvas: Scene {
 							commandBuffer: commandBuffer, transform: transform, zoomScale: 1)
 			renderContext.render(texture: subtexture, in: Rect(-1, -1, 2, 2))
 
-			commandBuffer.commit()
-			commandBuffer.waitUntilCompleted()
-
-//			subrenderPassDescriptor.colorAttachments[0].loadAction = .load
 		}
+
+		commandBuffer.commit()
+		commandBuffer.waitUntilCompleted()
 
 		// drawing in offscreen (canvasTexture) is done,
 		self.setNeedsDisplay()
