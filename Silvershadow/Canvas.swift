@@ -38,12 +38,14 @@ class Canvas: Scene {
 		return self.device.renderer()
 	}()
 
-	lazy var canvasVertexes: VertexBuffer<ImageVertex>? = {
-		let size = Size(Float(self.contentSize.width), Float(self.contentSize.height))
-		return self.canvasRenderer.vertexBuffer(for: Rect(0, 0, size.width, size.height))
-	}()
-
 	fileprivate (set) var canvasLayers: [CanvasLayer]
+	
+	var overlayCanvasLayer: CanvasLayer? {
+		didSet {
+			overlayCanvasLayer?.canvas = self
+			self.setNeedsDisplay()
+		}
+	}
 
 	override init?(device: MTLDevice, contentSize: CGSize) {
 		self.canvasLayers = [CanvasLayer]()
@@ -61,15 +63,23 @@ class Canvas: Scene {
 		return self.device.makeTexture(descriptor: descriptor)
 	}()
 
+	lazy var shadingTexture: MTLTexture = {
+		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
+					width: Int(self.contentSize.width), height: Int(self.contentSize.height), mipmapped: self.mipmapped)
+		descriptor.usage = [.shaderRead, .renderTarget]
+		return self.device.makeTexture(descriptor: descriptor)
+	}()
+
 	lazy var subcomandQueue: MTLCommandQueue = {
 		return self.device.makeCommandQueue()
 	}()
 
 	override func update() {
+		print("\(#function)")
 		let commandQueue = self.subcomandQueue
 		let canvasTexture = self.canvasTexture
 
-		let backgroundColor = XColor(ciColor: self.backgroundColor.ciColor)
+		let backgroundColor = XColor(rgba: self.backgroundColor.rgba)
 		let rgba = backgroundColor.rgba
 		let (r, g, b, a) = (Double(rgba.r), Double(rgba.g), Double(rgba.b), Double(rgba.a))
 		
@@ -79,53 +89,44 @@ class Canvas: Scene {
 		renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(r, g, b, a)
 		renderPassDescriptor.colorAttachments[0].storeAction = .store
 
-		// clear the canvas texture
-		let commandBuffer = commandQueue.makeCommandBuffer()
-		renderPassDescriptor.colorAttachments[0].loadAction = .clear
-		let clearEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
-		clearEncoder.endEncoding()
-		commandBuffer.commit()
-
 		renderPassDescriptor.colorAttachments[0].loadAction = .load
 		let subtransform = GLKMatrix4(self.transform)
 
 		// build an image per layer then flatten that image to the canvas texture
 		let subtexture = self.sublayerTexture
 
+		let subrenderPassDescriptor = MTLRenderPassDescriptor()
+		subrenderPassDescriptor.colorAttachments[0].texture = subtexture
+		subrenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0)
+		subrenderPassDescriptor.colorAttachments[0].loadAction = .clear
+		subrenderPassDescriptor.colorAttachments[0].storeAction = .store
+
+		let commandBuffer = commandQueue.makeCommandBuffer()
+
 		for canvasLayer in self.canvasLayers {
 
-			let subcommandBuffer = commandQueue.makeCommandBuffer()
-			guard !canvasLayer.isHidden else { continue }
+			if canvasLayer.isHidden { continue }
 
-			let subrenderPassDescriptor = MTLRenderPassDescriptor()
-			subrenderPassDescriptor.colorAttachments[0].texture = subtexture
-			subrenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0)
-			subrenderPassDescriptor.colorAttachments[0].storeAction = .store
+			// render a layer
 
-			// clear the subtexture
-			subrenderPassDescriptor.colorAttachments[0].loadAction = .clear
-			let clearEncoder = subcommandBuffer.makeRenderCommandEncoder(descriptor: subrenderPassDescriptor)
-			clearEncoder.endEncoding()
-
-			subrenderPassDescriptor.colorAttachments[0].loadAction = .load
-			let subrenderContext = RenderContext(renderPassDescriptor: subrenderPassDescriptor,
-						commandBuffer: subcommandBuffer, transform: subtransform, zoomScale: 1)
+			let subrenderContext = RenderCanvasContext(
+						renderPassDescriptor: subrenderPassDescriptor,
+						commandBuffer: commandBuffer, transform: subtransform, zoomScale: 1, bounds: self.bounds,
+						shadingTexture: self.shadingTexture)
 			canvasLayer.render(context: subrenderContext)
 
-			subcommandBuffer.commit()
-			subcommandBuffer.waitUntilCompleted()
 
-			let commandBuffer = commandQueue.makeCommandBuffer()
+			// flatten image
 
 			let transform = GLKMatrix4Identity
 			let renderContext = RenderContext(renderPassDescriptor: renderPassDescriptor,
 							commandBuffer: commandBuffer, transform: transform, zoomScale: 1)
 			renderContext.render(texture: subtexture, in: Rect(-1, -1, 2, 2))
 
-			commandBuffer.commit()
-			commandBuffer.waitUntilCompleted()
-
 		}
+
+		commandBuffer.commit()
+		commandBuffer.waitUntilCompleted()
 
 		// drawing in offscreen (canvasTexture) is done,
 		self.setNeedsDisplay()
@@ -146,9 +147,34 @@ class Canvas: Scene {
 	}
 
 	override func render(in context: RenderContext) {
-		if let canvasVertexes = self.canvasVertexes {
-			self.canvasRenderer.renderImage(context: context, texture: self.canvasTexture, vertexBuffer: canvasVertexes)
-		}
+
+		// build rendering overlay canvas layer
+
+		let commandBuffer = context.commandBuffer
+		guard let overlayCanvasLayer = self.overlayCanvasLayer else { return }
+		print("render: \(overlayCanvasLayer.name)")
+		let subtexture = self.sublayerTexture
+		let subtransform = GLKMatrix4(self.transform)
+
+		let subrenderPassDescriptor = MTLRenderPassDescriptor()
+		subrenderPassDescriptor.colorAttachments[0].texture = subtexture
+		subrenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0)
+		subrenderPassDescriptor.colorAttachments[0].loadAction = .clear
+		subrenderPassDescriptor.colorAttachments[0].storeAction = .store
+
+		let subrenderContext = RenderCanvasContext(renderPassDescriptor: subrenderPassDescriptor,
+					commandBuffer: commandBuffer, transform: subtransform, zoomScale: 1, bounds: self.bounds,
+					shadingTexture: self.shadingTexture)
+		overlayCanvasLayer.render(context: subrenderContext)
+
+		// render canvas texture
+
+		self.canvasRenderer.renderImage(context: context, texture: self.canvasTexture, in: Rect(self.bounds))
+
+		// render overlay canvas layer
+		
+		context.render(texture: subtexture, in: Rect(self.bounds))
+		
 	}
 
 	func addLayer(_ layer: CanvasLayer) {
@@ -158,9 +184,11 @@ class Canvas: Scene {
 	}
 
 	func bringLayer(toFront: CanvasLayer) {
+		assert(false, "not yet")
 	}
 	
 	func sendLayer(toBack: CanvasLayer) {
+		assert(false, "not yet")
 	}
 
 }

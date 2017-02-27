@@ -12,8 +12,16 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
+	@IBOutlet weak var sampleSceneMenuItem: NSMenuItem!
+	@IBOutlet weak var sampleCanvasMenuItem: NSMenuItem!
+
 	func applicationDidFinishLaunching(_ aNotification: Notification) {
-		// Insert code here to initialize your application
+
+		let app = NSApplication.shared()
+		if let sampleSceneAction = sampleCanvasMenuItem.action {
+			app.sendAction(sampleSceneAction, to: app, from: sampleCanvasMenuItem)
+		}
+
 	}
 
 	func applicationWillTerminate(_ aNotification: Notification) {

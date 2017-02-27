@@ -1,6 +1,6 @@
 //
 //	GeoUtils.swift
-//	Silvershadow
+//	ZKit
 //
 //	Created by Kaz Yoshikawa on 1/4/16.
 //	Copyright © 2016 Electricwoods LLC. All rights reserved.
@@ -382,54 +382,5 @@ func + (l: GLKVector2, r: GLKVector2) -> GLKVector2 {
 func * (l: GLKMatrix4, r: GLKVector2) -> GLKVector2 {
 	let vector4 = GLKMatrix4MultiplyVector4(l, GLKVector4Make(r.x, r.y, 0.0, 1.0))
 	return GLKVector2Make(vector4.x, vector4.y)
-}
-
-
-enum PathElement {
-    case moveToPoint(CGPoint)
-    case addLineToPoint(CGPoint)
-    case addQuadCurveToPoint(CGPoint, CGPoint)
-    case addCurveToPoint(CGPoint, CGPoint, CGPoint)
-    case closeSubpath
-}
-
-extension CGPath {
-
-	class Info {
-		var pathElements = [PathElement]()
-	}
-
-    var pathElements: [PathElement] {
-        var info = Info()
-
-
-        self.apply(info: &info) { (info, element) -> Void in
-
-            if let infoPointer = UnsafeMutablePointer<Info>(OpaquePointer(info)) {
-                switch element.pointee.type {
-                case .moveToPoint:
-                    let pt = element.pointee.points[0]
-                    infoPointer.pointee.pathElements.append(PathElement.moveToPoint(pt))
-                case .addLineToPoint:
-                    let pt = element.pointee.points[0]
-                    infoPointer.pointee.pathElements.append(PathElement.addLineToPoint(pt))
-                case .addQuadCurveToPoint:
-                    let pt1 = element.pointee.points[0]
-                    let pt2 = element.pointee.points[1]
-                    infoPointer.pointee.pathElements.append(PathElement.addQuadCurveToPoint(pt1, pt2))
-                case .addCurveToPoint:
-                    let pt1 = element.pointee.points[0]
-                    let pt2 = element.pointee.points[1]
-                    let pt3 = element.pointee.points[2]
-                    infoPointer.pointee.pathElements.append(PathElement.addCurveToPoint(pt1, pt2, pt3))
-                case .closeSubpath:
-                    infoPointer.pointee.pathElements.append(PathElement.closeSubpath)
-                }
-            }
-        }
-
-        return info.pathElements
-    }
-
 }
 

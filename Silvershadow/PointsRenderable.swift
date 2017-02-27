@@ -1,6 +1,6 @@
 //
 //	PointsRenderable.swift
-//	Metal2D
+//	Silvershadow
 //
 //	Created by Kaz Yoshikawa on 1/11/16.
 //	Copyright © 2016 Electricwoods LLC. All rights reserved.
@@ -24,7 +24,7 @@ class PointsRenderable: Renderable {
 	var vertices: [PointVertex]
 
 	lazy var vertexBuffer: VertexBuffer<PointVertex> = {
-		return self.renderer.vertexBuffer(for: self.vertices, expanding: 4096)
+		return self.renderer.vertexBuffer(for: self.vertices, capacity: 4096)
 	}()
 
 	init?(device: MTLDevice, texture: MTLTexture, vertices: [PointVertex]) {
@@ -50,7 +50,7 @@ class PointsRenderable: Renderable {
 			self.vertexBuffer.append(vertices)
 		}
 		else {
-			let vertexBuffer = renderer.vertexBuffer(for: self.vertices, expanding: 4096)
+			let vertexBuffer = renderer.vertexBuffer(for: self.vertices, capacity: 4096)
 			self.vertexBuffer = vertexBuffer
 		}
 	}

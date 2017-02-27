@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Foundation
 import MetalKit
 import GLKit
 
@@ -16,7 +15,7 @@ import GLKit
 //	RenderContext
 //
 
-struct RenderContext {
+class RenderContext {
 	let renderPassDescriptor: MTLRenderPassDescriptor
 	let commandBuffer: MTLCommandBuffer
 	let transform: GLKMatrix4
@@ -24,8 +23,25 @@ struct RenderContext {
 
 	var device: MTLDevice { return commandBuffer.device }
 
+	init(
+		renderPassDescriptor: MTLRenderPassDescriptor,
+		commandBuffer: MTLCommandBuffer,
+		transform: GLKMatrix4,
+		zoomScale: CGFloat
+	) {
+		self.renderPassDescriptor = renderPassDescriptor
+		self.commandBuffer = commandBuffer
+		self.transform = transform
+		self.zoomScale = zoomScale
+	}
+
+
 	func makeRenderCommandEncoder() -> MTLRenderCommandEncoder {
 		return self.commandBuffer.makeRenderCommandEncoder(descriptor: self.renderPassDescriptor)
+	}
+	
+	func makeCommandBuffer() -> MTLCommandBuffer {
+		return self.commandBuffer.commandQueue.makeCommandBuffer()
 	}
 }
 

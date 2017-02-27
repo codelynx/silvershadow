@@ -21,16 +21,15 @@ class VertexBuffer<T> {
 	var buffer: MTLBuffer
 	var count: Int
 	var capacity: Int
-	var expand: Int
 
-
-	init(device: MTLDevice, vertices: [T], expanding: Int? = nil) {
+	init(device: MTLDevice, vertices: [T], capacity: Int? = nil) {
+		assert(vertices.count <= capacity ?? vertices.count)
 		self.device = device
 		self.count = vertices.count
-		self.expand = (expanding ?? 4096)
-		let length = MemoryLayout<T>.size * (vertices.count + self.expand)
-		self.buffer = device.makeBuffer(bytes: vertices, length: length, options: [.storageModeShared])
-		self.capacity = length
+		let capacity = capacity ?? vertices.count
+		let length = MemoryLayout<T>.stride * capacity
+		self.capacity = capacity
+		self.buffer = device.makeBuffer(bytes: vertices, length: length, options: [.storageModeShared]) // !?!
 	}
 
 	deinit {
@@ -38,7 +37,7 @@ class VertexBuffer<T> {
 	}
 
 	func append(_ vertices: [T]) {
-		if self.count + vertices.count < self.expand {
+		if self.count + vertices.count < self.capacity {
 			let vertexArray = UnsafeMutablePointer<T>(OpaquePointer(self.buffer.contents()))
 			for index in 0 ..< vertices.count {
 				vertexArray[self.count + index] = vertices[index]
@@ -46,39 +45,36 @@ class VertexBuffer<T> {
 			self.count += vertices.count
 		}
 		else {
-			let length = self.count + vertices.count + self.expand
-			let buffer = self.device.makeBuffer(length: length, options: [.storageModeShared])
-			let sourceArray = UnsafeMutablePointer<T>(OpaquePointer(self.buffer.contents()))
-			let destinationArray = UnsafeMutablePointer<T>(OpaquePointer(buffer.contents()))
-			for index in 0 ..< self.count {
-				destinationArray[index] = sourceArray[index]
-			}
-			for index in 0 ..< vertices.count {
-				destinationArray[self.count + index] = vertices[index]
-			}
-			self.count = self.count + vertices.count
-			self.capacity = length
+			let count = self.count
+			let length = MemoryLayout<T>.stride * (count + vertices.count)
+			let buffer = self.device.makeBuffer(length: length, options: [.cpuCacheModeWriteCombined, .storageModeShared])
+			let sourceArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(self.buffer.contents()))
+			let sourceArray = UnsafeMutableBufferPointer<T>(start: sourceArrayPtr, count: count)
+			let destinationArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(buffer.contents()))
+			let destinationArray = UnsafeMutableBufferPointer<T>(start: destinationArrayPtr, count: count + vertices.count)
 
-			self.buffer.setPurgeableState(.empty)
+			(0 ..< count).forEach { destinationArray[$0] = sourceArray[$0] }
+			(0 ..< vertices.count).forEach { destinationArray[count + $0] = vertices[$0] }
+
+			self.count = count + vertices.count
+			self.capacity = self.count
+
 			self.buffer = buffer
 		}
 	}
 
 	func set(_ vertices: [T]) {
 		if vertices.count < self.capacity {
-			let destinationArray = UnsafeMutablePointer<T>(OpaquePointer(buffer.contents()))
-			for index in 0 ..< vertices.count {
-				destinationArray[index] = vertices[index]
-			}
+			let destinationArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(buffer.contents()))
+			let destinationArray = UnsafeMutableBufferPointer<T>(start: destinationArrayPtr, count: count + vertices.count)
+			(0 ..< vertices.count).forEach { destinationArray[$0] = vertices[$0]  }
 			self.count = vertices.count
 		}
 		else {
-			let length = MemoryLayout<T>.size * (vertices.count + self.expand)
-			let buffer = device.makeBuffer(bytes: vertices, length: length, options: MTLResourceOptions())
+			let bytes = MemoryLayout<T>.size * vertices.count
+			let buffer = device.makeBuffer(bytes: vertices, length: bytes, options: MTLResourceOptions())
 			self.count = vertices.count
-			self.capacity = length
-			
-			self.buffer.setPurgeableState(.empty)
+			self.capacity = vertices.count
 			self.buffer = buffer
 		}
 	}
@@ -89,3 +85,4 @@ class VertexBuffer<T> {
 	}
 
 }
+

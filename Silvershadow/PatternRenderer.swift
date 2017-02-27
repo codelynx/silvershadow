@@ -11,14 +11,14 @@ import CoreGraphics
 import Metal
 import MetalKit
 import GLKit
+import simd
 
-typealias ImageVertex = ImageRenderer.Vertex
 
 //
 //	ImageRenderer
 //
 
-class ImageRenderer: Renderer {
+class PatternRenderer: Renderer {
 
 	typealias VertexType = Vertex
 
@@ -30,8 +30,9 @@ class ImageRenderer: Renderer {
 
 	struct Uniforms {
 		var transform: GLKMatrix4
+		var contentSize: float2
+		var patternSize: float2
 	}
-
 
 	let device: MTLDevice
 	
@@ -78,24 +79,32 @@ class ImageRenderer: Renderer {
 	lazy var renderPipelineState: MTLRenderPipelineState = {
 		let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
 		renderPipelineDescriptor.vertexDescriptor = self.vertexDescriptor
-		renderPipelineDescriptor.vertexFunction = self.library.makeFunction(name: "image_vertex")!
-		renderPipelineDescriptor.fragmentFunction = self.library.makeFunction(name: "image_fragment")!
+		renderPipelineDescriptor.vertexFunction = self.library.makeFunction(name: "pattern_vertex")!
+		renderPipelineDescriptor.fragmentFunction = self.library.makeFunction(name: "pattern_fragment")!
 
 		renderPipelineDescriptor.colorAttachments[0].pixelFormat = defaultPixelFormat
 		renderPipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
 		renderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
 		renderPipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
 
-		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
+		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .one
+		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .one
 		renderPipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
 		renderPipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
-
 
 		return try! self.device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
 	}()
 
-	lazy var colorSamplerState: MTLSamplerState = {
+	lazy var shadingSamplerState: MTLSamplerState = {
+		let samplerDescriptor = MTLSamplerDescriptor()
+		samplerDescriptor.minFilter = .nearest
+		samplerDescriptor.magFilter = .linear
+		samplerDescriptor.sAddressMode = .repeat
+		samplerDescriptor.tAddressMode = .repeat
+		return self.device.makeSamplerState(descriptor: samplerDescriptor)
+	}()
+
+	lazy var patternSamplerState: MTLSamplerState = {
 		let samplerDescriptor = MTLSamplerDescriptor()
 		samplerDescriptor.minFilter = .nearest
 		samplerDescriptor.magFilter = .linear
@@ -123,7 +132,9 @@ class ImageRenderer: Renderer {
 	
 	// MARK: -
 
+
 	// prepare triple reusable buffers for avoid race condition
+
 	lazy var uniformTripleBuffer: [MTLBuffer] = {
 		return [
 			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared]),
@@ -131,30 +142,35 @@ class ImageRenderer: Renderer {
 			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared])
 		]
 	}()
-
+	
 	let rectangularVertexCount = 6
 
-	lazy var rectangularVertexTripleBuffer: [VertexBuffer<Vertex>] = {
+	lazy var rectVertexTripleBuffer: [MTLBuffer] = {
 		let count = self.rectangularVertexCount
 		return [
-			VertexBuffer<Vertex>(device: self.device, vertices: [], capacity: count),
-			VertexBuffer<Vertex>(device: self.device, vertices: [], capacity: count),
-			VertexBuffer<Vertex>(device: self.device, vertices: [], capacity: count)
+			self.device.makeBuffer(length: MemoryLayout<Vertex>.size * count, options: [.storageModeShared]),
+			self.device.makeBuffer(length: MemoryLayout<Vertex>.size * count, options: [.storageModeShared]),
+			self.device.makeBuffer(length: MemoryLayout<Vertex>.size * count, options: [.storageModeShared])
 		]
 	}()
 	
 	var tripleBufferIndex = 0
 
-	func renderImage(context: RenderContext, texture: MTLTexture, in rect: Rect) {
+	func renderPattern(context: RenderCanvasContext, in rect: Rect) {
 		defer { tripleBufferIndex = (tripleBufferIndex + 1) % uniformTripleBuffer.count }
 
 		let uniformsBuffer = uniformTripleBuffer[tripleBufferIndex]
 		let uniformsBufferPtr = UnsafeMutablePointer<Uniforms>(OpaquePointer(uniformsBuffer.contents()))
 		uniformsBufferPtr.pointee.transform = context.transform
+		uniformsBufferPtr.pointee.contentSize = float2(context.bounds.size.width, context.bounds.size.height)
+		uniformsBufferPtr.pointee.patternSize = float2(Float(context.brushPattern.width), Float(context.brushPattern.height))
 
-		let vertices = self.vertices(for: rect)
-		let vertexBuffer = rectangularVertexTripleBuffer[tripleBufferIndex]
-		vertexBuffer.set(vertices)
+		let vertexes = self.vertices(for: rect)
+		assert(vertexes.count == rectangularVertexCount)
+		let vertexBuffer = rectVertexTripleBuffer[tripleBufferIndex]
+		let vertexArrayPtr = UnsafeMutablePointer<Vertex>(OpaquePointer(vertexBuffer.contents()))
+		let vertexArray = UnsafeMutableBufferPointer<Vertex>(start: vertexArrayPtr, count: vertexes.count)
+		(0 ..< vertexes.count).forEach { vertexArray[$0] = vertexes[$0] }
 
 		let encoder = context.makeRenderCommandEncoder()
 		
@@ -162,33 +178,18 @@ class ImageRenderer: Renderer {
 
 		encoder.setFrontFacing(.clockwise)
 //		commandEncoder.setCullMode(.back)
-		encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
+		encoder.setVertexBuffer(vertexBuffer, offset: 0, at: 0)
 		encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
 
-		encoder.setFragmentTexture(texture, at: 0)
-		encoder.setFragmentSamplerState(self.colorSamplerState, at: 0)
+		encoder.setFragmentTexture(context.shadingTexture, at: 0)
+		encoder.setFragmentTexture(context.brushPattern, at: 1)
+		encoder.setFragmentSamplerState(self.shadingSamplerState, at: 0)
+		encoder.setFragmentSamplerState(self.patternSamplerState, at: 1)
+		encoder.setFragmentBuffer(uniformsBuffer, offset: 0, at: 0)
 
-		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexBuffer.count)
+		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexes.count)
 
 		encoder.endEncoding()
 	}
-}
-
-
-extension RenderContext {
-
-	func render(texture: MTLTexture?, in rect: Rect) {
-		guard let texture = texture else { return }
-		let renderer = self.device.renderer() as ImageRenderer
-		renderer.renderImage(context: self, texture: texture, in: rect)
-	}
-
-	func render(image: XImage?, in rect: Rect) {
-		guard let image = image else { return }
-		let device = self.device
-		guard let texture = device.texture(of: image) else { return }
-		self.render(texture: texture, in: rect)
-	}
-
 }
 

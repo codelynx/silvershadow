@@ -42,14 +42,19 @@ class RenderView: XView, MTKViewDelegate {
 		if let scene = self.scene {
 			let contentSize = scene.contentSize
 			self.scrollView.contentSize = contentSize
-			self.contentView.frame = CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
+//			self.contentView.bounds = CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
+			let bounds = CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
+			let frame = self.scrollView.convert(bounds, to: self.contentView)
+			self.contentView.frame = frame
 		}
 		else {
 			self.scrollView.contentSize = self.bounds.size
-			self.contentView.frame = self.bounds
+			self.contentView.bounds = self.bounds
 		}
+		self.scrollView.autoresizesSubviews = false;
 		self.contentView.translatesAutoresizingMaskIntoConstraints = false
-		self.contentView.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin]
+		self.contentView.autoresizingMask = []
+		self.contentView.autoresizingMask = [.flexibleRightMargin, .flexibleBottomMargin]
 		self.setNeedsDisplay()
 	}
 	#endif
@@ -212,8 +217,10 @@ class RenderView: XView, MTKViewDelegate {
 
 		let commandBuffer = commandQueue.makeCommandBuffer()
 
+		let rgba = self.scene?.backgroundColor.rgba ?? XRGBA(0.9, 0.9, 0.9, 1.0)
+		let clearColor = MTLClearColorMake(Double(rgba.r), Double(rgba.g), Double(rgba.b), Double(rgba.a))
 		renderPassDescriptor.colorAttachments[0].texture = drawable.texture // error on simulator target
-		renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.9, 0.9, 0.9, 1)
+		renderPassDescriptor.colorAttachments[0].clearColor = clearColor
 		renderPassDescriptor.colorAttachments[0].loadAction = .clear
 		renderPassDescriptor.colorAttachments[0].storeAction = .store
 

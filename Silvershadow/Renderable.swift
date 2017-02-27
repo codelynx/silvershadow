@@ -17,7 +17,6 @@ import MetalKit
 import GLKit
 
 
-fileprivate var deviceRendererMap = NSMapTable<MTLDevice, RendererRegistry>.weakToStrongObjects()
 
 
 protocol Renderable: class {
@@ -32,29 +31,12 @@ protocol Renderable: class {
 
 extension Renderable {
 	var renderer: RendererType {
-		let device = self.device
-		let key = NSStringFromClass(RendererType.self)
-		let registry = deviceRendererMap.object(forKey: device) ?? RendererRegistry()
-		let renderer = registry[key] ?? RendererType(device: device)
-		registry[key] = renderer
-		deviceRendererMap.setObject(registry, forKey: device)
-		return renderer as! RendererType
+		let renderer = self.device.renderer() as RendererType
+		return renderer
 	}
 }
 
 
-extension MTLDevice {
-
-	func renderer<T: Renderer>() -> T {
-		let key = NSStringFromClass(T.self)
-		let registry = deviceRendererMap.object(forKey: self) ?? RendererRegistry()
-		let renderer = registry[key] ?? T(device: self)
-		registry[key] = renderer
-		deviceRendererMap.setObject(registry, forKey: self)
-		return renderer as! T
-	}
-
-}
 
 
 

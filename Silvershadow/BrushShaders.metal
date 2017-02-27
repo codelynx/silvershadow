@@ -2,116 +2,104 @@
 //	BrushShaders.metal
 //	Silvershadow
 //
-//	Created by Kaz Yoshikawa on 12/27/16.
+//	Created by Kaz Yoshikawa on 1/11/16.
 //	Copyright © 2016 Electricwoods LLC. All rights reserved.
 //
 
 #include <metal_stdlib>
+
 using namespace metal;
+float4x4 invert(float4x4 matrix);
 
-#pragma mark Structs
+//
+//	BrushShape
+//
 
-// Control Point struct
-struct ControlPoint {
-	float4 position [[attribute(0)]];
+struct BrushShapeVertexIn {
+	float2 position [[ attribute(0) ]];
+	float2 attributes [[ attribute(1) ]];
 };
 
-// Patch struct
-struct PatchIn {
-	patch_control_point<ControlPoint> control_points;
+struct BrushShapeVertexOut {
+	float4 position [[ position ]];
+	float pointSize [[ point_size ]];
 };
 
-// Vertex-to-Fragment struct
-struct FunctionOutIn {
-	float4 position [[position]];
-	half4  color [[flat]];
+struct Uniforms {
+	float4x4 transform;
+	float zoomScale;
+	float unused2;
+	float unused3;
+	float unused4;
 };
 
-#pragma mark Compute Kernels
-
-// Triangle compute kernel
-kernel void brush_tessellation_kernel_triangle(
-	constant float& edge_factor [[ buffer(0) ]],
-	constant float& inside_factor [[ buffer(1) ]],
-	device MTLTriangleTessellationFactorsHalf* factors [[ buffer(2) ]],
-	uint pid [[ thread_position_in_grid ]]
+vertex BrushShapeVertexOut brush_shape_vertex(
+	device BrushShapeVertexIn * vertices [[ buffer(0) ]],
+	constant Uniforms & uniforms [[ buffer(1) ]],
+	uint vid [[ vertex_id ]]
 ) {
-	// Simple passthrough operation
-	// More sophisticated compute kernels might determine the tessellation factors based on the state of the scene (e.g. camera distance)
-	factors[pid].edgeTessellationFactor[0] = edge_factor;
-	factors[pid].edgeTessellationFactor[1] = edge_factor;
-	factors[pid].edgeTessellationFactor[2] = edge_factor;
-	factors[pid].insideTessellationFactor = inside_factor;
+	BrushShapeVertexIn inVertex = vertices[vid];
+	BrushShapeVertexOut outVertex;
+	outVertex.position = uniforms.transform * float4(inVertex.position, 0.0, 1.0);
+	float pointWidth = inVertex.attributes[0];
+	outVertex.pointSize = pointWidth * uniforms.zoomScale;
+	return outVertex;
 }
 
-// Quad compute kernel
-kernel void brush_tessellation_kernel_quad(
-	constant float& edge_factor [[ buffer(0) ]],
-	constant float& inside_factor [[ buffer(1) ]],
-	device MTLQuadTessellationFactorsHalf* factors [[ buffer(2) ]],
-	uint pid [[ thread_position_in_grid ]]
+fragment float4 brush_shape_fragment(
+	BrushShapeVertexOut vertexIn [[ stage_in ]],
+	texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+	sampler colorSampler [[ sampler(0) ]],
+	float2 texcoord [[ point_coord ]]
 ) {
-	// Simple passthrough operation
-	// More sophisticated compute kernels might determine the tessellation factors based on the state of the scene (e.g. camera distance)
-	factors[pid].edgeTessellationFactor[0] = edge_factor;
-	factors[pid].edgeTessellationFactor[1] = edge_factor;
-	factors[pid].edgeTessellationFactor[2] = edge_factor;
-	factors[pid].edgeTessellationFactor[3] = edge_factor;
-	factors[pid].insideTessellationFactor[0] = inside_factor;
-	factors[pid].insideTessellationFactor[1] = inside_factor;
+	
+	float4 color = colorTexture.sample(colorSampler, texcoord);
+	if (color.a < 0.1) {
+		discard_fragment();
+	}
+	return color;
 }
 
-#pragma mark Post-Tessellation Vertex Functions
+//
+//	BrushFill
+//
 
-// Triangle post-tessellation vertex function
-[[patch(triangle, 3)]]
-vertex FunctionOutIn brush_tessellation_vertex_triangle(
-	PatchIn patchIn [[stage_in]],
-	float3 patch_coord [[ position_in_patch ]]
+struct BrushFillVertexIn {
+	packed_float4 position [[ attribute(0) ]];
+	packed_float2 maskTexcoords [[ attribute(1) ]];
+	packed_float2 patternTexcoords [[ attribute(2) ]];
+};
+
+struct BrushFillVertexOut {
+	float4 position [[ position ]];
+	float2 maskTexcoords;
+	float2 patternTexcoords;
+};
+
+vertex BrushFillVertexOut brush_fill_vertex(
+	device BrushFillVertexIn * vertices [[ buffer(0) ]],
+	constant Uniforms & uniforms [[ buffer(1) ]],
+	uint vid [[ vertex_id ]]
 ) {
-	// Barycentric coordinates
-	float u = patch_coord.x;
-	float v = patch_coord.y;
-	float w = patch_coord.z;
-	
-	// Convert to cartesian coordinates
-	float x = u * patchIn.control_points[0].position.x + v * patchIn.control_points[1].position.x + w * patchIn.control_points[2].position.x;
-	float y = u * patchIn.control_points[0].position.y + v * patchIn.control_points[1].position.y + w * patchIn.control_points[2].position.y;
-	
-	// Output
-	FunctionOutIn vertexOut;
-	vertexOut.position = float4(x, y, 0.0, 1.0);
-	vertexOut.color = half4(u, v, w, 1.0);
-	return vertexOut;
+	BrushFillVertexOut outVertex;
+	BrushFillVertexIn inVertex = vertices[vid];
+	outVertex.position = float4(inVertex.position);
+	outVertex.maskTexcoords = inVertex.maskTexcoords;
+	outVertex.patternTexcoords = inVertex.patternTexcoords;
+//	outVertex.maskTexcoords = (uniforms.transform * float4(inVertex.maskTexcoords, 0, 1)).xy;
+//	outVertex.patternTexcoords = (uniforms.transform * float4(inVertex.patternTexcoords, 0, 1)).xy;
+	return outVertex;
 }
 
-// Quad post-tessellation vertex function
-[[patch(quad, 4)]]
-vertex FunctionOutIn brush_tessellation_vertex_quad(
-	PatchIn patchIn [[stage_in]],
-	float2 patch_coord [[ position_in_patch ]]
+fragment float4 brush_fill_fragment(
+	BrushFillVertexOut vertexIn [[ stage_in ]],
+	texture2d<float, access::sample> maskTexture [[ texture(0) ]],
+	texture2d<float, access::sample> patternTexture [[ texture(1) ]],
+	sampler maskSampler [[ sampler(0) ]],
+	sampler patternSampler [[ sampler(1) ]]
 ) {
-	// Parameter coordinates
-	float u = patch_coord.x;
-	float v = patch_coord.y;
-	
-	// Linear interpolation
-	float2 upper_middle = mix(patchIn.control_points[0].position.xy, patchIn.control_points[1].position.xy, u);
-	float2 lower_middle = mix(patchIn.control_points[2].position.xy, patchIn.control_points[3].position.xy, 1-u);
-	
-	// Output
-	FunctionOutIn vertexOut;
-	vertexOut.position = float4(mix(upper_middle, lower_middle, v), 0.0, 1.0);
-	vertexOut.color = half4(u, v, 1.0-v, 1.0);
-	return vertexOut;
+	float mask = maskTexture.sample(maskSampler, vertexIn.maskTexcoords).a;
+	float4 pattern = patternTexture.sample(patternSampler, vertexIn.patternTexcoords);
+	return float4(pattern.rgb, pattern.a * mask);
 }
-
-#pragma mark Fragment Function
-
-// Common fragment function
-fragment half4 brush_tessellation_fragment(FunctionOutIn fragmentIn [[stage_in]])
-{
-	return fragmentIn.color;
-}
-
 
