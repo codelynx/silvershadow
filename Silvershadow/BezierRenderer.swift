@@ -221,41 +221,30 @@ class BezierRenderer: Renderer {
 		}
 		.flatMap { $0 }
 	}
+	
+	// MARK: -
+	
+	#if os(iOS)
+	lazy var heap: XHeap = {
+		return self.device.makeHeap(size: 1024 * 1024 * 64) // ??
+	}()
+	#endif
+
+	#if os(macOS)
+	var heap: XHeap { return self.device }
+	#endif
+
+
+	func makeElementBuffer(elements: [BezierPathElement]) -> MetalBuffer<BezierPathElement> {
+		return MetalBuffer<BezierPathElement>(heap: self.heap, vertices: elements)
+	}
+
+	func makeVertexBuffer(vertices: [Vertex], capacity: Int) -> MetalBuffer<Vertex> {
+		return MetalBuffer<Vertex>(heap: self.heap, vertices: vertices, capacity: capacity)
+	}
 
 	let vertexCapacity = 40_000
 	let elementsCapacity = 4_000
-
-	var elementBufferIndex = 0
-	var vertexBufferIndex = 0
-
-	// triple buffer technique
-
-	lazy var elementBuffers: [VertexBuffer<BezierPathElement>] = {
-		return [
-			VertexBuffer<BezierPathElement>(device: self.device, vertices: [], capacity: self.elementsCapacity),
-			VertexBuffer<BezierPathElement>(device: self.device, vertices: [], capacity: self.elementsCapacity),
-			VertexBuffer<BezierPathElement>(device: self.device, vertices: [], capacity: self.elementsCapacity)
-		]
-	}()
-	lazy var vertexBuffers: [VertexBuffer<Vertex>] = {
-		return [
-			VertexBuffer<Vertex>(device: self.device, vertices: [], capacity: self.vertexCapacity),
-			VertexBuffer<Vertex>(device: self.device, vertices: [], capacity: self.vertexCapacity),
-			VertexBuffer<Vertex>(device: self.device, vertices: [], capacity: self.vertexCapacity)
-		]
-	}()
-
-	func nextElementBuffer() -> VertexBuffer<BezierPathElement> {
-		defer { elementBufferIndex += 1 }
-		let index = elementBufferIndex % elementBuffers.count
-		return elementBuffers[index]
-	}
-
-	func nextVertexBuffer() -> VertexBuffer<Vertex> {
-		defer { vertexBufferIndex += 1 }
-		let index = vertexBufferIndex % vertexBuffers.count
-		return vertexBuffers[index]
-	}
 	
 	// MARK: -
 
@@ -315,10 +304,10 @@ class BezierRenderer: Renderer {
 		shadingRenderPassDescriptor.colorAttachments[0].storeAction = .store
 
 		for elements in elementsArray {
-			let vertexBuffer = nextVertexBuffer()
-			let elementBuffer = nextElementBuffer()
 
-//			let bufferIndex = index % vertexDoubleBuffers.count // double buffer
+			let vertexCount = elements.map { $0.numberOfVertexes }.reduce (0, +)
+			let elementBuffer = makeElementBuffer(elements: elements)
+			let vertexBuffer = makeVertexBuffer(vertices: [], capacity: Int(vertexCount))
 			let commandBuffer = context.commandBuffer
 
 			// build contiguous vertexes using computing shader from PathElement
@@ -326,6 +315,7 @@ class BezierRenderer: Renderer {
 			do {
 				let encoder = commandBuffer.makeComputeCommandEncoder()
 				encoder.setComputePipelineState(self.computePipelineState)
+
 				
 				elementBuffer.set(elements)
 				encoder.setBuffer(elementBuffer.buffer, offset: 0, at: 0)

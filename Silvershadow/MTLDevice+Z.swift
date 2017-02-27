@@ -43,4 +43,13 @@ extension MTLDevice {
 		do { return try self.textureLoader.newTexture(withName: name, scaleFactor: 1.0, bundle: nil, options: options) }
 		catch { fatalError("\(error)") }
 	}
+
+	#if os(iOS)
+	func makeHeap(size: Int) -> MTLHeap {
+		let descriptor = MTLHeapDescriptor()
+		descriptor.storageMode = .shared
+		descriptor.size = size
+		return self.makeHeap(descriptor: descriptor)
+	}
+	#endif
 }
