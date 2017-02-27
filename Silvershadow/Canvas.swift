@@ -111,7 +111,7 @@ class Canvas: Scene {
 
 			let subrenderContext = RenderCanvasContext(
 						renderPassDescriptor: subrenderPassDescriptor,
-						commandBuffer: commandBuffer, transform: subtransform, zoomScale: 1, bounds: self.bounds,
+						commandQueue: commandQueue, transform: subtransform, zoomScale: 1, bounds: self.bounds,
 						shadingTexture: self.shadingTexture)
 			canvasLayer.render(context: subrenderContext)
 
@@ -120,7 +120,7 @@ class Canvas: Scene {
 
 			let transform = GLKMatrix4Identity
 			let renderContext = RenderContext(renderPassDescriptor: renderPassDescriptor,
-							commandBuffer: commandBuffer, transform: transform, zoomScale: 1)
+							commandQueue: commandQueue, transform: transform, zoomScale: 1)
 			renderContext.render(texture: subtexture, in: Rect(-1, -1, 2, 2))
 
 		}
@@ -150,7 +150,8 @@ class Canvas: Scene {
 
 		// build rendering overlay canvas layer
 
-		let commandBuffer = context.commandBuffer
+		//let commandBuffer = context.makeCommandBuffer()
+
 		guard let overlayCanvasLayer = self.overlayCanvasLayer else { return }
 		print("render: \(overlayCanvasLayer.name)")
 		let subtexture = self.sublayerTexture
@@ -163,7 +164,7 @@ class Canvas: Scene {
 		subrenderPassDescriptor.colorAttachments[0].storeAction = .store
 
 		let subrenderContext = RenderCanvasContext(renderPassDescriptor: subrenderPassDescriptor,
-					commandBuffer: commandBuffer, transform: subtransform, zoomScale: 1, bounds: self.bounds,
+					commandQueue: context.commandQueue, transform: subtransform, zoomScale: 1, bounds: self.bounds,
 					shadingTexture: self.shadingTexture)
 		overlayCanvasLayer.render(context: subrenderContext)
 

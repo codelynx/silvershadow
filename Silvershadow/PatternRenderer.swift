@@ -172,7 +172,8 @@ class PatternRenderer: Renderer {
 		let vertexArray = UnsafeMutableBufferPointer<Vertex>(start: vertexArrayPtr, count: vertexes.count)
 		(0 ..< vertexes.count).forEach { vertexArray[$0] = vertexes[$0] }
 
-		let encoder = context.makeRenderCommandEncoder()
+		let commandBuffer = context.makeCommandBuffer()
+		let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: context.renderPassDescriptor)
 		
 		encoder.setRenderPipelineState(self.renderPipelineState)
 
@@ -190,6 +191,7 @@ class PatternRenderer: Renderer {
 		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexes.count)
 
 		encoder.endEncoding()
+		commandBuffer.commit()
 	}
 }
 

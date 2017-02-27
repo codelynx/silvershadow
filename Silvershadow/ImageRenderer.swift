@@ -156,7 +156,8 @@ class ImageRenderer: Renderer {
 		let vertexBuffer = rectangularVertexTripleBuffer[tripleBufferIndex]
 		vertexBuffer.set(vertices)
 
-		let encoder = context.makeRenderCommandEncoder()
+		let commandBuffer = context.makeCommandBuffer()
+		let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: context.renderPassDescriptor)
 		
 		encoder.setRenderPipelineState(self.renderPipelineState)
 
@@ -171,6 +172,7 @@ class ImageRenderer: Renderer {
 		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexBuffer.count)
 
 		encoder.endEncoding()
+		commandBuffer.commit()
 	}
 }
 

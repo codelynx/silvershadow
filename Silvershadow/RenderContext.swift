@@ -17,31 +17,26 @@ import GLKit
 
 class RenderContext {
 	let renderPassDescriptor: MTLRenderPassDescriptor
-	let commandBuffer: MTLCommandBuffer
+	let commandQueue: MTLCommandQueue
 	let transform: GLKMatrix4
 	let zoomScale: CGFloat
 
-	var device: MTLDevice { return commandBuffer.device }
+	var device: MTLDevice { return commandQueue.device }
 
 	init(
 		renderPassDescriptor: MTLRenderPassDescriptor,
-		commandBuffer: MTLCommandBuffer,
+		commandQueue: MTLCommandQueue,
 		transform: GLKMatrix4,
 		zoomScale: CGFloat
 	) {
 		self.renderPassDescriptor = renderPassDescriptor
-		self.commandBuffer = commandBuffer
+		self.commandQueue = commandQueue
 		self.transform = transform
 		self.zoomScale = zoomScale
 	}
 
-
-	func makeRenderCommandEncoder() -> MTLRenderCommandEncoder {
-		return self.commandBuffer.makeRenderCommandEncoder(descriptor: self.renderPassDescriptor)
-	}
-	
 	func makeCommandBuffer() -> MTLCommandBuffer {
-		return self.commandBuffer.commandQueue.makeCommandBuffer()
+		return self.commandQueue.makeCommandBuffer()
 	}
 }
 

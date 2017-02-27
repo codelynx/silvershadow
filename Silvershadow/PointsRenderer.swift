@@ -128,7 +128,8 @@ class PointsRenderer: Renderer {
 		var uniforms = Uniforms(transform: transform, zoomScale: Float(context.zoomScale))
 		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
 
-		let encoder = context.makeRenderCommandEncoder()
+		let commandBuffer = context.makeCommandBuffer()
+		let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: context.renderPassDescriptor)
 		encoder.setRenderPipelineState(self.renderPipelineState)
 
 		encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
@@ -139,6 +140,7 @@ class PointsRenderer: Renderer {
 
 		encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: vertexBuffer.count)
 		encoder.endEncoding()
+		commandBuffer.commit()
 	}
 
 	func render(context: RenderContext, texture: MTLTexture, vertexes: [Vertex]) {

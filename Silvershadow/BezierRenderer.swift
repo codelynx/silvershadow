@@ -305,10 +305,11 @@ class BezierRenderer: Renderer {
 
 		for elements in elementsArray {
 
+			let commandBuffer = context.makeCommandBuffer()
+
 			let vertexCount = elements.map { $0.numberOfVertexes }.reduce (0, +)
 			let elementBuffer = makeElementBuffer(elements: elements)
 			let vertexBuffer = makeVertexBuffer(vertices: [], capacity: Int(vertexCount))
-			let commandBuffer = context.commandBuffer
 
 			// build contiguous vertexes using computing shader from PathElement
 			
@@ -348,6 +349,8 @@ class BezierRenderer: Renderer {
 				encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: Int(vertexCount))
 				encoder.endEncoding()
 			}
+
+			commandBuffer.commit()
 
 			shadingRenderPassDescriptor.colorAttachments[0].loadAction = .load
 		}

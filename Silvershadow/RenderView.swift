@@ -215,7 +215,6 @@ class RenderView: XView, MTKViewDelegate {
 		guard let scene = self.scene else { return }
 		guard let commandQueue = self.commandQueue else { return }
 
-		let commandBuffer = commandQueue.makeCommandBuffer()
 
 		let rgba = self.scene?.backgroundColor.rgba ?? XRGBA(0.9, 0.9, 0.9, 1.0)
 		let clearColor = MTLClearColorMake(Double(rgba.r), Double(rgba.g), Double(rgba.b), Double(rgba.a))
@@ -225,20 +224,27 @@ class RenderView: XView, MTKViewDelegate {
 		renderPassDescriptor.colorAttachments[0].storeAction = .store
 
 		// just for clearing screen
-		let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
-		commandEncoder.endEncoding()
+		do {
+			let commandBuffer = commandQueue.makeCommandBuffer()
+			let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
+			commandEncoder.endEncoding()
+			commandBuffer.commit()
+		}
 	
 		// setup render context
 		let transform = GLKMatrix4(self.drawingTransform)
 		renderPassDescriptor.colorAttachments[0].loadAction = .load
-		let renderContext = RenderContext(renderPassDescriptor: renderPassDescriptor, commandBuffer: commandBuffer,
+		let renderContext = RenderContext(renderPassDescriptor: renderPassDescriptor, commandQueue: commandQueue,
 				transform: transform, zoomScale: self.zoomScale)
 
 		// actual rendering
 		scene.render(in: renderContext)
-		
-		commandBuffer.present(drawable)
-		commandBuffer.commit()
+
+		do {
+			let commandBuffer = commandQueue.makeCommandBuffer()
+			commandBuffer.present(drawable)
+			commandBuffer.commit()
+		}
 	}
 
 	var zoomScale: CGFloat {

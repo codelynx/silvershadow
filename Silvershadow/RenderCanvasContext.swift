@@ -26,7 +26,7 @@ class RenderCanvasContext: RenderContext {
 
 	init(
 		renderPassDescriptor: MTLRenderPassDescriptor,
-		commandBuffer: MTLCommandBuffer,
+		commandQueue: MTLCommandQueue,
 		transform: GLKMatrix4,
 		zoomScale: CGFloat,
 		bounds: CGRect,
@@ -34,7 +34,7 @@ class RenderCanvasContext: RenderContext {
 	) {
 		self.bounds = Rect(bounds)
 		self.shadingTexture = shadingTexture
-		super.init(renderPassDescriptor: renderPassDescriptor, commandBuffer: commandBuffer, transform: transform, zoomScale: zoomScale)
+		super.init(renderPassDescriptor: renderPassDescriptor, commandQueue: commandQueue, transform: transform, zoomScale: zoomScale)
 	}
 
 }
