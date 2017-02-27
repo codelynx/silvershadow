@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
@@ -616,6 +616,19 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Window" systemMenu="window" id="Td7-aD-5lo">
                                     <items>
+                                        <menuItem title="Sample Scene" id="4R0-Jc-qZ4">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <segue destination="B8D-0N-5wS" kind="show" id="OBX-0V-Z3x"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Sample Canvas" id="Xc2-yK-Ino">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <segue destination="SYA-AH-PKH" kind="show" id="5tn-3D-eud"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="Dm4-VU-KHP"/>
                                         <menuItem title="Minimize" keyEquivalent="m" id="OY7-WF-poV">
                                             <connections>
                                                 <action selector="performMiniaturize:" target="Ady-hI-5gd" id="VwT-WD-YPe"/>
@@ -655,10 +668,15 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="SilvershadowApp_mac" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="SilvershadowApp_mac" customModuleProvider="target">
+                    <connections>
+                        <outlet property="sampleCanvasMenuItem" destination="Xc2-yK-Ino" id="X0a-dl-FZd"/>
+                        <outlet property="sampleSceneMenuItem" destination="4R0-Jc-qZ4" id="OcQ-cd-XfF"/>
+                    </connections>
+                </customObject>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="0.0"/>
+            <point key="canvasLocation" x="336" y="-581"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
@@ -667,7 +685,7 @@
                     <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="196" y="240" width="1024" height="768"/>
+                        <rect key="contentRect" x="196" y="240" width="800" height="600"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
                         <value key="minSize" type="size" width="800" height="600"/>
                     </window>
@@ -679,10 +697,56 @@
             </objects>
             <point key="canvasLocation" x="74" y="-65"/>
         </scene>
-        <!--Sample View Controller-->
+        <!--Window Controller-->
+        <scene sceneID="sZm-lP-Wiv">
+            <objects>
+                <windowController id="SYA-AH-PKH" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="vIa-0U-T2O">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="1956" y="867" width="800" height="600"/>
+                        <rect key="screenRect" x="1440" y="303" width="3008" height="1669"/>
+                        <value key="minSize" type="size" width="800" height="600"/>
+                    </window>
+                    <connections>
+                        <segue destination="NDm-ic-JXY" kind="relationship" relationship="window.shadowedContentViewController" id="b3D-ds-aeK"/>
+                    </connections>
+                </windowController>
+                <customObject id="FkJ-a0-F9N" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="999" y="-65"/>
+        </scene>
+        <!--Sample Canvas View Controller-->
+        <scene sceneID="WCF-qa-8n0">
+            <objects>
+                <viewController id="NDm-ic-JXY" customClass="SampleCanvasViewController" customModule="SilvershadowApp_mac" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="8aa-Bz-pwV">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="8cm-1Y-HVl" customClass="RenderView" customModule="SilvershadowApp_mac" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                            </customView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="8cm-1Y-HVl" secondAttribute="bottom" id="V4K-Qw-Yfa"/>
+                            <constraint firstItem="8cm-1Y-HVl" firstAttribute="top" secondItem="8aa-Bz-pwV" secondAttribute="top" id="crY-gG-8aB"/>
+                            <constraint firstAttribute="trailing" secondItem="8cm-1Y-HVl" secondAttribute="trailing" id="nqy-wZ-bXs"/>
+                            <constraint firstItem="8cm-1Y-HVl" firstAttribute="leading" secondItem="8aa-Bz-pwV" secondAttribute="leading" id="wqm-hx-8Gg"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="renderView" destination="8cm-1Y-HVl" id="U56-Pd-3eV"/>
+                    </connections>
+                </viewController>
+                <customObject id="jQu-jc-R7J" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="999" y="625"/>
+        </scene>
+        <!--Sample Scene View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="XfG-lQ-9wD" customClass="SampleViewController" customModule="SilvershadowApp_mac" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="XfG-lQ-9wD" customClass="SampleSceneViewController" customModule="SilvershadowApp_mac" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -704,7 +768,7 @@
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="655"/>
+            <point key="canvasLocation" x="74" y="607"/>
         </scene>
     </scenes>
 </document>

@@ -11,14 +11,23 @@ import MetalKit
 import GLKit
 
 
-class SampleCanvasLayer2: CanvasLayer {
+class SampleCanvasScribbleLayer: CanvasLayer {
 
 	lazy var brushSapeTexture: MTLTexture? = {
 		return self.device?.texture(of: XImage(named: "Particle")!)!
 	}()
 
+
+	lazy var brushPatternTexture1: MTLTexture! = {
+		return self.device?.texture(of: XImage(named: "Pencil")!)!
+	}()
+
+	lazy var brushPatternTexture2: MTLTexture! = {
+		return self.device?.texture(of: XImage(named: "test")!)!
+	}()
+
 	lazy var strokePaths: [CGPath] = {
-		return [self.samplePath(CGAffineTransform.identity)]
+		return [ self.samplePath(.identity) ]
 	}()
 
 	var samplePoints: [(CGFloat, CGFloat)] = [
@@ -55,10 +64,9 @@ class SampleCanvasLayer2: CanvasLayer {
 	override func render(context: RenderCanvasContext) {
 		guard let device = self.device else { return }
 	
-		let brushShape = self.brushSapeTexture!
 		let bezierRenderer = device.renderer() as BezierRenderer
 
-		print("SampleCanvasLayer2: render(), cgPaths=\(strokePaths.count)")
+		context.brushPattern = self.brushPatternTexture2
 		bezierRenderer.render(context: context, cgPaths: strokePaths)
 	}
 

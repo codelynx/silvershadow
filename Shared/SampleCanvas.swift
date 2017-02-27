@@ -13,14 +13,14 @@ import GLKit
 
 class SampleCanvas: Canvas {
 
-	var drawingLayer = SampleCanvasLayer2()
-	var interactiveLayer = SampleCanvasLayer2()
+	var drawingLayer = SampleCanvasScribbleLayer()
+	var interactiveLayer = SampleCanvasScribbleLayer()
 
 	override init?(device: MTLDevice, contentSize: CGSize) {
 		super.init(device: device, contentSize: contentSize)
 
-		let sampleCanvasLayer1 = SampleCanvasLayer1()
-		self.addLayer(sampleCanvasLayer1)
+		let backdropLayer = SampleCanvasBackdropLayer()
+		self.addLayer(backdropLayer)
 		
 		// having problem of compositing layers, so comment out this part for now
 		self.addLayer(drawingLayer)

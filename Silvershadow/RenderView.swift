@@ -42,7 +42,10 @@ class RenderView: XView, MTKViewDelegate {
 		if let scene = self.scene {
 			let contentSize = scene.contentSize
 			self.scrollView.contentSize = contentSize
-			self.contentView.bounds = CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
+//			self.contentView.bounds = CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
+			let bounds = CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
+			let frame = self.scrollView.convert(bounds, to: self.contentView)
+			self.contentView.frame = frame
 		}
 		else {
 			self.scrollView.contentSize = self.bounds.size
@@ -50,7 +53,8 @@ class RenderView: XView, MTKViewDelegate {
 		}
 		self.scrollView.autoresizesSubviews = false;
 		self.contentView.translatesAutoresizingMaskIntoConstraints = false
-		self.contentView.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin]
+		self.contentView.autoresizingMask = []
+		self.contentView.autoresizingMask = [.flexibleRightMargin, .flexibleBottomMargin]
 		self.setNeedsDisplay()
 	}
 	#endif

@@ -13,12 +13,9 @@ import Cocoa
 #endif
 
 
-class SampleViewController: XViewController {
+class SampleCanvasViewController: XViewController {
 
-//	typealias SceneType = SampleScene
-	typealias SceneType = SampleCanvas
-
-	var sampleScene: SceneType!
+	var sampleScene: SampleCanvas!
 
 	@IBOutlet var renderView: RenderView!
 
@@ -28,7 +25,7 @@ class SampleViewController: XViewController {
 		let device = self.renderView.device
 		let contentSize = CGSize(2048, 1024)
 
-		self.sampleScene = SceneType(device: device, contentSize: contentSize)
+		self.sampleScene = SampleCanvas(device: device, contentSize: contentSize)
 		self.renderView.scene = self.sampleScene
 	}
 

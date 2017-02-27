@@ -222,11 +222,46 @@ class BezierRenderer: Renderer {
 		.flatMap { $0 }
 	}
 
+	let vertexCapacity = 40_000
+	let elementsCapacity = 4_000
+
+	var elementBufferIndex = 0
+	var vertexBufferIndex = 0
+
+	// triple buffer technique
+
+	lazy var elementBuffers: [VertexBuffer<BezierPathElement>] = {
+		return [
+			VertexBuffer<BezierPathElement>(device: self.device, vertices: [], capacity: self.elementsCapacity),
+			VertexBuffer<BezierPathElement>(device: self.device, vertices: [], capacity: self.elementsCapacity),
+			VertexBuffer<BezierPathElement>(device: self.device, vertices: [], capacity: self.elementsCapacity)
+		]
+	}()
+	lazy var vertexBuffers: [VertexBuffer<Vertex>] = {
+		return [
+			VertexBuffer<Vertex>(device: self.device, vertices: [], capacity: self.vertexCapacity),
+			VertexBuffer<Vertex>(device: self.device, vertices: [], capacity: self.vertexCapacity),
+			VertexBuffer<Vertex>(device: self.device, vertices: [], capacity: self.vertexCapacity)
+		]
+	}()
+
+	func nextElementBuffer() -> VertexBuffer<BezierPathElement> {
+		defer { elementBufferIndex += 1 }
+		let index = elementBufferIndex % elementBuffers.count
+		return elementBuffers[index]
+	}
+
+	func nextVertexBuffer() -> VertexBuffer<Vertex> {
+		defer { vertexBufferIndex += 1 }
+		let index = vertexBufferIndex % vertexBuffers.count
+		return vertexBuffers[index]
+	}
+	
+	// MARK: -
+
 	func render(context: RenderCanvasContext, cgPaths: [CGPath]) {
 		guard cgPaths.count > 0 else { return }
 
-		let vertexCapacity = 40_000
-		let elementsCapacity = 4_000
 		var elementsArray = [[BezierPathElement]]()
 		let (w1, w2) = (8, 8)
 
@@ -266,16 +301,10 @@ class BezierRenderer: Renderer {
 		var uniforms = Uniforms(transform: transform, zoomScale: Float(context.zoomScale))
 		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
 
-		// double buffer technique
-		let elementsDoubleBuffers: [MTLBuffer] = [
-				device.makeBuffer(length: MemoryLayout<BezierPathElement>.size * elementsCapacity, options: [.storageModeShared]),
-				device.makeBuffer(length: MemoryLayout<BezierPathElement>.size * elementsCapacity, options: [.storageModeShared])
-		]
-		let vertexDoubleBuffers: [MTLBuffer] = [
-			device.makeBuffer(length: MemoryLayout<Vertex>.size * vertexCapacity, options: [.storageModePrivate]),
-			device.makeBuffer(length: MemoryLayout<Vertex>.size * vertexCapacity, options: [.storageModePrivate])
-		]
-		assert(elementsDoubleBuffers.count == vertexDoubleBuffers.count)
+
+		//	var curentElementBufferIndex = 0
+		//	var curentVertexBufferIndex = 0
+
 
 		// Now shading brush stroke on shadingTexture
 
@@ -285,9 +314,11 @@ class BezierRenderer: Renderer {
 		shadingRenderPassDescriptor.colorAttachments[0].loadAction = .clear
 		shadingRenderPassDescriptor.colorAttachments[0].storeAction = .store
 
-		for (index, elements) in elementsArray.enumerated() {
+		for elements in elementsArray {
+			let vertexBuffer = nextVertexBuffer()
+			let elementBuffer = nextElementBuffer()
 
-			let bufferIndex = index % vertexDoubleBuffers.count // double buffer
+//			let bufferIndex = index % vertexDoubleBuffers.count // double buffer
 			let commandBuffer = context.commandBuffer
 
 			// build contiguous vertexes using computing shader from PathElement
@@ -295,12 +326,10 @@ class BezierRenderer: Renderer {
 			do {
 				let encoder = commandBuffer.makeComputeCommandEncoder()
 				encoder.setComputePipelineState(self.computePipelineState)
-				let destinationArray = UnsafeMutablePointer<BezierPathElement>(OpaquePointer(elementsDoubleBuffers[bufferIndex].contents()))
-				for index in 0 ..< elements.count {
-					destinationArray[index] = elements[index]
-				}
-				encoder.setBuffer(elementsDoubleBuffers[bufferIndex], offset: 0, at: 0)
-				encoder.setBuffer(vertexDoubleBuffers[bufferIndex], offset: 0, at: 1)
+				
+				elementBuffer.set(elements)
+				encoder.setBuffer(elementBuffer.buffer, offset: 0, at: 0)
+				encoder.setBuffer(vertexBuffer.buffer, offset: 0, at: 1)
 				let threadgroupsPerGrid = MTLSizeMake(elements.count, 1, 1)
 				let threadsPerThreadgroup = MTLSizeMake(1, 1, 1)
 				encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
@@ -316,7 +345,8 @@ class BezierRenderer: Renderer {
 				encoder.setRenderPipelineState(self.renderPipelineState)
 
 				encoder.setFrontFacing(.clockwise)
-				encoder.setVertexBuffer(vertexDoubleBuffers[bufferIndex], offset: 0, at: 0)
+
+				encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
 				encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
 
 				encoder.setFragmentTexture(context.brushShape, at: 0)

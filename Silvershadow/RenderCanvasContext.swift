@@ -21,7 +21,7 @@ class RenderCanvasContext: RenderContext {
 	}()
 
 	lazy var brushPattern: MTLTexture = {
-		return self.device.texture(of: XImage(named: "test")!)!
+		return self.device.texture(of: XImage(named: "Pencil")!)!
 	}()
 
 	init(
