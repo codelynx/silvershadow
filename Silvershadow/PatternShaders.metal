@@ -53,7 +53,11 @@ fragment float4 pattern_fragment(
 	float4 shape = shadingTexture.sample(shadingSampler, fragmentIn.texcoords).a;
 	float2 ratio = uniforms.contentSize / uniforms.patternSize;
 	float4 patternColor = patternTexture.sample(patternSampler, (fragmentIn.position * uniforms.transform).xy * ratio);
-	float4 color = float4(patternColor.rgb, shape.a);
-	return color;
+	if (patternColor.a * shape.a > 0.0) {
+		return float4(patternColor.rgb, patternColor.a * shape.a);
+	}
+	else {
+		return float4(0);
+	}
 }
 

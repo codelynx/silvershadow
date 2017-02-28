@@ -68,8 +68,8 @@ class ColorRenderer: Renderer {
 		renderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
 		renderPipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
 
-		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
+		renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .one
+		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .one
 		renderPipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
 		renderPipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
 		

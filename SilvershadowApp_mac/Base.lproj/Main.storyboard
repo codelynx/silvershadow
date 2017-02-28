@@ -616,14 +616,12 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Window" systemMenu="window" id="Td7-aD-5lo">
                                     <items>
-                                        <menuItem title="Sample Scene" id="4R0-Jc-qZ4">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        <menuItem title="Sample Scene" keyEquivalent="1" id="4R0-Jc-qZ4">
                                             <connections>
                                                 <segue destination="B8D-0N-5wS" kind="show" id="OBX-0V-Z3x"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Sample Canvas" id="Xc2-yK-Ino">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        <menuItem title="Sample Canvas" keyEquivalent="2" id="Xc2-yK-Ino">
                                             <connections>
                                                 <segue destination="SYA-AH-PKH" kind="show" id="5tn-3D-eud"/>
                                             </connections>
