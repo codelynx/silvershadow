@@ -201,16 +201,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		CC0664AD1E2090CA0054E445 /* Kernels */ = {
-			isa = PBXGroup;
-			children = (
-				CC78D71E1E43B72300B7C0DA /* BezierShaders.metal */,
-				CCADFADD1E211EBB00ECB9D0 /* BezierRenderer.swift */,
-				CC78D7181E436D9F00B7C0DA /* Kernel.swift */,
-			);
-			name = Kernels;
-			sourceTree = "<group>";
-		};
 		CCF3494C1E0F994000EF1312 = {
 			isa = PBXGroup;
 			children = (
@@ -257,6 +247,8 @@
 		CCF3497E1E0F99C300EF1312 /* Silvershadow */ = {
 			isa = PBXGroup;
 			children = (
+				CCADFADD1E211EBB00ECB9D0 /* BezierRenderer.swift */,
+				CC78D71E1E43B72300B7C0DA /* BezierShaders.metal */,
 				CC851CE91E135C770083268F /* Canvas.swift */,
 				CC851CEC1E135CF30083268F /* CanvasLayer.swift */,
 				CC78D71B1E43832C00B7C0DA /* CGPath+Z.swift */,
@@ -270,8 +262,10 @@
 				CC1F2F2C1E1151180097B223 /* ImageRenderable.swift */,
 				CC1F2F2D1E1151180097B223 /* ImageRenderer.swift */,
 				CC1F2F2E1E1151180097B223 /* ImageShaders.metal */,
-				CC0664AD1E2090CA0054E445 /* Kernels */,
+				CC78D7181E436D9F00B7C0DA /* Kernel.swift */,
+				CCAF8F161E64772C000ECD48 /* MetalBuffer.swift */,
 				CCB11D9A1E24C65300F30482 /* MTLDevice+Z.swift */,
+				CCAF8F191E64788E000ECD48 /* MTLHeap+Z.swift */,
 				CC851CFE1E13A4100083268F /* MTLTexture+Z.swift */,
 				CCE9FE301E595F2B002603BC /* PatternRenderer.swift */,
 				CCE9FE2B1E5953FC002603BC /* PatternShaders.metal */,
@@ -288,10 +282,8 @@
 				CCF349851E0F9A0300EF1312 /* RenderView.swift */,
 				CCF349821E0F9A0300EF1312 /* Scene.swift */,
 				CC851CDE1E12F8AD0083268F /* Sequence+Z.swift */,
-				CCAF8F161E64772C000ECD48 /* MetalBuffer.swift */,
 				CCF3498A1E0F9A0300EF1312 /* VertexBuffer.swift */,
 				CCF349AF1E0FA19100EF1312 /* XView+Z.swift */,
-				CCAF8F191E64788E000ECD48 /* MTLHeap+Z.swift */,
 			);
 			path = Silvershadow;
 			sourceTree = "<group>";

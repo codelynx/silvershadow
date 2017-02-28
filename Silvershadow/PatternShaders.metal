@@ -50,10 +50,10 @@ fragment float4 pattern_fragment(
 	constant Uniforms & uniforms [[ buffer(0) ]]
 ) {
 
-	float4 shpae = shadingTexture.sample(shadingSampler, fragmentIn.texcoords).a;
+	float4 shape = shadingTexture.sample(shadingSampler, fragmentIn.texcoords).a;
 	float2 ratio = uniforms.contentSize / uniforms.patternSize;
 	float4 patternColor = patternTexture.sample(patternSampler, (fragmentIn.position * uniforms.transform).xy * ratio);
-	float4 color = float4(patternColor.rgb, shpae.a);
+	float4 color = float4(patternColor.rgb, shape.a);
 	return color;
 }
 
