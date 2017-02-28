@@ -47,17 +47,15 @@ class Scene {
 	func setNeedsUpdate() {
 		if self.beingUpdated == false {
 			self.beingUpdated = true
-			DispatchQueue.main.async {
-				if let semaphore = self.renderView?.semaphore {
-					semaphore.wait()
-					defer { semaphore.signal() }
-					self.update()
-				}
-				else {
-					self.update()
-				}
-				self.beingUpdated = false
+			if let semaphore = self.renderView?.semaphore {
+				semaphore.wait()
+				defer { semaphore.signal() }
+				self.update()
 			}
+			else {
+				self.update()
+			}
+			self.beingUpdated = false
 		}
 	}
 	

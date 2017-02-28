@@ -145,7 +145,7 @@ class ImageRenderer: Renderer {
 	
 	var tripleBufferIndex = 0
 
-	func renderImage(context: RenderContext, texture: MTLTexture, in rect: Rect) {
+	func renderTexture(context: RenderContext, texture: MTLTexture, in rect: Rect) {
 		defer { tripleBufferIndex = (tripleBufferIndex + 1) % uniformTripleBuffer.count }
 
 		let uniformsBuffer = uniformTripleBuffer[tripleBufferIndex]
@@ -158,7 +158,7 @@ class ImageRenderer: Renderer {
 
 		let commandBuffer = context.makeCommandBuffer()
 		let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: context.renderPassDescriptor)
-		
+		encoder.pushDebugGroup("image")
 		encoder.setRenderPipelineState(self.renderPipelineState)
 
 		encoder.setFrontFacing(.clockwise)
@@ -170,8 +170,9 @@ class ImageRenderer: Renderer {
 		encoder.setFragmentSamplerState(self.colorSamplerState, at: 0)
 
 		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexBuffer.count)
-
+		encoder.popDebugGroup()
 		encoder.endEncoding()
+
 		commandBuffer.commit()
 	}
 }
@@ -182,7 +183,7 @@ extension RenderContext {
 	func render(texture: MTLTexture?, in rect: Rect) {
 		guard let texture = texture else { return }
 		let renderer = self.device.renderer() as ImageRenderer
-		renderer.renderImage(context: self, texture: texture, in: rect)
+		renderer.renderTexture(context: self, texture: texture, in: rect)
 	}
 
 	func render(image: XImage?, in rect: Rect) {

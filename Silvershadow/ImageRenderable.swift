@@ -40,7 +40,7 @@ class ImageRenderable: Renderable {
 	}
 
 	func render(context: RenderContext) {
-		self.renderer.renderImage(context: context, texture: texture, in: frame)
+		self.renderer.renderTexture(context: context, texture: texture, in: frame)
 	}
 	
 }

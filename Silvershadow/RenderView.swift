@@ -75,7 +75,7 @@ class RenderView: XView, MTKViewDelegate {
 			self.scrollView.documentView?.frame = CGRect(0, 0, self.bounds.width, self.bounds.height)
 		}
 		self.contentView.translatesAutoresizingMaskIntoConstraints = false
-		self.contentView.autoresizingMask = [.viewMinXMargin, .viewMaxXMargin, .viewMinYMargin, .viewMaxYMargin]
+		self.contentView.autoresizingMask = [.viewMaxXMargin, /*.viewMinYMargin,*/ .viewMaxYMargin]
 		self.setNeedsDisplay()
 	}
 	#endif
@@ -140,8 +140,13 @@ class RenderView: XView, MTKViewDelegate {
 	#endif
 
 	#if os(macOS)
+	
+	var lastCall = Date()
+	
 	@objc func scrollContentDidChange(_ notification: Notification) {
-		self.drawView.setNeedsDisplay()
+		Swift.print("since lastCall = \(-lastCall.timeIntervalSinceNow * 1000) ms")
+		self.lastCall = Date()
+//		self.drawView.setNeedsDisplay()
 		self.mtkView.setNeedsDisplay()
 	}
 	#endif
@@ -205,6 +210,10 @@ class RenderView: XView, MTKViewDelegate {
 	let semaphore = DispatchSemaphore(value: 1)
 
 	func draw(in view: MTKView) {
+
+		let date = Date()
+		defer { Swift.print("RenderView: draw() ", -date.timeIntervalSinceNow * 1000, " ms") }
+	
 		self.semaphore.wait()
 		defer { self.semaphore.signal() }
 	

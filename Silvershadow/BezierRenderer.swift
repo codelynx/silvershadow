@@ -239,7 +239,7 @@ class BezierRenderer: Renderer {
 		return MetalBuffer<BezierPathElement>(heap: self.heap, vertices: elements)
 	}
 
-	func makeVertexBuffer(vertices: [Vertex], capacity: Int) -> MetalBuffer<Vertex> {
+	func makeVertexBuffer(vertices: [Vertex]?, capacity: Int) -> MetalBuffer<Vertex> {
 		return MetalBuffer<Vertex>(heap: self.heap, vertices: vertices, capacity: capacity)
 	}
 
@@ -266,7 +266,7 @@ class BezierRenderer: Renderer {
 		// by segment because of performance.  Following code sprits line segments by vertex buffer's capacity.
 
 		for segment in segments {
-			let count = Int(segment.length)
+			let count = Int(ceil(segment.length))
 			if vertexCount + count > vertexCapacity || elementCount + 1 > elementsCapacity {
 				elementsArray.append(elements)
 				elements = [BezierPathElement]()
@@ -303,11 +303,14 @@ class BezierRenderer: Renderer {
 		shadingRenderPassDescriptor.colorAttachments[0].loadAction = .clear
 		shadingRenderPassDescriptor.colorAttachments[0].storeAction = .store
 
+		print("elementsArray=\(elementsArray.count)")
+
 		for elements in elementsArray {
+
+			let vertexCount = elements.map { $0.numberOfVertexes }.reduce (0, +)
 
 			let commandBuffer = context.makeCommandBuffer()
 
-			let vertexCount = elements.map { $0.numberOfVertexes }.reduce (0, +)
 			let elementBuffer = makeElementBuffer(elements: elements)
 			let vertexBuffer = makeVertexBuffer(vertices: [], capacity: Int(vertexCount))
 
@@ -315,24 +318,25 @@ class BezierRenderer: Renderer {
 			
 			do {
 				let encoder = commandBuffer.makeComputeCommandEncoder()
+				encoder.pushDebugGroup("bezier - kernel")
 				encoder.setComputePipelineState(self.computePipelineState)
 
-				
 				elementBuffer.set(elements)
 				encoder.setBuffer(elementBuffer.buffer, offset: 0, at: 0)
 				encoder.setBuffer(vertexBuffer.buffer, offset: 0, at: 1)
 				let threadgroupsPerGrid = MTLSizeMake(elements.count, 1, 1)
 				let threadsPerThreadgroup = MTLSizeMake(1, 1, 1)
 				encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+
+				encoder.popDebugGroup()
 				encoder.endEncoding()
 			}
 
 			// vertex buffer should be filled with vertexes then draw it
 
 			do {
-				let vertexCount = elements.map { $0.numberOfVertexes }.reduce (0, +)
-
 				let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: shadingRenderPassDescriptor)
+				encoder.pushDebugGroup("bezier - brush shaping")
 				encoder.setRenderPipelineState(self.renderPipelineState)
 
 				encoder.setFrontFacing(.clockwise)
@@ -347,6 +351,7 @@ class BezierRenderer: Renderer {
 				encoder.setFragmentSamplerState(self.patternSamplerState, at: 1)
 
 				encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: Int(vertexCount))
+				encoder.popDebugGroup()
 				encoder.endEncoding()
 			}
 
@@ -354,7 +359,6 @@ class BezierRenderer: Renderer {
 
 			shadingRenderPassDescriptor.colorAttachments[0].loadAction = .load
 		}
-
 
 		let renderer = context.device.renderer() as PatternRenderer
 		renderer.renderPattern(context: context, in: context.bounds)
