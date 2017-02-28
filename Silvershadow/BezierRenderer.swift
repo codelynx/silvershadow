@@ -243,7 +243,7 @@ class BezierRenderer: Renderer {
 	
 	// MARK: -
 
-	func render(context: RenderCanvasContext, cgPaths: [CGPath]) {
+	func render(context: RenderContext, cgPaths: [CGPath]) {
 		guard cgPaths.count > 0 else { return }
 
 		var elementsArray = [[BezierPathElement]]()
@@ -356,7 +356,7 @@ class BezierRenderer: Renderer {
 		}
 
 		let renderer = context.device.renderer() as PatternRenderer
-		renderer.renderPattern(context: context, in: context.bounds)
+		renderer.renderPattern(context: context, in: Rect(Point(0, 0), Size(context.size)))
 	}
 
 }

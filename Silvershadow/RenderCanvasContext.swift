@@ -10,10 +10,10 @@ import Foundation
 import MetalKit
 import GLKit
 
-
+/*
 class RenderCanvasContext: RenderContext {
 
-	var bounds: Rect
+//	var bounds: Rect
 	var shadingTexture: MTLTexture
 
 	lazy var brushShape: MTLTexture = {
@@ -32,9 +32,10 @@ class RenderCanvasContext: RenderContext {
 		bounds: CGRect,
 		shadingTexture: MTLTexture
 	) {
-		self.bounds = Rect(bounds)
+//		self.bounds = Rect(bounds)
 		self.shadingTexture = shadingTexture
 		super.init(renderPassDescriptor: renderPassDescriptor, commandQueue: commandQueue, transform: transform, zoomScale: zoomScale)
 	}
 
 }
+*/

@@ -55,7 +55,7 @@ class SampleCanvasBackdropLayer: CanvasLayer {
 		return cgPath
 	}
 
-	override func render(context: RenderCanvasContext) {
+	override func render(context: RenderContext) {
 		guard let device = self.device else { return }
 
 		self.imageRenderable?.render(context: context)

@@ -18,19 +18,37 @@ import GLKit
 class RenderContext {
 	let renderPassDescriptor: MTLRenderPassDescriptor
 	let commandQueue: MTLCommandQueue
+	let size: CGSize
 	let transform: GLKMatrix4
 	let zoomScale: CGFloat
 
 	var device: MTLDevice { return commandQueue.device }
 
+	lazy var shadingTexture: MTLTexture = {
+		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
+					width: Int(self.size.width), height: Int(self.size.height), mipmapped: false)
+		descriptor.usage = [.shaderRead, .renderTarget]
+		return self.device.makeTexture(descriptor: descriptor)
+	}()
+
+	lazy var brushShape: MTLTexture = {
+		return self.device.texture(of: XImage(named: "Particle")!)!
+	}()
+
+	lazy var brushPattern: MTLTexture = {
+		return self.device.texture(of: XImage(named: "Pencil")!)!
+	}()
+
 	init(
 		renderPassDescriptor: MTLRenderPassDescriptor,
 		commandQueue: MTLCommandQueue,
+		size: CGSize,
 		transform: GLKMatrix4,
 		zoomScale: CGFloat
 	) {
 		self.renderPassDescriptor = renderPassDescriptor
 		self.commandQueue = commandQueue
+		self.size = size
 		self.transform = transform
 		self.zoomScale = zoomScale
 	}

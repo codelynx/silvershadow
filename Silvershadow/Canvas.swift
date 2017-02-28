@@ -63,13 +63,6 @@ class Canvas: Scene {
 		return self.device.makeTexture(descriptor: descriptor)
 	}()
 
-	lazy var shadingTexture: MTLTexture = {
-		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
-					width: Int(self.contentSize.width), height: Int(self.contentSize.height), mipmapped: self.mipmapped)
-		descriptor.usage = [.shaderRead, .renderTarget]
-		return self.device.makeTexture(descriptor: descriptor)
-	}()
-
 	lazy var subcomandQueue: MTLCommandQueue = {
 		return self.device.makeCommandQueue()
 	}()
@@ -124,10 +117,10 @@ class Canvas: Scene {
 			commandBuffer.commit()
 			subrenderPassDescriptor.colorAttachments[0].loadAction = .load
 
-			let subrenderContext = RenderCanvasContext(
+			let subrenderContext = RenderContext(
 						renderPassDescriptor: subrenderPassDescriptor,
-						commandQueue: commandQueue, transform: subtransform, zoomScale: 1, bounds: self.bounds,
-						shadingTexture: self.shadingTexture)
+						commandQueue: commandQueue, size: self.bounds.size,
+						transform: subtransform, zoomScale: 1)
 
 			// render a layer
 
@@ -137,7 +130,7 @@ class Canvas: Scene {
 
 			let transform = GLKMatrix4Identity
 			let renderContext = RenderContext(renderPassDescriptor: renderPassDescriptor,
-							commandQueue: commandQueue, transform: transform, zoomScale: 1)
+							commandQueue: commandQueue, size: self.contentSize, transform: transform, zoomScale: 1)
 			renderContext.render(texture: subtexture, in: Rect(-1, -1, 2, 2))
 
 		}
@@ -192,9 +185,9 @@ class Canvas: Scene {
 		commandBuffer.commit()
 
 		subrenderPassDescriptor.colorAttachments[0].loadAction = .load
-		let subrenderContext = RenderCanvasContext(renderPassDescriptor: subrenderPassDescriptor,
-					commandQueue: context.commandQueue, transform: subtransform, zoomScale: 1, bounds: self.bounds,
-					shadingTexture: self.shadingTexture)
+		let subrenderContext = RenderContext(renderPassDescriptor: subrenderPassDescriptor,
+					commandQueue: context.commandQueue, size: self.contentSize,
+					transform: subtransform, zoomScale: 1)
 		overlayCanvasLayer.render(context: subrenderContext)
 
 		// render canvas texture

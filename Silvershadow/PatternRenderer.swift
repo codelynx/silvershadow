@@ -156,13 +156,13 @@ class PatternRenderer: Renderer {
 	
 	var tripleBufferIndex = 0
 
-	func renderPattern(context: RenderCanvasContext, in rect: Rect) {
+	func renderPattern(context: RenderContext, in rect: Rect) {
 		defer { tripleBufferIndex = (tripleBufferIndex + 1) % uniformTripleBuffer.count }
 
 		let uniformsBuffer = uniformTripleBuffer[tripleBufferIndex]
 		let uniformsBufferPtr = UnsafeMutablePointer<Uniforms>(OpaquePointer(uniformsBuffer.contents()))
 		uniformsBufferPtr.pointee.transform = context.transform
-		uniformsBufferPtr.pointee.contentSize = float2(context.bounds.size.width, context.bounds.size.height)
+		uniformsBufferPtr.pointee.contentSize = float2(Float(context.size.width), Float(context.size.height))
 		uniformsBufferPtr.pointee.patternSize = float2(Float(context.brushPattern.width), Float(context.brushPattern.height))
 
 		let vertexes = self.vertices(for: rect)

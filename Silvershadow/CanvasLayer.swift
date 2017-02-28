@@ -35,7 +35,7 @@ class CanvasLayer: Equatable {
 		self.canvas = canvas
 	}
 
-	func render(context: RenderCanvasContext) {
+	func render(context: RenderContext) {
 	}
 
 	static func == (lhs: CanvasLayer, rhs: CanvasLayer) -> Bool {

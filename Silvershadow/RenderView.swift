@@ -243,8 +243,9 @@ class RenderView: XView, MTKViewDelegate {
 		// setup render context
 		let transform = GLKMatrix4(self.drawingTransform)
 		renderPassDescriptor.colorAttachments[0].loadAction = .load
-		let renderContext = RenderContext(renderPassDescriptor: renderPassDescriptor, commandQueue: commandQueue,
-				transform: transform, zoomScale: self.zoomScale)
+		let renderContext = RenderContext(
+				renderPassDescriptor: renderPassDescriptor, commandQueue: commandQueue,
+				size: self.mtkView.bounds.size, transform: transform, zoomScale: self.zoomScale)
 
 		// actual rendering
 		scene.render(in: renderContext)
