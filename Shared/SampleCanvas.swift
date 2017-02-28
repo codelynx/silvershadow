@@ -85,9 +85,13 @@ class SampleCanvas: Canvas {
 	}
 	
 	override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-		if let (activeTouch, activePath) = self.activeTouchPath, touches.contains(activeTouch) {
-			if let location = self.locationInScene(activeTouch) {
-				activePath.addLine(to: location)
+		if let (touch, activePath) = self.activeTouchPath, touches.contains(touch) {
+			if let event = event, let coalescedTouches = event.coalescedTouches(for: touch) {
+				for coalescedTouch in coalescedTouches {
+					if let location = self.locationInScene(coalescedTouch) {
+						activePath.addLine(to: location)
+					}
+				}
 			}
 			self.setNeedsDisplay()
 		}
@@ -95,8 +99,12 @@ class SampleCanvas: Canvas {
 	
 	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
 		if let (touch, activePath) = self.activeTouchPath, touches.contains(touch) {
-			if let location = self.locationInScene(touch) {
-				activePath.addLine(to: location)
+			if let event = event, let coalescedTouches = event.coalescedTouches(for: touch) {
+				for coalescedTouch in coalescedTouches {
+					if let location = self.locationInScene(coalescedTouch) {
+						activePath.addLine(to: location)
+					}
+				}
 			}
 			drawingLayer.strokePaths.append(activePath)
 			self.interactiveLayer.strokePaths = []
