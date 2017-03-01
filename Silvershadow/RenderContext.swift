@@ -18,15 +18,18 @@ import GLKit
 class RenderContext {
 	let renderPassDescriptor: MTLRenderPassDescriptor
 	let commandQueue: MTLCommandQueue
-	let size: CGSize
+	let contentSize: CGSize
+	let deviceSize: CGSize // eg. MTKView's size, offscreen bitmap's size etc.
 	let transform: GLKMatrix4
 	let zoomScale: CGFloat
 
 	var device: MTLDevice { return commandQueue.device }
 
+	//
+
 	lazy var shadingTexture: MTLTexture = {
 		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
-					width: Int(self.size.width), height: Int(self.size.height), mipmapped: false)
+					width: Int(self.contentSize.width), height: Int(self.contentSize.height), mipmapped: false)
 		descriptor.usage = [.shaderRead, .renderTarget]
 		return self.device.makeTexture(descriptor: descriptor)
 	}()
@@ -42,13 +45,15 @@ class RenderContext {
 	init(
 		renderPassDescriptor: MTLRenderPassDescriptor,
 		commandQueue: MTLCommandQueue,
-		size: CGSize,
+		contentSize: CGSize,
+		deviceSize: CGSize,
 		transform: GLKMatrix4,
 		zoomScale: CGFloat
 	) {
 		self.renderPassDescriptor = renderPassDescriptor
 		self.commandQueue = commandQueue
-		self.size = size
+		self.contentSize = contentSize
+		self.deviceSize = deviceSize
 		self.transform = transform
 		self.zoomScale = zoomScale
 	}

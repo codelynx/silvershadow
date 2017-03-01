@@ -245,7 +245,8 @@ class RenderView: XView, MTKViewDelegate {
 		renderPassDescriptor.colorAttachments[0].loadAction = .load
 		let renderContext = RenderContext(
 				renderPassDescriptor: renderPassDescriptor, commandQueue: commandQueue,
-				size: self.mtkView.bounds.size, transform: transform, zoomScale: self.zoomScale)
+				contentSize: scene.contentSize, deviceSize: self.mtkView.bounds.size,
+				transform: transform, zoomScale: self.zoomScale)
 
 		// actual rendering
 		scene.render(in: renderContext)
