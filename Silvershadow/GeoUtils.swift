@@ -10,9 +10,11 @@ import Foundation
 import CoreGraphics
 import QuartzCore
 import GLKit
+import simd
 
 infix operator •
 infix operator ×
+
 
 // MARK: -
 
@@ -313,6 +315,7 @@ extension GLKMatrix4: CustomStringConvertible {
 	static func * (l: GLKMatrix4, r: GLKMatrix4) -> GLKMatrix4 {
 		return GLKMatrix4Multiply(l, r)
 	}
+	
 }
 
 
@@ -340,4 +343,41 @@ func * (l: GLKMatrix4, r: GLKVector2) -> GLKVector2 {
 	let vector4 = GLKMatrix4MultiplyVector4(l, GLKVector4Make(r.x, r.y, 0.0, 1.0))
 	return GLKVector2Make(vector4.x, vector4.y)
 }
+
+extension float2 {
+	init(_ vector: GLKVector2) {
+		self = unsafeBitCast(vector, to: float2.self)
+	}
+}
+
+extension float3 {
+	init(_ vector: GLKVector4) {
+		self = unsafeBitCast(vector, to: float3.self)
+	}
+}
+
+extension float4 {
+	init(_ vector: GLKVector4) {
+		self = unsafeBitCast(vector, to: float4.self)
+	}
+}
+
+extension float2x2 {
+	init(_ matrix: GLKMatrix2) {
+		self = unsafeBitCast(matrix, to: float2x2.self)
+	}
+}
+
+extension float3x3 {
+	init(_ matrix: GLKMatrix3) {
+		self = unsafeBitCast(matrix, to: float3x3.self)
+	}
+}
+
+extension float4x4 {
+	init(_ matrix: GLKMatrix4) {
+		self = unsafeBitCast(matrix, to: float4x4.self)
+	}
+}
+
 

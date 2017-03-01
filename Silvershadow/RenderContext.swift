@@ -10,18 +10,52 @@ import Foundation
 import MetalKit
 import GLKit
 
+//
+//	RenderContextState
+//
+
+struct RenderContextState {
+	var renderPassDescriptor: MTLRenderPassDescriptor
+	var commandQueue: MTLCommandQueue
+	var contentSize: CGSize
+	var deviceSize: CGSize // eg. MTKView's size, offscreen bitmap's size etc.
+	var transform: GLKMatrix4
+	var zoomScale: CGFloat
+}
+
 
 //
 //	RenderContext
 //
 
 class RenderContext {
-	let renderPassDescriptor: MTLRenderPassDescriptor
-	let commandQueue: MTLCommandQueue
-	let contentSize: CGSize
-	let deviceSize: CGSize // eg. MTKView's size, offscreen bitmap's size etc.
-	let transform: GLKMatrix4
-	let zoomScale: CGFloat
+	var current: RenderContextState
+	private var contextStack = [RenderContextState]()
+
+	var renderPassDescriptor: MTLRenderPassDescriptor {
+		get { return current.renderPassDescriptor }
+		set { current.renderPassDescriptor = newValue }
+	}
+	var commandQueue: MTLCommandQueue {
+		get { return current.commandQueue }
+		set { self.current.commandQueue = newValue }
+	}
+	var contentSize: CGSize {
+		get { return current.contentSize }
+		set { self.current.contentSize = newValue }
+	}
+	var deviceSize: CGSize { // eg. MTKView's size, offscreen bitmap's size etc.
+		get { return current.deviceSize }
+		set { self.deviceSize = newValue }
+	}
+	var transform: GLKMatrix4 {
+		get { return current.transform }
+		set { self.current.transform = newValue }
+	}
+	var zoomScale: CGFloat {
+		get { return current.zoomScale }
+		set {}
+	}
 
 	var device: MTLDevice { return commandQueue.device }
 
@@ -29,7 +63,7 @@ class RenderContext {
 
 	lazy var shadingTexture: MTLTexture = {
 		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
-					width: Int(self.contentSize.width), height: Int(self.contentSize.height), mipmapped: false)
+					width: Int(self.deviceSize.width), height: Int(self.deviceSize.height), mipmapped: false)
 		descriptor.usage = [.shaderRead, .renderTarget]
 		return self.device.makeTexture(descriptor: descriptor)
 	}()
@@ -50,22 +84,35 @@ class RenderContext {
 		transform: GLKMatrix4,
 		zoomScale: CGFloat
 	) {
-		self.renderPassDescriptor = renderPassDescriptor
-		self.commandQueue = commandQueue
-		self.contentSize = contentSize
-		self.deviceSize = deviceSize
-		self.transform = transform
-		self.zoomScale = zoomScale
+		self.current = RenderContextState(
+					renderPassDescriptor: renderPassDescriptor, commandQueue: commandQueue,
+					contentSize: contentSize, deviceSize: deviceSize, transform: transform, zoomScale: zoomScale)
 	}
 
 	func makeCommandBuffer() -> MTLCommandBuffer {
 		return self.commandQueue.makeCommandBuffer()
 	}
+	
+	// MARK: -
+
+	func pushContext() {
+		let copiedState = self.current
+		let copiedRenderpassDescriptor = self.current.renderPassDescriptor.copy() as! MTLRenderPassDescriptor
+		self.current.renderPassDescriptor = copiedRenderpassDescriptor
+		self.contextStack.append(copiedState)
+	}
+	
+	func popContext() {
+		if self.contextStack.count > 0 {
+			self.current = self.contextStack.removeLast()
+		}
+		else { fatalError("cannot pop") }
+	}
 }
 
 extension RenderContext {
 
-	func widthCGContext(contentSize: CGSize, _ closure: ((CGContext)->())) {
+	func widthCGContext(_ closure: ((CGContext)->())) {
 		let (width, height, bytesPerRow) = (Int(contentSize.width), Int(contentSize.height), Int(contentSize.width) * 4)
 		let colorSpace = CGColorSpaceCreateDeviceRGB()
 		let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)

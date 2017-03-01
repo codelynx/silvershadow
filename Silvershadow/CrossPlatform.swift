@@ -27,6 +27,7 @@ typealias XBezierPath = UIBezierPath
 typealias XScrollView = UIScrollView
 typealias XScrollViewDelegate = UIScrollViewDelegate
 typealias XViewController = UIViewController
+typealias XFont = UIFont
 
 #elseif os(macOS)
 
@@ -37,6 +38,7 @@ typealias XColor = NSColor
 typealias XBezierPath = NSBezierPath
 typealias XScrollView = NSScrollView
 typealias XViewController = NSViewController
+typealias XFont = NSFont
 
 protocol XScrollViewDelegate {}
 
@@ -154,11 +156,11 @@ extension XColor {
 		var (r, g, b, a) = (CGFloat(0), CGFloat(0), CGFloat(0), CGFloat(0))
 		#if os(iOS)
 		self.getRed(&r, green: &g, blue: &b, alpha: &a)
+		return (r, g, b, a)
 		#elseif os(macOS)
 		let ciColor = CIColor(color: self)!
 		return (ciColor.red, ciColor.green, ciColor.blue, ciColor.alpha)
 		#endif
-		return (r, g, b, a)
 	}
 
 	convenience init(rgba: XRGBA) {
@@ -166,3 +168,16 @@ extension XColor {
 	}
 
 }
+
+extension NSMutableParagraphStyle {
+
+	static func makeParagraphStyle() -> NSMutableParagraphStyle {
+		#if os(iOS)
+		return NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+		#elseif os(macOS)
+		return NSParagraphStyle.default().mutableCopy() as! NSMutableParagraphStyle
+		#endif
+	}
+}
+
+
