@@ -20,13 +20,19 @@ extension MTLDevice {
 
 	func texture(of image: CGImage) -> MTLTexture? {
 
-		var options: [String : NSObject] = [MTKTextureLoaderOptionSRGB: false as NSNumber]
+		let textureUsage : MTLTextureUsage = [.pixelFormatView, .shaderRead]
+		var options: [String : NSObject] = [
+			MTKTextureLoaderOptionSRGB: false as NSNumber,
+			MTKTextureLoaderOptionTextureUsage: textureUsage.rawValue as NSNumber
+		]
 		if #available(iOS 10.0, *) {
 			options[MTKTextureLoaderOptionOrigin] = true as NSNumber
 		}
-		let texture = try? self.textureLoader.newTexture(with: image, options: options)
-		assert(texture!.pixelFormat == .bgra8Unorm)
-		return texture
+
+		guard let texture = try? self.textureLoader.newTexture(with: image, options: options) else { return nil }
+
+		if texture.pixelFormat == .bgra8Unorm { return texture }
+		else { return texture.makeTextureView(pixelFormat: .bgra8Unorm) }
 	}
 
 	func texture(of image: XImage) -> MTLTexture? {

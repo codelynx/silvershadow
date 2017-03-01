@@ -162,7 +162,7 @@ class PatternRenderer: Renderer {
 		let uniformsBuffer = uniformTripleBuffer[tripleBufferIndex]
 		let uniformsBufferPtr = UnsafeMutablePointer<Uniforms>(OpaquePointer(uniformsBuffer.contents()))
 		uniformsBufferPtr.pointee.transform = context.transform
-		uniformsBufferPtr.pointee.contentSize = float2(Float(context.size.width), Float(context.size.height))
+		uniformsBufferPtr.pointee.contentSize = float2(Float(context.deviceSize.width), Float(context.deviceSize.height))
 		uniformsBufferPtr.pointee.patternSize = float2(Float(context.brushPattern.width), Float(context.brushPattern.height))
 
 		let vertexes = self.vertices(for: rect)

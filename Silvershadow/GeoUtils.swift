@@ -10,9 +10,11 @@ import Foundation
 import CoreGraphics
 import QuartzCore
 import GLKit
+import simd
 
 infix operator •
 infix operator ×
+
 
 // MARK: -
 
@@ -54,7 +56,7 @@ extension Float: CGFloatCovertible {
 
 // MARK: -
 
-struct Point: Hashable {
+struct Point: Hashable, CustomStringConvertible {
 
 	var x: Float
 	var y: Float
@@ -81,6 +83,19 @@ struct Point: Hashable {
 
 	static func × (lhs: Point, rhs: Point) -> Float { // cross product
 		return lhs.x * rhs.y - lhs.y * rhs.x
+	}
+
+	init<X: FloatCovertible, Y: FloatCovertible>(_ x: X, _ y: Y) {
+		self.x = x.floatValue
+		self.y = y.floatValue
+	}
+	init<X: FloatCovertible, Y: FloatCovertible>(x: X, y: Y) {
+		self.x = x.floatValue
+		self.y = y.floatValue
+	}
+	init(_ point: CGPoint) {
+		self.x = Float(point.x)
+		self.y = Float(point.y)
 	}
 	
 	var length²: Float {
@@ -110,27 +125,13 @@ struct Point: Hashable {
 		return lhs.x == rhs.y && lhs.y == rhs.y
 	}
 	
-}
-
-extension Point {
-
-	init<X: FloatCovertible, Y: FloatCovertible>(_ x: X, _ y: Y) {
-		self.x = x.floatValue
-		self.y = y.floatValue
+	var description: String {
+		return "(x:\(x), y:\(y))"
 	}
-	init<X: FloatCovertible, Y: FloatCovertible>(x: X, y: Y) {
-		self.x = x.floatValue
-		self.y = y.floatValue
-	}
-	init(_ point: CGPoint) {
-		self.x = Float(point.x)
-		self.y = Float(point.y)
-	}
-	
 }
 
 
-struct Size {
+struct Size: CustomStringConvertible {
 	var width: Float
 	var height: Float
 
@@ -146,6 +147,9 @@ struct Size {
 	init(_ size: CGSize) {
 		self.width = Float(size.width)
 		self.height = Float(size.height)
+	}
+	var description: String {
+		return "(w:\(width), h:\(height))"
 	}
 }
 
@@ -283,51 +287,7 @@ extension CGRect {
 }
 
 
-func CGRectMakeAspectFill(_ imageSize: CGSize, _ bounds: CGRect) -> CGRect {
-	let result: CGRect
-	let margin: CGFloat
-	let horizontalRatioToFit = bounds.size.width / imageSize.width
-	let verticalRatioToFit = bounds.size.height / imageSize.height
-	let imageHeightWhenItFitsHorizontally = horizontalRatioToFit * imageSize.height
-	let imageWidthWhenItFitsVertically = verticalRatioToFit * imageSize.width
-	let minX = bounds.minX
-	let minY = bounds.minY
-
-	if (imageHeightWhenItFitsHorizontally > bounds.size.height) {
-		margin = (imageHeightWhenItFitsHorizontally - bounds.size.height) * 0.5
-		result = CGRect(x: minX, y: minY - margin, width: imageSize.width * horizontalRatioToFit, height: imageSize.height * horizontalRatioToFit)
-	}
-	else {
-		margin = (imageWidthWhenItFitsVertically - bounds.size.width) * 0.5
-		result = CGRect(x: minX - margin, y: minY, width: imageSize.width * verticalRatioToFit, height: imageSize.height * verticalRatioToFit)
-	}
-	return result;
-}
-
-func CGRectMakeAspectFit(_ imageSize: CGSize, _ bounds: CGRect) -> CGRect {
-	let minX = bounds.minX
-	let minY = bounds.minY
-	let widthRatio = bounds.size.width / imageSize.width
-	let heightRatio = bounds.size.height / imageSize.height
-	let ratio = min(widthRatio, heightRatio)
-	let width = imageSize.width * ratio
-	let height = imageSize.height * ratio
-	let xmargin = (bounds.size.width - width) / 2.0
-	let ymargin = (bounds.size.height - height) / 2.0
-	return CGRect(x: minX + xmargin, y: minY + ymargin, width: width, height: height)
-}
-
-func CGSizeMakeAspectFit(_ imageSize: CGSize, frameSize: CGSize) -> CGSize {
-	let widthRatio = frameSize.width / imageSize.width
-	let heightRatio = frameSize.height / imageSize.height
-	let ratio = (widthRatio < heightRatio) ? widthRatio : heightRatio
-	let width = imageSize.width * ratio
-	let height = imageSize.height * ratio
-	return CGSize(width: width, height: height)
-}
-
-
-extension GLKMatrix4 {
+extension GLKMatrix4: CustomStringConvertible {
 	init(_ transform: CGAffineTransform) {
 		let t = CATransform3DMakeAffineTransform(transform)
 		self.init(m: (
@@ -345,42 +305,79 @@ extension GLKMatrix4 {
 		if !invertible { print("not invertible") }
 		return t
 	}
-	var description: String {
+	public var description: String {
 		return	"[ \(self.m00), \(self.m01), \(self.m02), \(self.m03) ;" +
 				" \(self.m10), \(self.m11), \(self.m12), \(self.m13) ;" +
 				" \(self.m20), \(self.m21), \(self.m22), \(self.m23) ;" +
 				" \(self.m30), \(self.m31), \(self.m32), \(self.m33) ]"
 	}
+
+	static func * (l: GLKMatrix4, r: GLKMatrix4) -> GLKMatrix4 {
+		return GLKMatrix4Multiply(l, r)
+	}
+	
 }
 
 
-extension GLKVector2 {
+extension GLKVector2: CustomStringConvertible {
 	init(_ point: CGPoint) {
 		self.init(v: (Float(point.x), Float(point.y)))
 	}
-	var description: String {
+	public var description: String {
 		return	"[ \(self.x), \(self.y) ]"
+	}
+	static func + (l: GLKVector2, r: GLKVector2) -> GLKVector2 {
+		return GLKVector2Add(l, r)
 	}
 }
 
 
-extension GLKVector4 {
-	var description: String {
+extension GLKVector4: CustomStringConvertible {
+	public var description: String {
 		return	"[ \(self.x), \(self.y), \(self.z), \(self.w) ]"
 	}
 }
 
 
-func * (l: GLKMatrix4, r: GLKMatrix4) -> GLKMatrix4 {
-	return GLKMatrix4Multiply(l, r)
-}
-
-func + (l: GLKVector2, r: GLKVector2) -> GLKVector2 {
-	return GLKVector2Add(l, r)
-}
-
 func * (l: GLKMatrix4, r: GLKVector2) -> GLKVector2 {
 	let vector4 = GLKMatrix4MultiplyVector4(l, GLKVector4Make(r.x, r.y, 0.0, 1.0))
 	return GLKVector2Make(vector4.x, vector4.y)
 }
+
+extension float2 {
+	init(_ vector: GLKVector2) {
+		self = unsafeBitCast(vector, to: float2.self)
+	}
+}
+
+extension float3 {
+	init(_ vector: GLKVector4) {
+		self = unsafeBitCast(vector, to: float3.self)
+	}
+}
+
+extension float4 {
+	init(_ vector: GLKVector4) {
+		self = unsafeBitCast(vector, to: float4.self)
+	}
+}
+
+extension float2x2 {
+	init(_ matrix: GLKMatrix2) {
+		self = unsafeBitCast(matrix, to: float2x2.self)
+	}
+}
+
+extension float3x3 {
+	init(_ matrix: GLKMatrix3) {
+		self = unsafeBitCast(matrix, to: float3x3.self)
+	}
+}
+
+extension float4x4 {
+	init(_ matrix: GLKMatrix4) {
+		self = unsafeBitCast(matrix, to: float4x4.self)
+	}
+}
+
 

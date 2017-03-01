@@ -286,10 +286,6 @@ class BezierRenderer: Renderer {
 		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
 
 
-		//	var curentElementBufferIndex = 0
-		//	var curentVertexBufferIndex = 0
-
-
 		// Now shading brush stroke on shadingTexture
 
 		let shadingRenderPassDescriptor = MTLRenderPassDescriptor()
@@ -303,9 +299,9 @@ class BezierRenderer: Renderer {
 		for elements in elementsArray {
 
 			let vertexCount = elements.map { $0.numberOfVertexes }.reduce (0, +)
+			guard vertexCount > 0 else { continue }
 
 			let commandBuffer = context.makeCommandBuffer()
-
 			let elementBuffer = makeElementBuffer(elements: elements)
 			let vertexBuffer = makeVertexBuffer(vertices: [], capacity: Int(vertexCount))
 
@@ -355,8 +351,18 @@ class BezierRenderer: Renderer {
 			shadingRenderPassDescriptor.colorAttachments[0].loadAction = .load
 		}
 
+		/*
+		let p1 = float4x4(context.transform.invert) * float4(-1, -1, 0, 1)
+		let p2 = float4x4(context.transform.invert) * float4(+1, +1, 0, 1)
+		let (l, r, t, b) = (p1.x, p2.x, min(p1.y, p2.y), max(p1.y, p2.y))
+		*/
+
+		// offscreen buffer does not require transform ??
+		context.pushContext()
+		context.transform = GLKMatrix4Identity
 		let renderer = context.device.renderer() as PatternRenderer
-		renderer.renderPattern(context: context, in: Rect(Point(0, 0), Size(context.size)))
+		renderer.renderPattern(context: context, in: Rect(-1, -1, 2, 2)) // ??
+		context.popContext()
 	}
 
 }

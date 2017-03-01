@@ -147,8 +147,5 @@ fragment float4 bezier_fragment(
 	float4 shapeColor = shapeTexture.sample(shapeSampler, texcoord);
 	float4 patternColor = patternTexture.sample(patternSampler, float2(vertexIn.position.xy) + texcoord);
 	float4 color = float4(patternColor.rgb, shapeColor.a);
-//	if (color.a == 0.0) {
-//		discard_fragment();
-//	}
 	return color;
 }

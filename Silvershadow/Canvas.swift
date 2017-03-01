@@ -119,7 +119,7 @@ class Canvas: Scene {
 
 			let subrenderContext = RenderContext(
 						renderPassDescriptor: subrenderPassDescriptor,
-						commandQueue: commandQueue, size: self.bounds.size,
+						commandQueue: commandQueue, contentSize: self.contentSize, deviceSize: self.contentSize,
 						transform: subtransform, zoomScale: 1)
 
 			// render a layer
@@ -129,8 +129,10 @@ class Canvas: Scene {
 			// flatten image
 
 			let transform = GLKMatrix4Identity
-			let renderContext = RenderContext(renderPassDescriptor: renderPassDescriptor,
-							commandQueue: commandQueue, size: self.contentSize, transform: transform, zoomScale: 1)
+			let renderContext = RenderContext(
+							renderPassDescriptor: renderPassDescriptor,
+							commandQueue: commandQueue, contentSize: self.contentSize, deviceSize: self.contentSize,
+							transform: transform, zoomScale: 1)
 			renderContext.render(texture: subtexture, in: Rect(-1, -1, 2, 2))
 
 		}
@@ -186,7 +188,7 @@ class Canvas: Scene {
 
 		subrenderPassDescriptor.colorAttachments[0].loadAction = .load
 		let subrenderContext = RenderContext(renderPassDescriptor: subrenderPassDescriptor,
-					commandQueue: context.commandQueue, size: self.contentSize,
+					commandQueue: context.commandQueue, contentSize: self.contentSize, deviceSize: self.contentSize,
 					transform: subtransform, zoomScale: 1)
 		overlayCanvasLayer.render(context: subrenderContext)
 
