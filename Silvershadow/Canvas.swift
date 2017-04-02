@@ -170,7 +170,7 @@ class Canvas: Scene {
 		//let commandBuffer = context.makeCommandBuffer()
 
 		guard let overlayCanvasLayer = self.overlayCanvasLayer else { return }
-		print("render: \(Date()), \(overlayCanvasLayer.name)")
+		print("render: \(Date()), \(String(describing: overlayCanvasLayer.name))")
 		let subtexture = self.sublayerTexture
 		let subtransform = GLKMatrix4(self.transform)
 
