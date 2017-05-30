@@ -178,27 +178,27 @@ class BezierRenderer: Renderer {
 	private func lineSegments(cgPaths: [CGPath]) -> [LineSegment] {
 		let nan2 = CGPoint(CGFloat.nan, CGFloat.nan)
 	
-		return cgPaths.map { (cgPath) -> [LineSegment] in
+		return cgPaths.flatMap { (cgPath) -> [LineSegment] in
 
 			var origin: CGPoint?
 			var lastPoint: CGPoint?
 
 			return cgPath.pathElements.flatMap { (pathElement) -> LineSegment? in
 				switch pathElement {
-				case .moveTo(let p1):
+				case let .moveTo(p1):
 					origin = p1
 					lastPoint = p1
-				case .lineTo(let p1):
+				case let .lineTo(p1):
 					guard let p0 = lastPoint else { return nil }
 					let length = (p0 - p1).length
 					lastPoint = p1
 					return (.lineTo, length, p0, p1, nan2, nan2)
-				case .quadCurveTo(let p1, let p2):
+				case let .quadCurveTo(p1, p2):
 					guard let p0 = lastPoint else { return nil }
 					let length = CGPath.quadraticCurveLength(p0, p1, p2)
 					lastPoint = p2
 					return (.quadCurveTo, length, p0, p1, p2, nan2)
-				case .curveTo(let p1, let p2, let p3):
+				case let .curveTo(p1, p2, p3):
 					guard let p0 = lastPoint else { return nil }
 					let length = CGPath.approximateCubicCurveLength(p0, p1, p2, p3)
 					lastPoint = p3
@@ -212,9 +212,7 @@ class BezierRenderer: Renderer {
 				}
 				return nil
 			}
-
 		}
-		.flatMap { $0 }
 	}
 	
 	// MARK: -
