@@ -39,6 +39,26 @@ public enum PathElement {
 	case quadCurveTo(CGPoint, CGPoint)
 	case curveTo(CGPoint, CGPoint, CGPoint)
 	case closeSubpath
+
+    //
+    //	operator ==
+    //
+
+    static public func ==(lhs: PathElement, rhs: PathElement) -> Bool {
+        switch (lhs, rhs) {
+        case let (.moveTo(l), .moveTo(r)),
+             let (.lineTo(l), .lineTo(r)):
+            return l == r
+        case let (.quadCurveTo(l), .quadCurveTo(r)):
+            return l == r
+        case let (.curveTo(l), .curveTo(r)):
+            return l == r
+        case (.closeSubpath, .closeSubpath):
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 
@@ -83,29 +103,8 @@ public extension CGPath {
 		let pathelements = elements.pathElements
 		return pathelements
 	}
-
 }
 
-//
-//	operator ==
-//
-
-public func == (lhs: PathElement, rhs: PathElement) -> Bool {
-	switch (lhs, rhs) {
-	case (.moveTo(let a), .moveTo(let b)):
-		return a == b
-	case (.lineTo(let a), .lineTo(let b)):
-		return a == b
-	case (.quadCurveTo(let a1, let a2), .quadCurveTo(let b1, let b2)):
-		return a1.equalTo(b1) && a2.equalTo(b2)
-	case (.curveTo(let a1, let a2, let a3), .curveTo(let b1, let b2, let b3)):
-		return a1 == b1 && a2 == b2 && a3 == b3
-	case (.closeSubpath, .closeSubpath):
-		return true
-	default:
-		return false
-	}
-}
 
 //
 //
