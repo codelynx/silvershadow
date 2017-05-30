@@ -44,28 +44,28 @@ extension MTLTexture {
 
 	var cgImage: CGImage? {
 
-		assert(self.pixelFormat == .bgra8Unorm)
+		assert(pixelFormat == .bgra8Unorm)
 	
 		// read texture as byte array
-		let rowBytes = self.width * 4
-		let length = rowBytes * self.height
+		let rowBytes = width * 4
+		let length = rowBytes * height
 		let bgraBytes = [UInt8](repeating: 0, count: length)
-		let region = MTLRegionMake2D(0, 0, self.width, self.height)
+		let region = MTLRegionMake2D(0, 0, width, height)
 		self.getBytes(UnsafeMutableRawPointer(mutating: bgraBytes), bytesPerRow: rowBytes, from: region, mipmapLevel: 0)
 
 		// use Accelerate framework to convert from BGRA to RGBA
 		var bgraBuffer = vImage_Buffer(data: UnsafeMutableRawPointer(mutating: bgraBytes),
-					height: vImagePixelCount(self.height), width: vImagePixelCount(self.width), rowBytes: rowBytes)
+					height: vImagePixelCount(height), width: vImagePixelCount(width), rowBytes: rowBytes)
 		let rgbaBytes = [UInt8](repeating: 0, count: length)
 		var rgbaBuffer = vImage_Buffer(data: UnsafeMutableRawPointer(mutating: rgbaBytes),
-					height: vImagePixelCount(self.height), width: vImagePixelCount(self.width), rowBytes: rowBytes)
+					height: vImagePixelCount(height), width: vImagePixelCount(width), rowBytes: rowBytes)
 		let map: [UInt8] = [2, 1, 0, 3]
 		vImagePermuteChannels_ARGB8888(&bgraBuffer, &rgbaBuffer, map, 0)
 
 		// flipping image virtically
 		let flippedBytes = bgraBytes // reuse the buffer
 		var flippedBuffer = vImage_Buffer(data: UnsafeMutableRawPointer(mutating: flippedBytes),
-					height: vImagePixelCount(self.height), width: vImagePixelCount(self.width), rowBytes: rowBytes)
+					height: vImagePixelCount(height), width: vImagePixelCount(width), rowBytes: rowBytes)
 		vImageVerticalReflect_ARGB8888(&rgbaBuffer, &flippedBuffer, 0)
 
 		// create CGImage with RGBA Flipped Bytes
@@ -73,7 +73,7 @@ extension MTLTexture {
 		let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
 		guard let data = CFDataCreate(nil, flippedBytes, length) else { return nil }
 		guard let dataProvider = CGDataProvider(data: data) else { return nil }
-		let cgImage = CGImage(width: self.width, height: self.height, bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: rowBytes,
+		let cgImage = CGImage(width: width, height: height, bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: rowBytes,
 					space: colorScape, bitmapInfo: bitmapInfo, provider: dataProvider,
 					decode: nil, shouldInterpolate: true, intent: .defaultIntent)
 		return cgImage
