@@ -104,9 +104,7 @@ class Canvas: Scene {
 		subrenderPassDescriptor.colorAttachments[0].storeAction = .store
 
 
-		for canvasLayer in self.canvasLayers {
-
-			if canvasLayer.isHidden { continue }
+		for canvasLayer in self.canvasLayers where !canvasLayer.isHidden {
 
 			// clear subtexture
 

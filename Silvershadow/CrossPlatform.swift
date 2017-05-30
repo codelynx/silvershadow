@@ -143,7 +143,7 @@ typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
 extension NSColor {
 
 	var ciColor: CIColor {
-		return CIColor(cgColor: self.cgColor)
+		return CIColor(cgColor: cgColor)
 	}
 
 }
