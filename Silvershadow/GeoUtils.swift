@@ -244,14 +244,11 @@ extension CGPoint {
 	}
 
 	var normalized: CGPoint {
-
-		return self * (1.0 / length)
+		return self / length
 	}
-
 }
 
 extension CGPoint {
-
 	init<X: CGFloatCovertible, Y: CGFloatCovertible>(_ x: X, _ y: Y) {
 		self.x = x.cgFloatValue
 		self.y = y.cgFloatValue
@@ -260,7 +257,6 @@ extension CGPoint {
 
 
 extension CGSize {
-
 	init(_ size: Size) {
 		self.init(width: CGFloat(size.width), height: CGFloat(size.height))
 	}
@@ -271,9 +267,7 @@ extension CGSize {
 	}
 }
 
-
 extension CGRect {
-
 	init(_ rect: Rect) {
 		self.init(origin: CGPoint(rect.origin), size: CGSize(rect.size))
 	}
@@ -282,9 +276,7 @@ extension CGRect {
 		self.origin = CGPoint(x, y)
 		self.size = CGSize(width, height)
 	}
-
 }
-
 
 extension GLKMatrix4: CustomStringConvertible, Collection {
     public typealias Index = Int
@@ -303,22 +295,20 @@ extension GLKMatrix4: CustomStringConvertible, Collection {
 
     init(_ transform: CGAffineTransform) {
 		let t = CATransform3DMakeAffineTransform(transform)
-		self.init(m: (
-				Float(t.m11), Float(t.m12), Float(t.m13), Float(t.m14),
-				Float(t.m21), Float(t.m22), Float(t.m23), Float(t.m24),
-				Float(t.m31), Float(t.m32), Float(t.m33), Float(t.m34),
-				Float(t.m41), Float(t.m42), Float(t.m43), Float(t.m44)))
+		self.init(m: (Float(t.m11), Float(t.m12), Float(t.m13), Float(t.m14),
+		              Float(t.m21), Float(t.m22), Float(t.m23), Float(t.m24),
+		              Float(t.m31), Float(t.m32), Float(t.m33), Float(t.m34),
+		              Float(t.m41), Float(t.m42), Float(t.m43), Float(t.m44)))
 	}
 
     var scaleFactor : Float {
 		return sqrt(m00 * m00 + m01 * m01 + m02 * m02)
 	}
 
-    var invert: GLKMatrix4 {
+    var invert: GLKMatrix4? {
 		var invertible: Bool = true
 		let t = GLKMatrix4Invert(self, &invertible)
-		if !invertible { print("not invertible") }
-		return t
+        return invertible ? t : nil
 	}
 
     public var description: String {
@@ -328,7 +318,6 @@ extension GLKMatrix4: CustomStringConvertible, Collection {
 	static func * (l: GLKMatrix4, r: GLKMatrix4) -> GLKMatrix4 {
 		return GLKMatrix4Multiply(l, r)
 	}
-	
 }
 
 extension GLKVector2: CustomStringConvertible {
@@ -363,7 +352,7 @@ extension float2 {
 }
 
 extension float3 {
-	init(_ vector: GLKVector4) {
+	init(_ vector: GLKVector3) {
 		self = unsafeBitCast(vector, to: float3.self)
 	}
 }
