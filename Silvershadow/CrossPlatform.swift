@@ -82,11 +82,11 @@ extension UIBezierPath {
 extension NSView {
 
 	func setNeedsLayout() {
-		self.layout()
+		layout()
 	}
 	
 	func setNeedsDisplay() {
-		self.setNeedsDisplay(self.bounds)
+		setNeedsDisplay(bounds)
 	}
 
 	func sendSubview(toBack: NSView) {
@@ -119,21 +119,18 @@ extension NSView {
 }
 #endif
 
-
 #if os(macOS)
 extension NSImage {
 
 	// somehow OSX does not provide CGImage property
 	var cgImage: CGImage? {
-		if let data = self.tiffRepresentation,
-		   let imageSource = CGImageSourceCreateWithData(data as CFData, nil) {
-			if CGImageSourceGetCount(imageSource) > 0 {
-				return CGImageSourceCreateImageAtIndex(imageSource, 0, nil)
-			}
-		}
-		return nil
+        return tiffRepresentation.flatMap {
+            CGImageSourceCreateWithData($0 as CFData, nil).flatMap {
+                guard CGImageSourceGetCount($0) > 0 else { return nil }
+                return CGImageSourceCreateImageAtIndex($0, 0, nil)
+            }
+        }
 	}
-
 }
 #endif
 
