@@ -7,82 +7,72 @@
 //
 
 #if os(iOS)
-import UIKit
+    import UIKit
 #elseif os(macOS)
-import Cocoa
+    import Cocoa
 #endif
-
 
 class RenderDrawView: XView {
 
-	var renderView: RenderView?
-	
-	var contentView: RenderContentView? {
-		return self.renderView?.contentView
-	}
+    var renderView: RenderView?
 
-	#if os(iOS)
-	override func layoutSubviews() {
-		super.layoutSubviews()
-		assert(renderView != nil)
-	}
-	#endif
+    var contentView: RenderContentView? {
+        return renderView?.contentView
+    }
 
-	#if os(macOS)
-	override func layout() {
-		super.layout()
-		self.wantsLayer = true
-		self.layer?.backgroundColor = .clear
-	}
-	#endif
+    #if os(iOS)
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        assert(renderView != nil)
+    }
 
-	// MARK: -
+    override func draw(_ layer: CALayer, in context: CGContext) {
+        self.draw(in : context)
+    }
 
-	#if os(iOS)
-	override func draw(_ layer: CALayer, in context: CGContext) {
-		if let contentView = contentView, let renderableScene = renderView?.scene  {
-			let targetRect = contentView.convert(contentView.bounds, to: self)
-			let transform = renderableScene.bounds.transform(to: targetRect)
-			context.concatenate(transform)
+    override func setNeedsDisplay() {
+        self.layer.setNeedsDisplay()
+        super.setNeedsDisplay()
+    }
 
-			context.saveGState()
-			UIGraphicsPushContext(context)
-			renderableScene.draw(in: context)
-			UIGraphicsPopContext()
-			context.restoreGState()
-		}
-	}
-	#endif
+    #endif
 
-	#if os(macOS)
-	override func draw(_ dirtyRect: NSRect) {
-		if let contentView = contentView, let renderableScene = renderView?.scene, let graphicsContext = NSGraphicsContext.current() {
-			let context = graphicsContext.cgContext
+    #if os(macOS)
+    override func layout() {
+        super.layout()
+        self.wantsLayer = true
+        self.layer?.backgroundColor = .clear
+    }
 
-			let targetRect = contentView.convert(contentView.bounds, to: self)
-			let transform = renderableScene.bounds.transform(to: targetRect)
+    override func draw(_ dirtyRect: NSRect) {
+        CGContext.current.map { self.draw(in: $0) }
+    }
 
-			context.concatenate(transform)
-			context.saveGState()
+    override var isFlipped: Bool {
+        return true
+    }
 
-			renderableScene.draw(in: context)
+    #endif
 
-			context.restoreGState()
-		}
-	}
-	#endif
+    // MARK: -
 
-	#if os(macOS)
-	override var isFlipped: Bool {
-		return true
-	}
-	#endif
+    func draw(in context: CGContext) {
+        guard let contentView = contentView, let renderableScene = renderView?.scene else { return }
+        let targetRect = contentView.convert(contentView.bounds, to: self)
+        let transform = renderableScene.bounds.transform(to: targetRect)
+        context.concatenate(transform)
+        context.saveGState()
 
-	#if os(iOS)
-	override func setNeedsDisplay() {
-		self.layer.setNeedsDisplay()
-		super.setNeedsDisplay()
-	}
-	#endif
+        #if os(iOS)
+            UIGraphicsPushContext(context)
+        #endif
 
+        renderableScene.draw(in: context)
+
+        #if os(iOS)
+            UIGraphicsPopContext()
+        #endif
+        
+        context.restoreGState()
+    }
 }

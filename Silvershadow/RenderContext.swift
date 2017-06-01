@@ -23,14 +23,34 @@ struct RenderContextState {
 	var zoomScale: CGFloat
 }
 
+struct Stack<Element> {
+    private var content : [Element]
 
+    init() {
+        content = []
+    }
+
+    mutating
+    func push(_ element: Element) {
+        content.append(element)
+    }
+
+    mutating
+    func pop() -> Element? {
+        guard let l = content.last else { return nil }
+        defer {
+            content.removeLast()
+        }
+        return l
+    }
+}
 //
 //	RenderContext
 //
 
 class RenderContext {
 	var current: RenderContextState
-	private var contextStack = [RenderContextState]()
+	private var contextStack = Stack<RenderContextState>()
 
 	var renderPassDescriptor: MTLRenderPassDescriptor {
 		get { return current.renderPassDescriptor }
@@ -99,14 +119,12 @@ class RenderContext {
 		let copiedState = self.current
 		let copiedRenderpassDescriptor = self.current.renderPassDescriptor.copy() as! MTLRenderPassDescriptor
 		self.current.renderPassDescriptor = copiedRenderpassDescriptor
-		self.contextStack.append(copiedState)
+		self.contextStack.push(copiedState)
 	}
 	
 	func popContext() {
-		if self.contextStack.count > 0 {
-			self.current = self.contextStack.removeLast()
-		}
-		else { fatalError("cannot pop") }
+        guard let current = contextStack.pop() else { fatalError("cannot pop") }
+        self.current = current
 	}
 }
 
