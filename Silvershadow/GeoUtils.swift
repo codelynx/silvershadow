@@ -383,4 +383,10 @@ extension float4x4 {
 	}
 }
 
+extension MTLClearColor : Equatable {
+    public static func ==(lhs: MTLClearColor, rhs: MTLClearColor) -> Bool {
+        return lhs.red == rhs.red && lhs.green == rhs.green &&
+               lhs.blue == rhs.blue && lhs.alpha == rhs.alpha
+    }
+}
 

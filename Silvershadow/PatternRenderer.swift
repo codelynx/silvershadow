@@ -96,21 +96,11 @@ class PatternRenderer: Renderer {
 	}()
 
 	lazy var shadingSamplerState: MTLSamplerState = {
-		let samplerDescriptor = MTLSamplerDescriptor()
-		samplerDescriptor.minFilter = .nearest
-		samplerDescriptor.magFilter = .linear
-		samplerDescriptor.sAddressMode = .repeat
-		samplerDescriptor.tAddressMode = .repeat
-		return self.device.makeSamplerState(descriptor: samplerDescriptor)
+		return self.device.makeSamplerState(descriptor: .`default`)
 	}()
 
 	lazy var patternSamplerState: MTLSamplerState = {
-		let samplerDescriptor = MTLSamplerDescriptor()
-		samplerDescriptor.minFilter = .nearest
-		samplerDescriptor.magFilter = .linear
-		samplerDescriptor.sAddressMode = .repeat
-		samplerDescriptor.tAddressMode = .repeat
-		return self.device.makeSamplerState(descriptor: samplerDescriptor)
+		return self.device.makeSamplerState(descriptor: .`default`)
 	}()
 
 	func vertexBuffer(for vertices: [Vertex]) -> VertexBuffer<Vertex>? {

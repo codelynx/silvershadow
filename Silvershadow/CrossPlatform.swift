@@ -8,14 +8,6 @@
 
 import Foundation
 
-
-#if os(iOS)
-    import UIKit
-#elseif os(macOS)
-    import Cocoa
-#endif
-
-
 typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
 
 #if os(iOS)
@@ -31,9 +23,9 @@ typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
     typealias XFont = UIFont
 
     extension UIBezierPath {
-
-        func line(to point: CGPoint) { self.addLine(to: point) }
-
+        func line(to point: CGPoint) {
+            addLine(to: point)
+        }
     }
 
 
@@ -53,13 +45,15 @@ typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
 
     extension NSBezierPath {
 
-        func addLine(to point: CGPoint) { self.line(to: point) }
+        func addLine(to point: CGPoint) {
+            line(to: point)
+        }
 
         public var cgPath: CGPath {
             let path = CGMutablePath()
             var points = [CGPoint](repeating: .zero, count: 3)
-            for i in 0 ..< self.elementCount {
-                let type = self.element(at: i, associatedPoints: &points)
+            for i in 0 ..< elementCount {
+                let type = element(at: i, associatedPoints: &points)
                 switch type {
                 case .moveToBezierPathElement: path.move(to: points[0])
                 case .lineToBezierPathElement: path.addLine(to: points[0])

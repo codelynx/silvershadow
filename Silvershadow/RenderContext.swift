@@ -102,7 +102,7 @@ class RenderContext {
 		contentSize: CGSize,
 		deviceSize: CGSize,
 		transform: GLKMatrix4,
-		zoomScale: CGFloat
+		zoomScale: CGFloat = 1
 	) {
 		self.current = RenderContextState(
 					renderPassDescriptor: renderPassDescriptor, commandQueue: commandQueue,

@@ -96,12 +96,7 @@ class ImageRenderer: Renderer {
 	}()
 
 	lazy var colorSamplerState: MTLSamplerState = {
-		let samplerDescriptor = MTLSamplerDescriptor()
-		samplerDescriptor.minFilter = .nearest
-		samplerDescriptor.magFilter = .linear
-		samplerDescriptor.sAddressMode = .repeat
-		samplerDescriptor.tAddressMode = .repeat
-		return self.device.makeSamplerState(descriptor: samplerDescriptor)
+		return self.device.makeSamplerState(descriptor: .`default`)
 	}()
 
 	func vertexBuffer(for vertices: [Vertex]) -> VertexBuffer<Vertex>? {

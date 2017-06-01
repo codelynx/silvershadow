@@ -158,21 +158,11 @@ class BezierRenderer: Renderer {
 	}()
 
 	lazy var shapeSamplerState: MTLSamplerState = {
-		let samplerDescriptor = MTLSamplerDescriptor()
-		samplerDescriptor.minFilter = .nearest
-		samplerDescriptor.magFilter = .linear
-		samplerDescriptor.sAddressMode = .repeat
-		samplerDescriptor.tAddressMode = .repeat
-		return self.device.makeSamplerState(descriptor: samplerDescriptor)
+		return self.device.makeSamplerState(descriptor: .`default`)
 	}()
 
 	lazy var patternSamplerState: MTLSamplerState = {
-		let samplerDescriptor = MTLSamplerDescriptor()
-		samplerDescriptor.minFilter = .nearest
-		samplerDescriptor.magFilter = .linear
-		samplerDescriptor.sAddressMode = .repeat
-		samplerDescriptor.tAddressMode = .repeat
-		return self.device.makeSamplerState(descriptor: samplerDescriptor)
+		return self.device.makeSamplerState(descriptor: .`default`)
 	}()
 
 	private typealias LineSegment = (type: ElementType, length: CGFloat, p0: CGPoint, p1: CGPoint, p2: CGPoint, p3: CGPoint)
@@ -184,8 +174,8 @@ class BezierRenderer: Renderer {
             var origin: CGPoint?
             var lastPoint: CGPoint?
 
-            return cgPath.pathElements.flatMap { (pathElement) -> LineSegment? in
-                switch pathElement {
+            return cgPath.pathElements.flatMap {
+                switch $0 {
                 case let .moveTo(p1):
                     origin = p1
                     lastPoint = p1
@@ -230,11 +220,11 @@ class BezierRenderer: Renderer {
 
 
 	func makeElementBuffer(elements: [BezierPathElement]) -> MetalBuffer<BezierPathElement> {
-		return MetalBuffer<BezierPathElement>(heap: self.heap, vertices: elements)
+		return MetalBuffer(heap: heap, vertices: elements)
 	}
 
 	func makeVertexBuffer(vertices: [Vertex]?, capacity: Int) -> MetalBuffer<Vertex> {
-		return MetalBuffer<Vertex>(heap: self.heap, vertices: vertices, capacity: capacity)
+		return MetalBuffer(heap: heap, vertices: vertices, capacity: capacity)
 	}
 
 	let vertexCapacity = 40_000
@@ -248,8 +238,8 @@ class BezierRenderer: Renderer {
 		var elementsArray = [[BezierPathElement]]()
 		let (w1, w2) = (8, 8)
 
-		let segments = self.lineSegments(cgPaths: cgPaths)
-		let totalLength = segments.reduce(CGFloat(0)) { (total, value) in return total + value.length }
+		let segments = lineSegments(cgPaths: cgPaths)
+		let totalLength = segments.reduce(CGFloat(0)) { $0 + $1.length }
 		print("totalLength=\(totalLength)")
 
 		var elements = [BezierPathElement]()
@@ -309,7 +299,7 @@ class BezierRenderer: Renderer {
 			do {
 				let encoder = commandBuffer.makeComputeCommandEncoder()
 				encoder.pushDebugGroup("bezier - kernel")
-				encoder.setComputePipelineState(self.computePipelineState)
+				encoder.setComputePipelineState(computePipelineState)
 
 				elementBuffer.set(elements)
 				encoder.setBuffer(elementBuffer.buffer, offset: 0, at: 0)
@@ -327,7 +317,7 @@ class BezierRenderer: Renderer {
 			do {
 				let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: shadingRenderPassDescriptor)
 				encoder.pushDebugGroup("bezier - brush shaping")
-				encoder.setRenderPipelineState(self.renderPipelineState)
+				encoder.setRenderPipelineState(renderPipelineState)
 
 				encoder.setFrontFacing(.clockwise)
 
@@ -335,10 +325,10 @@ class BezierRenderer: Renderer {
 				encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
 
 				encoder.setFragmentTexture(context.brushShape, at: 0)
-				encoder.setFragmentSamplerState(self.shapeSamplerState, at: 0)
+				encoder.setFragmentSamplerState(shapeSamplerState, at: 0)
 
 				encoder.setFragmentTexture(context.brushPattern, at: 1)
-				encoder.setFragmentSamplerState(self.patternSamplerState, at: 1)
+				encoder.setFragmentSamplerState(patternSamplerState, at: 1)
 
 				encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: Int(vertexCount))
 				encoder.popDebugGroup()
