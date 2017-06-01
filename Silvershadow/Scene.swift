@@ -26,7 +26,7 @@ class Scene {
 	weak var renderView: RenderView?
 
 	var bounds: CGRect {
-        return CGRect(origin: CGPoint(), size: contentSize)
+        return CGRect(origin: .zero, size: contentSize)
 	}
 	
 	init?(device: MTLDevice, contentSize: CGSize) {
@@ -68,7 +68,7 @@ class Scene {
 	}
 
 	var transform: CGAffineTransform {
-		return CGRect(origin: CGPoint.zero, size: self.contentSize).transform(to: CGRect(-1, -1, 2, 2))
+		return bounds.transform(to: CGRect(-1, -1, 2, 2))
 	}
 
 	// MARK: -
@@ -91,9 +91,7 @@ class Scene {
 
 	#if os(macOS)
 	func locationInScene(_ event: NSEvent) -> CGPoint? {
-		guard let contentView = self.renderView?.contentView else { return nil }
-		let location = contentView.convert(event.locationInWindow, from: nil)
-		return location
+        return renderView?.contentView.convert(event.locationInWindow, from: nil)
 	}
 	#endif
 
