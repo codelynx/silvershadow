@@ -244,8 +244,8 @@ extension CGPoint {
 	}
 
 	var normalized: CGPoint {
-		let length = self.length
-		return CGPoint(x: x/length, y: y/length)
+
+		return self * (1.0 / length)
 	}
 
 }
@@ -256,7 +256,6 @@ extension CGPoint {
 		self.x = x.cgFloatValue
 		self.y = y.cgFloatValue
 	}
-
 }
 
 
@@ -287,8 +286,22 @@ extension CGRect {
 }
 
 
-extension GLKMatrix4: CustomStringConvertible {
-	init(_ transform: CGAffineTransform) {
+extension GLKMatrix4: CustomStringConvertible, Collection {
+    public typealias Index = Int
+
+    public var startIndex : Index {
+        return 0
+    }
+
+    public var endIndex : Index {
+        return 16
+    }
+
+    public func index(after i: Index) -> Index {
+        return i + 1
+    }
+
+    init(_ transform: CGAffineTransform) {
 		let t = CATransform3DMakeAffineTransform(transform)
 		self.init(m: (
 				Float(t.m11), Float(t.m12), Float(t.m13), Float(t.m14),
@@ -296,20 +309,20 @@ extension GLKMatrix4: CustomStringConvertible {
 				Float(t.m31), Float(t.m32), Float(t.m33), Float(t.m34),
 				Float(t.m41), Float(t.m42), Float(t.m43), Float(t.m44)))
 	}
-	var scaleFactor : Float {
+
+    var scaleFactor : Float {
 		return sqrt(m00 * m00 + m01 * m01 + m02 * m02)
 	}
-	var invert: GLKMatrix4 {
+
+    var invert: GLKMatrix4 {
 		var invertible: Bool = true
 		let t = GLKMatrix4Invert(self, &invertible)
 		if !invertible { print("not invertible") }
 		return t
 	}
-	public var description: String {
-		return	"[ \(self.m00), \(self.m01), \(self.m02), \(self.m03) ;" +
-				" \(self.m10), \(self.m11), \(self.m12), \(self.m13) ;" +
-				" \(self.m20), \(self.m21), \(self.m22), \(self.m23) ;" +
-				" \(self.m30), \(self.m31), \(self.m32), \(self.m33) ]"
+
+    public var description: String {
+        return map { "\($0)" }.joined(separator: ",")
 	}
 
 	static func * (l: GLKMatrix4, r: GLKMatrix4) -> GLKMatrix4 {
@@ -317,7 +330,6 @@ extension GLKMatrix4: CustomStringConvertible {
 	}
 	
 }
-
 
 extension GLKVector2: CustomStringConvertible {
 	init(_ point: CGPoint) {
