@@ -70,13 +70,13 @@ extension CGRect {
 	}
 
 	func aspectFit(_ size: CGSize) -> CGRect {
-		let widthRatio = size.width / size.width
-		let heightRatio = size.height / size.height
+		let widthRatio = self.size.width / size.width
+		let heightRatio = self.size.height / size.height
 		let ratio = min(widthRatio, heightRatio)
 		let width = size.width * ratio
 		let height = size.height * ratio
-		let xmargin = (size.width - width) / 2.0
-		let ymargin = (size.height - height) / 2.0
+		let xmargin = (self.size.width - width) / 2.0
+		let ymargin = (self.size.height - height) / 2.0
 		return CGRect(x: minX + xmargin, y: minY + ymargin, width: width, height: height)
 	}
 
