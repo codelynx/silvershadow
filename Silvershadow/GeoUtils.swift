@@ -281,6 +281,8 @@ extension CGRect {
 extension GLKMatrix4: CustomStringConvertible, Collection {
     public typealias Index = Int
 
+    static let identity : GLKMatrix4 = GLKMatrix4Identity
+
     public var startIndex : Index {
         return 0
     }

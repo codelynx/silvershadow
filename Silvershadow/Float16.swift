@@ -60,7 +60,7 @@ struct Float16: CustomStringConvertible {
     }
 
     var description: String {
-        return self.floatValue.description
+        return floatValue.description
     }
 
 	static func + (lhs: Float16, rhs: Float16) -> Float16 {

@@ -130,7 +130,7 @@ class RenderContext {
 
 extension RenderContext {
 
-	func widthCGContext(_ closure: ((CGContext)->())) {
+	func widthCGContext(_ closure: (CGContext) -> ()) {
 		let (width, height, bytesPerRow) = (Int(contentSize.width), Int(contentSize.height), Int(contentSize.width) * 4)
 		let colorSpace = CGColorSpaceCreateDeviceRGB()
 		let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)

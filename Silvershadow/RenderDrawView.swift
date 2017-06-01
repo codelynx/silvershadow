@@ -57,9 +57,10 @@ class RenderDrawView: XView {
     // MARK: -
 
     func draw(in context: CGContext) {
-        guard let contentView = contentView, let renderableScene = renderView?.scene else { return }
-        let targetRect = contentView.convert(contentView.bounds, to: self)
-        let transform = renderableScene.bounds.transform(to: targetRect)
+        guard let contentView = contentView, let scene = renderView?.scene else { return }
+
+        let target = contentView.convert(contentView.bounds, to: self)
+        let transform = scene.bounds.transform(to: target)
         context.concatenate(transform)
         context.saveGState()
 
@@ -67,7 +68,7 @@ class RenderDrawView: XView {
             UIGraphicsPushContext(context)
         #endif
 
-        renderableScene.draw(in: context)
+        scene.draw(in: context)
 
         #if os(iOS)
             UIGraphicsPopContext()

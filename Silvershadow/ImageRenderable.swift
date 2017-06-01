@@ -20,7 +20,7 @@ class ImageRenderable: Renderable {
 	typealias RendererType = ImageRenderer
 
 	let device: MTLDevice
-	var transform = GLKMatrix4Identity
+    var transform : GLKMatrix4 = .identity
 
 	var image: XImage
 	var frame: Rect
