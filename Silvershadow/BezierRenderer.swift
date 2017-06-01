@@ -14,7 +14,9 @@ import GLKit
 import simd
 
 
-
+extension CGPoint {
+    static let nan = CGPoint(CGFloat.nan, CGFloat.nan)
+}
 
 class BezierRenderer: Renderer {
 
@@ -176,43 +178,42 @@ class BezierRenderer: Renderer {
 	private typealias LineSegment = (type: ElementType, length: CGFloat, p0: CGPoint, p1: CGPoint, p2: CGPoint, p3: CGPoint)
 
 	private func lineSegments(cgPaths: [CGPath]) -> [LineSegment] {
-		let nan2 = CGPoint(CGFloat.nan, CGFloat.nan)
-	
-		return cgPaths.flatMap { (cgPath) -> [LineSegment] in
 
-			var origin: CGPoint?
-			var lastPoint: CGPoint?
+        return cgPaths.flatMap { (cgPath) -> [LineSegment] in
 
-			return cgPath.pathElements.flatMap { (pathElement) -> LineSegment? in
-				switch pathElement {
-				case let .moveTo(p1):
-					origin = p1
-					lastPoint = p1
-				case let .lineTo(p1):
-					guard let p0 = lastPoint else { return nil }
-					let length = (p0 - p1).length
-					lastPoint = p1
-					return (.lineTo, length, p0, p1, nan2, nan2)
-				case let .quadCurveTo(p1, p2):
-					guard let p0 = lastPoint else { return nil }
-					let length = CGPath.quadraticCurveLength(p0, p1, p2)
-					lastPoint = p2
-					return (.quadCurveTo, length, p0, p1, p2, nan2)
-				case let .curveTo(p1, p2, p3):
-					guard let p0 = lastPoint else { return nil }
-					let length = CGPath.approximateCubicCurveLength(p0, p1, p2, p3)
-					lastPoint = p3
-					return (.curveTo, length, p0, p1, p2, p3)
-				case .closeSubpath:
-					guard let p0 = lastPoint, let p1 = origin else { return nil }
-					let length = (p0 - p1).length
-					lastPoint = nil
-					origin = nil
-					return (.lineTo, length, p0, p1, nan2, nan2)
-				}
-				return nil
-			}
-		}
+            var origin: CGPoint?
+            var lastPoint: CGPoint?
+
+            return cgPath.pathElements.flatMap { (pathElement) -> LineSegment? in
+                switch pathElement {
+                case let .moveTo(p1):
+                    origin = p1
+                    lastPoint = p1
+                case let .lineTo(p1):
+                    guard let p0 = lastPoint else { return nil }
+                    let length = (p0 - p1).length
+                    lastPoint = p1
+                    return (.lineTo, length, p0, p1, .nan, .nan)
+                case let .quadCurveTo(p1, p2):
+                    guard let p0 = lastPoint else { return nil }
+                    let length = CGPath.quadraticCurveLength(p0, p1, p2)
+                    lastPoint = p2
+                    return (.quadCurveTo, length, p0, p1, p2, .nan)
+                case let .curveTo(p1, p2, p3):
+                    guard let p0 = lastPoint else { return nil }
+                    let length = CGPath.approximateCubicCurveLength(p0, p1, p2, p3)
+                    lastPoint = p3
+                    return (.curveTo, length, p0, p1, p2, p3)
+                case .closeSubpath:
+                    guard let p0 = lastPoint, let p1 = origin else { return nil }
+                    let length = (p0 - p1).length
+                    lastPoint = nil
+                    origin = nil
+                    return (.lineTo, length, p0, p1, .nan, .nan)
+                }
+                return nil
+            }
+        }
 	}
 	
 	// MARK: -

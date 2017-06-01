@@ -20,13 +20,13 @@ class Scene {
 		didSet { self.setNeedsDisplay() }
 	}
 
-	var width: CGFloat { return self.contentSize.width }
-	var height: CGFloat { return self.contentSize.height }
+	var width: CGFloat { return contentSize.width }
+	var height: CGFloat { return contentSize.height }
 
 	weak var renderView: RenderView?
 
 	var bounds: CGRect {
-		return CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
+        return CGRect(origin: CGPoint(), size: contentSize)
 	}
 	
 	init?(device: MTLDevice, contentSize: CGSize) {
