@@ -143,7 +143,7 @@ class BezierRenderer: Renderer {
 		renderPipelineDescriptor.vertexFunction = self.library.makeFunction(name: "bezier_vertex")!
 		renderPipelineDescriptor.fragmentFunction = self.library.makeFunction(name: "bezier_fragment")!
 
-		renderPipelineDescriptor.colorAttachments[0].pixelFormat = defaultPixelFormat
+		renderPipelineDescriptor.colorAttachments[0].pixelFormat = .`default`
 		renderPipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
 		renderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
 		renderPipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add

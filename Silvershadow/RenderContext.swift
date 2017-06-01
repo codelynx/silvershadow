@@ -62,7 +62,7 @@ class RenderContext {
 	//
 
 	lazy var shadingTexture: MTLTexture = {
-		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
+		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .`default`,
 					width: Int(self.deviceSize.width), height: Int(self.deviceSize.height), mipmapped: false)
 		descriptor.usage = [.shaderRead, .renderTarget]
 		return self.device.makeTexture(descriptor: descriptor)
@@ -90,7 +90,7 @@ class RenderContext {
 	}
 
 	func makeCommandBuffer() -> MTLCommandBuffer {
-		return self.commandQueue.makeCommandBuffer()
+		return commandQueue.makeCommandBuffer()
 	}
 	
 	// MARK: -

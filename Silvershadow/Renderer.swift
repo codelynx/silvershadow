@@ -16,8 +16,10 @@ import Cocoa
 import MetalKit
 import GLKit
 
+extension MTLPixelFormat {
+    static let `default` : MTLPixelFormat = .bgra8Unorm
+}
 
-var defaultPixelFormat: MTLPixelFormat = .bgra8Unorm
 fileprivate var deviceRendererMap = NSMapTable<MTLDevice, RendererRegistry>.weakToStrongObjects()
 
 

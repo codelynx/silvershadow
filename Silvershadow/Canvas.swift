@@ -28,7 +28,7 @@ class Canvas: Scene {
 
 	// master texture of canvas
 	lazy var canvasTexture: MTLTexture = {
-		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
+		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .`default`,
 					width: Int(self.contentSize.width), height: Int(self.contentSize.height), mipmapped: self.mipmapped)
 		descriptor.usage = [.shaderRead, .shaderWrite, .renderTarget]
 		return self.device.makeTexture(descriptor: descriptor)
@@ -57,7 +57,7 @@ class Canvas: Scene {
 	}
 
 	lazy var sublayerTexture: MTLTexture = {
-		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: defaultPixelFormat,
+		let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .`default`,
 					width: Int(self.contentSize.width), height: Int(self.contentSize.height), mipmapped: self.mipmapped)
 		descriptor.usage = [.shaderRead, .renderTarget]
 		return self.device.makeTexture(descriptor: descriptor)
