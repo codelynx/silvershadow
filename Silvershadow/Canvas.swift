@@ -190,7 +190,7 @@ class Canvas: Scene {
 
         let subrenderPassDescriptor = MTLRenderPassDescriptor()
         subrenderPassDescriptor.colorAttachments[0].texture = subtexture
-        subrenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0)
+        subrenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor()
         subrenderPassDescriptor.colorAttachments[0].loadAction = .clear
         subrenderPassDescriptor.colorAttachments[0].storeAction = .store
 
