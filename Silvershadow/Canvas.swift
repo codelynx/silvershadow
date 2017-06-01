@@ -25,7 +25,7 @@ import GLKit
 //
 
 extension MTLTextureDescriptor {
-    static func texture2DDescriptor(size: CGSize, mipmapped: Bool = false, usage: MTLTextureUsage = []) -> MTLTextureDescriptor {
+    static func texture2DDescriptor(size: CGSize, mipmapped: Bool, usage: MTLTextureUsage = []) -> MTLTextureDescriptor {
         let desc = texture2DDescriptor(pixelFormat: .`default`,
                                        width: Int(size.width),
                                        height: Int(size.height),
@@ -35,14 +35,21 @@ extension MTLTextureDescriptor {
     }
 }
 
+extension MTLDevice {
+    final func makeTexture2D(size: CGSize, mipmapped: Bool, usage: MTLTextureUsage) -> MTLTexture {
+        return makeTexture(descriptor: .texture2DDescriptor(size: size,
+                                                            mipmapped: mipmapped,
+                                                            usage: usage))
+    }
+}
+
 class Canvas: Scene {
 
     // master texture of canvas
     lazy var canvasTexture: MTLTexture = {
-        let descriptor : MTLTextureDescriptor = .texture2DDescriptor(size: self.contentSize,
-                                                                     mipmapped: self.mipmapped,
-                                                                     usage: [.shaderRead, .shaderWrite, .renderTarget])
-        return self.device.makeTexture(descriptor: descriptor)
+        return self.device.makeTexture2D(size: self.contentSize,
+                                         mipmapped: self.mipmapped,
+                                         usage: [.shaderRead, .shaderWrite, .renderTarget])
     }()
 
     lazy var canvasRenderer: ImageRenderer = {
@@ -68,10 +75,9 @@ class Canvas: Scene {
     }
 
     lazy var sublayerTexture: MTLTexture = {
-        let descriptor : MTLTextureDescriptor = .texture2DDescriptor(size: self.contentSize,
-                                                                     mipmapped: self.mipmapped,
-                                                                     usage: [.shaderRead, .renderTarget])
-        return self.device.makeTexture(descriptor: descriptor)
+        return self.device.makeTexture2D(size: self.contentSize,
+                                         mipmapped: self.mipmapped,
+                                         usage: [.shaderRead, .renderTarget])
     }()
 
     lazy var subcomandQueue: MTLCommandQueue = {
