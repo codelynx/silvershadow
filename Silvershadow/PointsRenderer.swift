@@ -130,13 +130,13 @@ class PointsRenderer: Renderer {
     }()
 
     func vertexBuffer(for vertices: [Vertex], capacity: Int? = nil) -> VertexBuffer<Vertex> {
-        return VertexBuffer<Vertex>(device: self.device, vertices: vertices, capacity: capacity)
+        return VertexBuffer(device: self.device, vertices: vertices, capacity: capacity)
     }
 
     func render(context: RenderContext, texture: MTLTexture, vertexBuffer: VertexBuffer<Vertex>) {
         let transform = context.transform
         var uniforms = Uniforms(transform: transform, zoomScale: Float(context.zoomScale))
-        let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
+        let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: [])
 
         let commandBuffer = context.makeCommandBuffer()
         let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: context.renderPassDescriptor)

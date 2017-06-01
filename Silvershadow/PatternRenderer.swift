@@ -104,11 +104,11 @@ class PatternRenderer: Renderer {
 	}()
 
 	func vertexBuffer(for vertices: [Vertex]) -> VertexBuffer<Vertex>? {
-		return VertexBuffer<Vertex>(device: device, vertices: vertices)
+		return VertexBuffer(device: device, vertices: vertices)
 	}
 
 	func vertexBuffer(for rect: Rect) -> VertexBuffer<Vertex>? {
-		return VertexBuffer<Vertex>(device: device, vertices: self.vertices(for: rect))
+		return VertexBuffer(device: device, vertices: vertices(for: rect))
 	}
 	
 	func texture(of image: XImage) -> MTLTexture? {
@@ -136,11 +136,11 @@ class PatternRenderer: Renderer {
 	let rectangularVertexCount = 6
 
 	lazy var rectVertexTripleBuffer: [MTLBuffer] = {
-		let count = self.rectangularVertexCount
+		let len = MemoryLayout<Vertex>.size * self.rectangularVertexCount
 		return [
-			self.device.makeBuffer(length: MemoryLayout<Vertex>.size * count, options: [.storageModeShared]),
-			self.device.makeBuffer(length: MemoryLayout<Vertex>.size * count, options: [.storageModeShared]),
-			self.device.makeBuffer(length: MemoryLayout<Vertex>.size * count, options: [.storageModeShared])
+			self.device.makeBuffer(length: len, options: [.storageModeShared]),
+			self.device.makeBuffer(length: len, options: [.storageModeShared]),
+			self.device.makeBuffer(length: len, options: [.storageModeShared])
 		]
 	}()
 	

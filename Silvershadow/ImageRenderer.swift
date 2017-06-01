@@ -100,11 +100,11 @@ class ImageRenderer: Renderer {
 	}()
 
 	func vertexBuffer(for vertices: [Vertex]) -> VertexBuffer<Vertex>? {
-		return VertexBuffer<Vertex>(device: device, vertices: vertices)
+		return VertexBuffer(device: device, vertices: vertices)
 	}
 
 	func vertexBuffer(for rect: Rect) -> VertexBuffer<Vertex>? {
-		return VertexBuffer<Vertex>(device: device, vertices: self.vertices(for: rect))
+		return VertexBuffer(device: device, vertices: vertices(for: rect))
 	}
 	
 	func texture(of image: XImage) -> MTLTexture? {

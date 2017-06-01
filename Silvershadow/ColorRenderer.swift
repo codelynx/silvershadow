@@ -83,7 +83,7 @@ class ColorRenderer: Renderer {
 
 	func render(context: RenderContext, vertexBuffer: VertexBuffer<Vertex>) {
 		var uniforms = Uniforms(transform: context.transform)
-		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
+		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: [])
 
 		let commandBuffer = context.makeCommandBuffer()
 
@@ -100,7 +100,7 @@ class ColorRenderer: Renderer {
 	}
 
 	func vertexBuffer(for vertices: [Vertex]) -> VertexBuffer<Vertex>? {
-		return VertexBuffer<Vertex>(device: device, vertices: vertices)
+		return VertexBuffer(device: device, vertices: vertices)
 	}
 
 	func vertices(for rect: Rect, color: XColor) -> [Vertex] {

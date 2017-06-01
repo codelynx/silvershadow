@@ -270,9 +270,11 @@ class BezierRenderer: Renderer {
 
 		// now, elements are sprited 
 
-		let transform = context.transform
-		var uniforms = Uniforms(transform: transform, zoomScale: Float(context.zoomScale))
-		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
+
+		var uniforms = Uniforms(transform: context.transform,
+		                        zoomScale: Float(context.zoomScale))
+		let uniformsBuffer = device.makeBuffer(bytes: &uniforms,
+		                                       length: MemoryLayout<Uniforms>.size, options: [])
 
 
 		// Now shading brush stroke on shadingTexture

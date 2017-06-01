@@ -155,7 +155,11 @@ class Canvas: Scene {
     }
 
     var threadSize: MTLSize {
-        return MTLSize(texture: canvasTexture)
+        var size = 32
+        while (canvasTexture.width / size) * (canvasTexture.height / size) > 1024 {
+            size *= 2
+        }
+        return MTLSize(width: size, height: size, depth: 1)
     }
 
     var threadsPerThreadgroup: MTLSize {
