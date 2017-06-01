@@ -215,15 +215,15 @@ class Canvas: Scene {
 
 }
 
+extension RangeReplaceableCollection where Iterator.Element : Equatable {
+    mutating func remove(_ element: Iterator.Element) -> Index? {
+        return index(of: element).map { self.remove(at: $0); return $0 }
+    }
+}
+
 extension CanvasLayer {
-
 	func removeFromCanvas() {
-		if let canvas = self.canvas {
-			if let index = canvas.canvasLayers.index(of: self) {
-				canvas.canvasLayers.remove(at: index)
-			}
-		}
+        _ = canvas?.canvasLayers.remove(self)
 	}
-
 }
 
