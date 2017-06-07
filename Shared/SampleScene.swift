@@ -95,7 +95,7 @@ class SampleScene: Scene {
 		bezierRenderer.render(context: context, cgPaths: [self.samplePath()])
 	
 		context.widthCGContext { (cgContext) in
-			let paragraphStyle = NSMutableParagraphStyle.makeParagraphStyle()
+            let paragraphStyle : NSMutableParagraphStyle = .makeParagraphStyle()
 			paragraphStyle.alignment = .center
 			let attributes = [
 				NSFontAttributeName: XFont.boldSystemFont(ofSize: 32),

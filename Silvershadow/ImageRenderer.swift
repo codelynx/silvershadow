@@ -81,7 +81,7 @@ class ImageRenderer: Renderer {
 		renderPipelineDescriptor.vertexFunction = self.library.makeFunction(name: "image_vertex")!
 		renderPipelineDescriptor.fragmentFunction = self.library.makeFunction(name: "image_fragment")!
 
-		renderPipelineDescriptor.colorAttachments[0].pixelFormat = defaultPixelFormat
+		renderPipelineDescriptor.colorAttachments[0].pixelFormat = .`default`
 		renderPipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
 		renderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
 		renderPipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
@@ -96,20 +96,15 @@ class ImageRenderer: Renderer {
 	}()
 
 	lazy var colorSamplerState: MTLSamplerState = {
-		let samplerDescriptor = MTLSamplerDescriptor()
-		samplerDescriptor.minFilter = .nearest
-		samplerDescriptor.magFilter = .linear
-		samplerDescriptor.sAddressMode = .repeat
-		samplerDescriptor.tAddressMode = .repeat
-		return self.device.makeSamplerState(descriptor: samplerDescriptor)
+		return self.device.makeSamplerState(descriptor: .`default`)
 	}()
 
 	func vertexBuffer(for vertices: [Vertex]) -> VertexBuffer<Vertex>? {
-		return VertexBuffer<Vertex>(device: device, vertices: vertices)
+		return VertexBuffer(device: device, vertices: vertices)
 	}
 
 	func vertexBuffer(for rect: Rect) -> VertexBuffer<Vertex>? {
-		return VertexBuffer<Vertex>(device: device, vertices: self.vertices(for: rect))
+		return VertexBuffer(device: device, vertices: vertices(for: rect))
 	}
 	
 	func texture(of image: XImage) -> MTLTexture? {

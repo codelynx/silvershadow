@@ -36,8 +36,7 @@ extension MTLDevice {
 	}
 
 	func texture(of image: XImage) -> MTLTexture? {
-		guard let cgImage: CGImage = image.cgImage else { return nil }
-		return self.texture(of: cgImage)
+        return image.cgImage.flatMap { self.texture(of: $0) }
 	}
 
 	func texture(named name: String) -> MTLTexture? {

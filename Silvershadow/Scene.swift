@@ -20,13 +20,13 @@ class Scene {
 		didSet { self.setNeedsDisplay() }
 	}
 
-	var width: CGFloat { return self.contentSize.width }
-	var height: CGFloat { return self.contentSize.height }
+	var width: CGFloat { return contentSize.width }
+	var height: CGFloat { return contentSize.height }
 
 	weak var renderView: RenderView?
 
 	var bounds: CGRect {
-		return CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
+        return CGRect(origin: .zero, size: contentSize)
 	}
 	
 	init?(device: MTLDevice, contentSize: CGSize) {
@@ -68,7 +68,7 @@ class Scene {
 	}
 
 	var transform: CGAffineTransform {
-		return CGRect(origin: CGPoint.zero, size: self.contentSize).transform(to: CGRect(-1, -1, 2, 2))
+		return bounds.transform(to: CGRect(-1, -1, 2, 2))
 	}
 
 	// MARK: -
@@ -91,9 +91,7 @@ class Scene {
 
 	#if os(macOS)
 	func locationInScene(_ event: NSEvent) -> CGPoint? {
-		guard let contentView = self.renderView?.contentView else { return nil }
-		let location = contentView.convert(event.locationInWindow, from: nil)
-		return location
+        return renderView?.contentView.convert(event.locationInWindow, from: nil)
 	}
 	#endif
 

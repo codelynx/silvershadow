@@ -85,7 +85,7 @@ class RenderView: XView, MTKViewDelegate {
 	private (set) lazy var mtkView: MTKView = {
 		let mtkView = MTKView(frame: self.bounds)
 		mtkView.device = MTLCreateSystemDefaultDevice()!
-		mtkView.colorPixelFormat = defaultPixelFormat
+		mtkView.colorPixelFormat = .`default`
 		mtkView.delegate = self
 		self.addSubviewToFit(mtkView)
 		mtkView.enableSetNeedsDisplay = true

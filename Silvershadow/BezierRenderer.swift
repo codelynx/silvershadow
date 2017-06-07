@@ -14,7 +14,9 @@ import GLKit
 import simd
 
 
-
+extension CGPoint {
+    static let nan = CGPoint(CGFloat.nan, CGFloat.nan)
+}
 
 class BezierRenderer: Renderer {
 
@@ -141,7 +143,7 @@ class BezierRenderer: Renderer {
 		renderPipelineDescriptor.vertexFunction = self.library.makeFunction(name: "bezier_vertex")!
 		renderPipelineDescriptor.fragmentFunction = self.library.makeFunction(name: "bezier_fragment")!
 
-		renderPipelineDescriptor.colorAttachments[0].pixelFormat = defaultPixelFormat
+		renderPipelineDescriptor.colorAttachments[0].pixelFormat = .`default`
 		renderPipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
 		renderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
 		renderPipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
@@ -156,65 +158,52 @@ class BezierRenderer: Renderer {
 	}()
 
 	lazy var shapeSamplerState: MTLSamplerState = {
-		let samplerDescriptor = MTLSamplerDescriptor()
-		samplerDescriptor.minFilter = .nearest
-		samplerDescriptor.magFilter = .linear
-		samplerDescriptor.sAddressMode = .repeat
-		samplerDescriptor.tAddressMode = .repeat
-		return self.device.makeSamplerState(descriptor: samplerDescriptor)
+		return self.device.makeSamplerState(descriptor: .`default`)
 	}()
 
 	lazy var patternSamplerState: MTLSamplerState = {
-		let samplerDescriptor = MTLSamplerDescriptor()
-		samplerDescriptor.minFilter = .nearest
-		samplerDescriptor.magFilter = .linear
-		samplerDescriptor.sAddressMode = .repeat
-		samplerDescriptor.tAddressMode = .repeat
-		return self.device.makeSamplerState(descriptor: samplerDescriptor)
+		return self.device.makeSamplerState(descriptor: .`default`)
 	}()
 
 	private typealias LineSegment = (type: ElementType, length: CGFloat, p0: CGPoint, p1: CGPoint, p2: CGPoint, p3: CGPoint)
 
 	private func lineSegments(cgPaths: [CGPath]) -> [LineSegment] {
-		let nan2 = CGPoint(CGFloat.nan, CGFloat.nan)
-	
-		return cgPaths.map { (cgPath) -> [LineSegment] in
 
-			var origin: CGPoint?
-			var lastPoint: CGPoint?
+        return cgPaths.flatMap { (cgPath) -> [LineSegment] in
 
-			return cgPath.pathElements.flatMap { (pathElement) -> LineSegment? in
-				switch pathElement {
-				case .moveTo(let p1):
-					origin = p1
-					lastPoint = p1
-				case .lineTo(let p1):
-					guard let p0 = lastPoint else { return nil }
-					let length = (p0 - p1).length
-					lastPoint = p1
-					return (.lineTo, length, p0, p1, nan2, nan2)
-				case .quadCurveTo(let p1, let p2):
-					guard let p0 = lastPoint else { return nil }
-					let length = CGPath.quadraticCurveLength(p0, p1, p2)
-					lastPoint = p2
-					return (.quadCurveTo, length, p0, p1, p2, nan2)
-				case .curveTo(let p1, let p2, let p3):
-					guard let p0 = lastPoint else { return nil }
-					let length = CGPath.approximateCubicCurveLength(p0, p1, p2, p3)
-					lastPoint = p3
-					return (.curveTo, length, p0, p1, p2, p3)
-				case .closeSubpath:
-					guard let p0 = lastPoint, let p1 = origin else { return nil }
-					let length = (p0 - p1).length
-					lastPoint = nil
-					origin = nil
-					return (.lineTo, length, p0, p1, nan2, nan2)
-				}
-				return nil
-			}
+            var origin: CGPoint?
+            var lastPoint: CGPoint?
 
-		}
-		.flatMap { $0 }
+            return cgPath.pathElements.flatMap {
+                switch $0 {
+                case let .moveTo(p1):
+                    origin = p1
+                    lastPoint = p1
+                case let .lineTo(p1):
+                    guard let p0 = lastPoint else { return nil }
+                    let length = (p0 - p1).length
+                    lastPoint = p1
+                    return (.lineTo, length, p0, p1, .nan, .nan)
+                case let .quadCurveTo(p1, p2):
+                    guard let p0 = lastPoint else { return nil }
+                    let length = CGPath.quadraticCurveLength(p0, p1, p2)
+                    lastPoint = p2
+                    return (.quadCurveTo, length, p0, p1, p2, .nan)
+                case let .curveTo(p1, p2, p3):
+                    guard let p0 = lastPoint else { return nil }
+                    let length = CGPath.approximateCubicCurveLength(p0, p1, p2, p3)
+                    lastPoint = p3
+                    return (.curveTo, length, p0, p1, p2, p3)
+                case .closeSubpath:
+                    guard let p0 = lastPoint, let p1 = origin else { return nil }
+                    let length = (p0 - p1).length
+                    lastPoint = nil
+                    origin = nil
+                    return (.lineTo, length, p0, p1, .nan, .nan)
+                }
+                return nil
+            }
+        }
 	}
 	
 	// MARK: -
@@ -231,11 +220,11 @@ class BezierRenderer: Renderer {
 
 
 	func makeElementBuffer(elements: [BezierPathElement]) -> MetalBuffer<BezierPathElement> {
-		return MetalBuffer<BezierPathElement>(heap: self.heap, vertices: elements)
+		return MetalBuffer(heap: heap, vertices: elements)
 	}
 
 	func makeVertexBuffer(vertices: [Vertex]?, capacity: Int) -> MetalBuffer<Vertex> {
-		return MetalBuffer<Vertex>(heap: self.heap, vertices: vertices, capacity: capacity)
+		return MetalBuffer(heap: heap, vertices: vertices, capacity: capacity)
 	}
 
 	let vertexCapacity = 40_000
@@ -249,8 +238,8 @@ class BezierRenderer: Renderer {
 		var elementsArray = [[BezierPathElement]]()
 		let (w1, w2) = (8, 8)
 
-		let segments = self.lineSegments(cgPaths: cgPaths)
-		let totalLength = segments.reduce(CGFloat(0)) { (total, value) in return total + value.length }
+		let segments = lineSegments(cgPaths: cgPaths)
+		let totalLength = segments.reduce(CGFloat(0)) { $0 + $1.length }
 		print("totalLength=\(totalLength)")
 
 		var elements = [BezierPathElement]()
@@ -281,9 +270,11 @@ class BezierRenderer: Renderer {
 
 		// now, elements are sprited 
 
-		let transform = context.transform
-		var uniforms = Uniforms(transform: transform, zoomScale: Float(context.zoomScale))
-		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
+
+		var uniforms = Uniforms(transform: context.transform,
+		                        zoomScale: Float(context.zoomScale))
+		let uniformsBuffer = device.makeBuffer(bytes: &uniforms,
+		                                       length: MemoryLayout<Uniforms>.size, options: [])
 
 
 		// Now shading brush stroke on shadingTexture
@@ -310,7 +301,7 @@ class BezierRenderer: Renderer {
 			do {
 				let encoder = commandBuffer.makeComputeCommandEncoder()
 				encoder.pushDebugGroup("bezier - kernel")
-				encoder.setComputePipelineState(self.computePipelineState)
+				encoder.setComputePipelineState(computePipelineState)
 
 				elementBuffer.set(elements)
 				encoder.setBuffer(elementBuffer.buffer, offset: 0, at: 0)
@@ -328,7 +319,7 @@ class BezierRenderer: Renderer {
 			do {
 				let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: shadingRenderPassDescriptor)
 				encoder.pushDebugGroup("bezier - brush shaping")
-				encoder.setRenderPipelineState(self.renderPipelineState)
+				encoder.setRenderPipelineState(renderPipelineState)
 
 				encoder.setFrontFacing(.clockwise)
 
@@ -336,10 +327,10 @@ class BezierRenderer: Renderer {
 				encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
 
 				encoder.setFragmentTexture(context.brushShape, at: 0)
-				encoder.setFragmentSamplerState(self.shapeSamplerState, at: 0)
+				encoder.setFragmentSamplerState(shapeSamplerState, at: 0)
 
 				encoder.setFragmentTexture(context.brushPattern, at: 1)
-				encoder.setFragmentSamplerState(self.patternSamplerState, at: 1)
+				encoder.setFragmentSamplerState(patternSamplerState, at: 1)
 
 				encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: Int(vertexCount))
 				encoder.popDebugGroup()

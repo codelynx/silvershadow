@@ -23,27 +23,20 @@ extension Kernel {
 	}
 }
 
+final class KernelRegistry : DictLike<String, Kernel> { }
 
-class KernelRegistry {
-	private var registory = [String: Kernel]()
-	subscript(key: String) -> Kernel? {
-		get { return registory[key] }
-		set { registory[key] = newValue }
-	}
+final class KernelMap : NSMapTable<MTLDevice, KernelRegistry> {
+    static let shared = KernelMap.weakToStrongObjects()
 }
-
-
-fileprivate var deviceKernelMap = NSMapTable<MTLDevice, KernelRegistry>.weakToStrongObjects()
-
 
 extension MTLDevice {
 
 	func kernel<T: Kernel>() -> T {
 		let key = NSStringFromClass(T.self)
-		let registry = deviceKernelMap.object(forKey: self) ?? KernelRegistry()
+		let registry = KernelMap.shared.object(forKey: self) ?? KernelRegistry()
 		let renderer = registry[key] ?? T(device: self)
 		registry[key] = renderer
-		deviceKernelMap.setObject(registry, forKey: self)
+		KernelMap.shared.setObject(registry, forKey: self)
 		return renderer as! T
 	}
 

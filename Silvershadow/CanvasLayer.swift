@@ -6,10 +6,7 @@
 //	Copyright © 2016 Electricwoods LLC. All rights reserved.
 //
 
-import Foundation
 import MetalKit
-import GLKit
-
 
 class CanvasLayer: Equatable {
 
@@ -23,8 +20,7 @@ class CanvasLayer: Equatable {
 	var contentSize: CGSize? { return self.canvas?.contentSize }
 	
 	var bounds: CGRect? {
-		guard let contentSize = self.contentSize else { return nil }
-		return CGRect(0, 0, contentSize.width, contentSize.height)
+        return contentSize.map { CGRect(origin: .zero, size: $0) }
 	}
 	
 	init() {

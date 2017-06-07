@@ -63,7 +63,7 @@ class ColorRenderer: Renderer {
 		renderPipelineDescriptor.vertexFunction = self.library.makeFunction(name: "color_vertex")!
 		renderPipelineDescriptor.fragmentFunction = self.library.makeFunction(name: "color_fragment")!
 
-		renderPipelineDescriptor.colorAttachments[0].pixelFormat = defaultPixelFormat
+		renderPipelineDescriptor.colorAttachments[0].pixelFormat = .`default`
 		renderPipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
 		renderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
 		renderPipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
@@ -78,17 +78,12 @@ class ColorRenderer: Renderer {
 	}()
 
 	lazy var colorSamplerState: MTLSamplerState = {
-		let samplerDescriptor = MTLSamplerDescriptor()
-		samplerDescriptor.minFilter = .nearest
-		samplerDescriptor.magFilter = .linear
-		samplerDescriptor.sAddressMode = .repeat
-		samplerDescriptor.tAddressMode = .repeat
-		return self.device.makeSamplerState(descriptor: samplerDescriptor)
+		return self.device.makeSamplerState(descriptor: .`default`)
 	}()
 
 	func render(context: RenderContext, vertexBuffer: VertexBuffer<Vertex>) {
 		var uniforms = Uniforms(transform: context.transform)
-		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: MTLResourceOptions())
+		let uniformsBuffer = device.makeBuffer(bytes: &uniforms, length: MemoryLayout<Uniforms>.size, options: [])
 
 		let commandBuffer = context.makeCommandBuffer()
 
@@ -105,7 +100,7 @@ class ColorRenderer: Renderer {
 	}
 
 	func vertexBuffer(for vertices: [Vertex]) -> VertexBuffer<Vertex>? {
-		return VertexBuffer<Vertex>(device: device, vertices: vertices)
+		return VertexBuffer(device: device, vertices: vertices)
 	}
 
 	func vertices(for rect: Rect, color: XColor) -> [Vertex] {
