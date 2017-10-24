@@ -17,7 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 	func applicationDidFinishLaunching(_ aNotification: Notification) {
 
-		let app = NSApplication.shared()
+		let app = NSApplication.shared
 		if let sampleSceneAction = sampleCanvasMenuItem.action {
 			app.sendAction(sampleSceneAction, to: app, from: sampleCanvasMenuItem)
 		}

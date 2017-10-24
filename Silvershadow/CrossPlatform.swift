@@ -72,7 +72,7 @@ typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
             layout()
         }
 
-        func setNeedsDisplay() {
+        @objc func setNeedsDisplay() {
             setNeedsDisplay(bounds)
         }
 
@@ -119,7 +119,7 @@ typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
 
     extension CGContext {
         static var current : CGContext? {
-            return NSGraphicsContext.current()?.cgContext
+            return NSGraphicsContext.current?.cgContext
         }
     }
 
@@ -153,11 +153,7 @@ extension XColor {
 extension NSMutableParagraphStyle {
     
     static func makeParagraphStyle() -> NSMutableParagraphStyle {
-        #if os(iOS)
-            return NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
-        #elseif os(macOS)
-            return NSParagraphStyle.default().mutableCopy() as! NSMutableParagraphStyle
-        #endif
+		return NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
     }
 }
 

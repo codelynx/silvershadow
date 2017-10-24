@@ -39,11 +39,11 @@ class MetalBuffer<T> {
 		self.capacity = capacity
 		let buffer = self.heap.makeBuffer(length: length, options: [.storageModeShared])
 		if let vertices = vertices {
-			let destinationArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(buffer.contents()))
+			let destinationArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(buffer?.contents()))
 			let destinationArray = UnsafeMutableBufferPointer<T>(start: destinationArrayPtr, count: vertices.count)
 			(0 ..< vertices.count).forEach { destinationArray[$0] = vertices[$0]  }
 		}
-		self.buffer = buffer
+		self.buffer = buffer!
 	}
 
 	deinit {
@@ -65,7 +65,7 @@ class MetalBuffer<T> {
 			let buffer = self.heap.makeBuffer(length: length, options: [.storageModeShared])
 			let sourceArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(self.buffer.contents()))
 			let sourceArray = UnsafeMutableBufferPointer<T>(start: sourceArrayPtr, count: count)
-			let destinationArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(buffer.contents()))
+			let destinationArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(buffer?.contents()))
 			let destinationArray = UnsafeMutableBufferPointer<T>(start: destinationArrayPtr, count: count + items.count)
 
 			(0 ..< count).forEach { destinationArray[$0] = sourceArray[$0] }
@@ -74,7 +74,7 @@ class MetalBuffer<T> {
 			self.count = count + items.count
 			self.capacity = self.count
 
-			self.buffer = buffer
+			self.buffer = buffer!
 		}
 	}
 
@@ -91,7 +91,7 @@ class MetalBuffer<T> {
 			let buffer = self.heap.makeBuffer(bytes: items, length: bytes, options: [.storageModeShared])
 			self.count = items.count
 			self.capacity = items.count
-			self.buffer = buffer
+			self.buffer = buffer!
 		}
 	}
 

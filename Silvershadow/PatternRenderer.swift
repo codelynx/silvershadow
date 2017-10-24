@@ -97,11 +97,11 @@ class PatternRenderer: Renderer {
 
 	lazy var shadingSamplerState: MTLSamplerState = {
 		return self.device.makeSamplerState(descriptor: .`default`)
-	}()
+	}()!
 
 	lazy var patternSamplerState: MTLSamplerState = {
 		return self.device.makeSamplerState(descriptor: .`default`)
-	}()
+	}()!
 
 	func vertexBuffer(for vertices: [Vertex]) -> VertexBuffer<Vertex>? {
 		return VertexBuffer(device: device, vertices: vertices)
@@ -113,11 +113,11 @@ class PatternRenderer: Renderer {
 	
 	func texture(of image: XImage) -> MTLTexture? {
 		guard let cgImage: CGImage = image.cgImage else { return nil }
-		var options: [String : NSObject] = [MTKTextureLoaderOptionSRGB: false as NSNumber]
+		var options: [MTKTextureLoader.Option: Any] = [MTKTextureLoader.Option.SRGB: false]
 		if #available(iOS 10.0, *) {
-			options[MTKTextureLoaderOptionOrigin] = true as NSNumber
+			options[MTKTextureLoader.Option.origin] = true as NSNumber
 		}
-		return try? device.textureLoader.newTexture(with: cgImage, options: options)
+		return try? device.textureLoader.newTexture(cgImage: cgImage, options: options)
 	}
 	
 	// MARK: -
@@ -127,9 +127,9 @@ class PatternRenderer: Renderer {
 
 	lazy var uniformTripleBuffer: [MTLBuffer] = {
 		return [
-			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared]),
-			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared]),
-			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared])
+			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared])!,
+			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared])!,
+			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared])!
 		]
 	}()
 	
@@ -138,9 +138,9 @@ class PatternRenderer: Renderer {
 	lazy var rectVertexTripleBuffer: [MTLBuffer] = {
 		let len = MemoryLayout<Vertex>.size * self.rectangularVertexCount
 		return [
-			self.device.makeBuffer(length: len, options: [.storageModeShared]),
-			self.device.makeBuffer(length: len, options: [.storageModeShared]),
-			self.device.makeBuffer(length: len, options: [.storageModeShared])
+			self.device.makeBuffer(length: len, options: [.storageModeShared])!,
+			self.device.makeBuffer(length: len, options: [.storageModeShared])!,
+			self.device.makeBuffer(length: len, options: [.storageModeShared])!
 		]
 	}()
 	
@@ -164,25 +164,25 @@ class PatternRenderer: Renderer {
 
 		let commandBuffer = context.makeCommandBuffer()
 		let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: context.renderPassDescriptor)
-		encoder.pushDebugGroup("pattern filling")
+		encoder?.pushDebugGroup("pattern filling")
 		
-		encoder.setRenderPipelineState(self.renderPipelineState)
+		encoder?.setRenderPipelineState(self.renderPipelineState)
 
-		encoder.setFrontFacing(.clockwise)
+		encoder?.setFrontFacing(.clockwise)
 //		commandEncoder.setCullMode(.back)
-		encoder.setVertexBuffer(vertexBuffer, offset: 0, at: 0)
-		encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
+		encoder?.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+		encoder?.setVertexBuffer(uniformsBuffer, offset: 0, index: 1)
 
-		encoder.setFragmentTexture(context.shadingTexture, at: 0)
-		encoder.setFragmentTexture(context.brushPattern, at: 1)
-		encoder.setFragmentSamplerState(self.shadingSamplerState, at: 0)
-		encoder.setFragmentSamplerState(self.patternSamplerState, at: 1)
-		encoder.setFragmentBuffer(uniformsBuffer, offset: 0, at: 0)
+		encoder?.setFragmentTexture(context.shadingTexture, index: 0)
+		encoder?.setFragmentTexture(context.brushPattern, index: 1)
+		encoder?.setFragmentSamplerState(self.shadingSamplerState, index: 0)
+		encoder?.setFragmentSamplerState(self.patternSamplerState, index: 1)
+		encoder?.setFragmentBuffer(uniformsBuffer, offset: 0, index: 0)
 
-		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexes.count)
+		encoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexes.count)
 
-		encoder.popDebugGroup()
-		encoder.endEncoding()
+		encoder?.popDebugGroup()
+		encoder?.endEncoding()
 		commandBuffer.commit()
 	}
 }

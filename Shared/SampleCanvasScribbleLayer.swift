@@ -14,12 +14,12 @@ import GLKit
 class SampleCanvasScribbleLayer: CanvasLayer {
 
 	lazy var brushSapeTexture: MTLTexture? = {
-		return self.device?.texture(of: XImage(named: "Particle")!)!
+		return self.device?.texture(of: XImage(named: NSImage.Name("Particle"))!)!
 	}()
 
 
 	lazy var brushPatternTexture: MTLTexture! = {
-		return self.device?.texture(of: XImage(named: "Pencil")!)!
+		return self.device?.texture(of: XImage(named: NSImage.Name("Pencil"))!)!
 	}()
 
 	lazy var strokePaths: [CGPath] = {

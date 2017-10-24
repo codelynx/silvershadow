@@ -54,7 +54,7 @@ class ColorRenderer: Renderer {
 	}
 
 	lazy var library: MTLLibrary = {
-		return self.device.newDefaultLibrary()!
+		return self.device.makeDefaultLibrary()!
 	}()
 
 	lazy var renderPipelineState: MTLRenderPipelineState = {
@@ -79,7 +79,7 @@ class ColorRenderer: Renderer {
 
 	lazy var colorSamplerState: MTLSamplerState = {
 		return self.device.makeSamplerState(descriptor: .`default`)
-	}()
+	}()!
 
 	func render(context: RenderContext, vertexBuffer: VertexBuffer<Vertex>) {
 		var uniforms = Uniforms(transform: context.transform)
@@ -88,13 +88,13 @@ class ColorRenderer: Renderer {
 		let commandBuffer = context.makeCommandBuffer()
 
 		let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: context.renderPassDescriptor)
-		encoder.setRenderPipelineState(self.renderPipelineState)
-		encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
-		encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
+		encoder?.setRenderPipelineState(self.renderPipelineState)
+		encoder?.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: 0)
+		encoder?.setVertexBuffer(uniformsBuffer, offset: 0, index: 1)
 		
-		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexBuffer.count)
+		encoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexBuffer.count)
 
-		encoder.endEncoding()
+		encoder?.endEncoding()
 
 		commandBuffer.commit()
 	}

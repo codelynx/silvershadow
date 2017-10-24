@@ -27,7 +27,7 @@ class VertexBuffer<T> {
 		let capacity = capacity ?? vertices.count
 		let length = MemoryLayout<T>.stride * capacity
 		self.capacity = capacity
-		self.buffer = device.makeBuffer(bytes: vertices, length: length, options: [.storageModeShared]) // !?!
+		self.buffer = device.makeBuffer(bytes: vertices, length: length, options: [.storageModeShared])! // !?!
 	}
 
 	deinit {
@@ -48,7 +48,7 @@ class VertexBuffer<T> {
 			let buffer = self.device.makeBuffer(length: length, options: [.storageModeShared])
 			let sourceArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(self.buffer.contents()))
 			let sourceArray = UnsafeMutableBufferPointer<T>(start: sourceArrayPtr, count: count)
-			let destinationArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(buffer.contents()))
+			let destinationArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(buffer?.contents()))
 			let destinationArray = UnsafeMutableBufferPointer<T>(start: destinationArrayPtr, count: count + vertices.count)
 
 			(0 ..< count).forEach { destinationArray[$0] = sourceArray[$0] }
@@ -57,7 +57,7 @@ class VertexBuffer<T> {
 			self.count = count + vertices.count
 			self.capacity = self.count
 
-			self.buffer = buffer
+			self.buffer = buffer!
 		}
 	}
 
@@ -73,7 +73,7 @@ class VertexBuffer<T> {
 			let buffer = device.makeBuffer(bytes: vertices, length: bytes, options: [.storageModeShared])
 			self.count = vertices.count
 			self.capacity = vertices.count
-			self.buffer = buffer
+			self.buffer = buffer!
 		}
 	}
 

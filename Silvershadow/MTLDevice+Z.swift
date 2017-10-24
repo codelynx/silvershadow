@@ -21,15 +21,15 @@ extension MTLDevice {
 	func texture(of image: CGImage) -> MTLTexture? {
 
 		let textureUsage : MTLTextureUsage = [.pixelFormatView, .shaderRead]
-		var options: [String : NSObject] = [
-			MTKTextureLoaderOptionSRGB: false as NSNumber,
-			MTKTextureLoaderOptionTextureUsage: textureUsage.rawValue as NSNumber
+		var options: [MTKTextureLoader.Option : Any] = [
+			MTKTextureLoader.Option.SRGB: false,
+			MTKTextureLoader.Option.textureUsage: textureUsage.rawValue as NSNumber
 		]
 		if #available(iOS 10.0, *) {
-			options[MTKTextureLoaderOptionOrigin] = true as NSNumber
+			options[MTKTextureLoader.Option.origin] = true as NSNumber
 		}
 
-		guard let texture = try? self.textureLoader.newTexture(with: image, options: options) else { return nil }
+		guard let texture = try? self.textureLoader.newTexture(cgImage: image, options: options) else { return nil }
 
 		if texture.pixelFormat == .bgra8Unorm { return texture }
 		else { return texture.makeTextureView(pixelFormat: .bgra8Unorm) }
@@ -40,12 +40,12 @@ extension MTLDevice {
 	}
 
 	func texture(named name: String) -> MTLTexture? {
-		var options = [String: NSObject]()
-		options[MTKTextureLoaderOptionSRGB] = false as NSNumber
+		var options = [MTKTextureLoader.Option: Any]()
+		options[MTKTextureLoader.Option.SRGB] = false
 		if #available(iOS 10.0, *) {
-			options[MTKTextureLoaderOptionOrigin] = MTKTextureLoaderOriginTopLeft as NSObject
+			options[MTKTextureLoader.Option.origin] = MTKTextureLoader.Origin.topLeft as NSObject
 		}
-		do { return try self.textureLoader.newTexture(withName: name, scaleFactor: 1.0, bundle: nil, options: options) }
+		do { return try self.textureLoader.newTexture(name: name, scaleFactor: 1.0, bundle: nil, options: options) }
 		catch { fatalError("\(error)") }
 	}
 

@@ -112,7 +112,7 @@ class BezierRenderer: Renderer {
 	}
 
 	var library: MTLLibrary {
-		return self.device.newDefaultLibrary()!
+		return self.device.makeDefaultLibrary()!
 	}
 	
 	lazy var computePipelineState: MTLComputePipelineState = {
@@ -159,11 +159,11 @@ class BezierRenderer: Renderer {
 
 	lazy var shapeSamplerState: MTLSamplerState = {
 		return self.device.makeSamplerState(descriptor: .`default`)
-	}()
+	}()!
 
 	lazy var patternSamplerState: MTLSamplerState = {
 		return self.device.makeSamplerState(descriptor: .`default`)
-	}()
+	}()!
 
 	private typealias LineSegment = (type: ElementType, length: CGFloat, p0: CGPoint, p1: CGPoint, p2: CGPoint, p3: CGPoint)
 
@@ -300,41 +300,41 @@ class BezierRenderer: Renderer {
 			
 			do {
 				let encoder = commandBuffer.makeComputeCommandEncoder()
-				encoder.pushDebugGroup("bezier - kernel")
-				encoder.setComputePipelineState(computePipelineState)
+				encoder?.pushDebugGroup("bezier - kernel")
+				encoder?.setComputePipelineState(computePipelineState)
 
 				elementBuffer.set(elements)
-				encoder.setBuffer(elementBuffer.buffer, offset: 0, at: 0)
-				encoder.setBuffer(vertexBuffer.buffer, offset: 0, at: 1)
+				encoder?.setBuffer(elementBuffer.buffer, offset: 0, index: 0)
+				encoder?.setBuffer(vertexBuffer.buffer, offset: 0, index: 1)
 				let threadgroupsPerGrid = MTLSizeMake(elements.count, 1, 1)
 				let threadsPerThreadgroup = MTLSizeMake(1, 1, 1)
-				encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+				encoder?.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
 
-				encoder.popDebugGroup()
-				encoder.endEncoding()
+				encoder?.popDebugGroup()
+				encoder?.endEncoding()
 			}
 
 			// vertex buffer should be filled with vertexes then draw it
 
 			do {
 				let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: shadingRenderPassDescriptor)
-				encoder.pushDebugGroup("bezier - brush shaping")
-				encoder.setRenderPipelineState(renderPipelineState)
+				encoder?.pushDebugGroup("bezier - brush shaping")
+				encoder?.setRenderPipelineState(renderPipelineState)
 
-				encoder.setFrontFacing(.clockwise)
+				encoder?.setFrontFacing(.clockwise)
 
-				encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
-				encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
+				encoder?.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: 0)
+				encoder?.setVertexBuffer(uniformsBuffer, offset: 0, index: 1)
 
-				encoder.setFragmentTexture(context.brushShape, at: 0)
-				encoder.setFragmentSamplerState(shapeSamplerState, at: 0)
+				encoder?.setFragmentTexture(context.brushShape, index: 0)
+				encoder?.setFragmentSamplerState(shapeSamplerState, index: 0)
 
-				encoder.setFragmentTexture(context.brushPattern, at: 1)
-				encoder.setFragmentSamplerState(patternSamplerState, at: 1)
+				encoder?.setFragmentTexture(context.brushPattern, index: 1)
+				encoder?.setFragmentSamplerState(patternSamplerState, index: 1)
 
-				encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: Int(vertexCount))
-				encoder.popDebugGroup()
-				encoder.endEncoding()
+				encoder?.drawPrimitives(type: .point, vertexStart: 0, vertexCount: Int(vertexCount))
+				encoder?.popDebugGroup()
+				encoder?.endEncoding()
 			}
 
 			commandBuffer.commit()

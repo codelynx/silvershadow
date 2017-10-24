@@ -97,7 +97,7 @@ class ImageRenderer: Renderer {
 
 	lazy var colorSamplerState: MTLSamplerState = {
 		return self.device.makeSamplerState(descriptor: .`default`)
-	}()
+	}()!
 
 	func vertexBuffer(for vertices: [Vertex]) -> VertexBuffer<Vertex>? {
 		return VertexBuffer(device: device, vertices: vertices)
@@ -109,11 +109,11 @@ class ImageRenderer: Renderer {
 	
 	func texture(of image: XImage) -> MTLTexture? {
 		guard let cgImage: CGImage = image.cgImage else { return nil }
-		var options: [String : NSObject] = [MTKTextureLoaderOptionSRGB: false as NSNumber]
+		var options: [MTKTextureLoader.Option : Any] = [MTKTextureLoader.Option.SRGB: false as NSNumber]
 		if #available(iOS 10.0, *) {
-			options[MTKTextureLoaderOptionOrigin] = true as NSNumber
+			options[MTKTextureLoader.Option.origin] = true as NSNumber
 		}
-		return try? device.textureLoader.newTexture(with: cgImage, options: options)
+		return try? device.textureLoader.newTexture(cgImage: cgImage, options: options)
 	}
 	
 	// MARK: -
@@ -121,9 +121,9 @@ class ImageRenderer: Renderer {
 	// prepare triple reusable buffers for avoid race condition
 	lazy var uniformTripleBuffer: [MTLBuffer] = {
 		return [
-			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared]),
-			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared]),
-			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared])
+			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared])!,
+			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared])!,
+			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared])!
 		]
 	}()
 
@@ -153,20 +153,20 @@ class ImageRenderer: Renderer {
 
 		let commandBuffer = context.makeCommandBuffer()
 		let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: context.renderPassDescriptor)
-		encoder.pushDebugGroup("image")
-		encoder.setRenderPipelineState(self.renderPipelineState)
+		encoder?.pushDebugGroup("image")
+		encoder?.setRenderPipelineState(self.renderPipelineState)
 
-		encoder.setFrontFacing(.clockwise)
+		encoder?.setFrontFacing(.clockwise)
 //		commandEncoder.setCullMode(.back)
-		encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
-		encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
+		encoder?.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: 0)
+		encoder?.setVertexBuffer(uniformsBuffer, offset: 0, index: 1)
 
-		encoder.setFragmentTexture(texture, at: 0)
-		encoder.setFragmentSamplerState(self.colorSamplerState, at: 0)
+		encoder?.setFragmentTexture(texture, index: 0)
+		encoder?.setFragmentSamplerState(self.colorSamplerState, index: 0)
 
-		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexBuffer.count)
-		encoder.popDebugGroup()
-		encoder.endEncoding()
+		encoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexBuffer.count)
+		encoder?.popDebugGroup()
+		encoder?.endEncoding()
 
 		commandBuffer.commit()
 	}
