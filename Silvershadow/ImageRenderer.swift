@@ -8,7 +8,6 @@
 
 import Foundation
 import CoreGraphics
-import Metal
 import MetalKit
 import GLKit
 

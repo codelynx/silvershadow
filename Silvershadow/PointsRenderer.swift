@@ -8,7 +8,7 @@
 
 import Foundation
 import CoreGraphics
-import Metal
+import MetalKit
 import QuartzCore
 import GLKit
 

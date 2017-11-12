@@ -12,7 +12,6 @@ import UIKit
 import Cocoa
 #endif
 
-import Metal
 import MetalKit
 import GLKit
 
