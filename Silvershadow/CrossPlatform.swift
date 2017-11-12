@@ -123,6 +123,12 @@ typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
         }
     }
 
+    extension NSScrollView {
+        var zoomScale : CGFloat {
+            return magnification
+        }
+    }
+
     extension NSColor {
         var ciColor: CIColor {
             return CIColor(cgColor: cgColor)

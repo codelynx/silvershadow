@@ -135,9 +135,7 @@ class RenderView: XView, MTKViewDelegate {
 
 		return scrollView
 	}()
-	#endif
 
-	#if os(macOS)
 
 	var lastCall = Date()
 
@@ -187,17 +185,11 @@ class RenderView: XView, MTKViewDelegate {
 		self.mtkView.setNeedsDisplay()
 		self.drawView.setNeedsDisplay()
 	}
-	#endif
 
-	#if os(macOS)
-	override var isFlipped: Bool {
+    override var isFlipped: Bool {
 		return true
 	}
-	#endif
 
-	//
-
-	#if os(macOS)
 	override func draw(_ dirtyRect: NSRect) {
 		super.draw(dirtyRect)
 	}
@@ -257,11 +249,7 @@ class RenderView: XView, MTKViewDelegate {
 	}
 
 	var zoomScale: CGFloat {
-		#if os(iOS)
 		return scrollView.zoomScale
-		#elseif os(macOS)
-		return scrollView.magnification
-		#endif
 	}
 
 	var drawingTransform: CGAffineTransform {
@@ -289,16 +277,12 @@ class RenderView: XView, MTKViewDelegate {
 		get { return self.scrollView.panGestureRecognizer.minimumNumberOfTouches }
 		set { self.scrollView.panGestureRecognizer.minimumNumberOfTouches = newValue }
 	}
-	#endif
 
-	#if os(iOS)
 	var scrollEnabled: Bool {
 		get { return self.scrollView.isScrollEnabled }
 		set { self.scrollView.isScrollEnabled = newValue }
 	}
-	#endif
 
-	#if os(iOS)
 	var delaysContentTouches: Bool {
 		get { return self.scrollView.delaysContentTouches }
 		set { self.scrollView.delaysContentTouches = newValue }
@@ -323,7 +307,6 @@ extension RenderView: UIScrollViewDelegate {
 
 }
 #endif
-
 
 #if os(macOS)
 class FlippedClipView: NSClipView {
