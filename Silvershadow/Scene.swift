@@ -28,7 +28,7 @@ class Scene {
 	var bounds: CGRect {
         return CGRect(origin: .zero, size: contentSize)
 	}
-	
+
 	init?(device: MTLDevice, contentSize: CGSize) {
 		self.device = device
 		self.contentSize = contentSize
@@ -58,7 +58,7 @@ class Scene {
 			self.beingUpdated = false
 		}
 	}
-	
+
 	func setNeedsDisplay() {
 		self.renderView?.setNeedsDisplay()
 	}
@@ -100,13 +100,13 @@ class Scene {
 	#if os(iOS)
 	func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 	}
-	
+
 	func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
 	}
-	
+
 	func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
 	}
-	
+
 	func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
 	}
 	#endif
@@ -114,13 +114,13 @@ class Scene {
 	#if os(macOS)
 	func mouseDown(with event: NSEvent) {
 	}
-	
+
 	func mouseMoved(with event: NSEvent) {
 	}
-	
+
 	func mouseDragged(with event: NSEvent) {
 	}
-	
+
 	func mouseUp(with event: NSEvent) {
 	}
 	#endif

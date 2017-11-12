@@ -14,15 +14,15 @@ class CanvasLayer: Equatable {
 
 	weak var canvas: Canvas?
 	var isHidden: Bool = false
-	
+
 	var device: MTLDevice? { return self.canvas?.device }
-	
+
 	var contentSize: CGSize? { return self.canvas?.contentSize }
-	
+
 	var bounds: CGRect? {
         return contentSize.map { CGRect(origin: .zero, size: $0) }
 	}
-	
+
 	init() {
 		self.canvas = nil
 	}
@@ -37,5 +37,5 @@ class CanvasLayer: Equatable {
 	static func == (lhs: CanvasLayer, rhs: CanvasLayer) -> Bool {
 		return lhs === rhs
 	}
-	
+
 }

@@ -128,11 +128,11 @@ typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
             return CIColor(cgColor: cgColor)
         }
     }
-    
+
 #endif
 
 extension XColor {
-    
+
     var rgba: XRGBA {
         var (r, g, b, a) = (CGFloat(0), CGFloat(0), CGFloat(0), CGFloat(0))
         #if os(iOS)
@@ -143,15 +143,15 @@ extension XColor {
             return (ciColor.red, ciColor.green, ciColor.blue, ciColor.alpha)
         #endif
     }
-    
+
     convenience init(rgba: XRGBA) {
         self.init(red: rgba.r, green: rgba.g, blue: rgba.b, alpha: rgba.a)
     }
-    
+
 }
 
 extension NSMutableParagraphStyle {
-    
+
     static func makeParagraphStyle() -> NSMutableParagraphStyle {
         #if os(iOS)
             return NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle

@@ -39,11 +39,11 @@ class PointsRenderable: Renderable {
 		self.vertices = PointsRenderer.vertexes(of: cgPath, width: width)
 	}
 
-	
+
 	func render(context: RenderContext) {
 		renderer.render(context: context, texture: texture, vertexBuffer: vertexBuffer)
 	}
-	
+
 	func append(_ vertices: [PointVertex]) {
 		self.vertices += vertices
 		if self.vertices.count < vertexBuffer.count {

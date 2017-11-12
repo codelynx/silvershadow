@@ -26,7 +26,7 @@ class ColorRenderer: Renderer {
 	required init(device: MTLDevice) {
 		self.device = device
 	}
-	
+
 	deinit {
 	}
 
@@ -47,7 +47,7 @@ class ColorRenderer: Renderer {
 		vertexDescriptor.attributes[1].offset = MemoryLayout<Float>.size * 4
 		vertexDescriptor.attributes[1].format = .float4
 		vertexDescriptor.attributes[1].bufferIndex = 0
-		
+
 		vertexDescriptor.layouts[0].stepFunction = .perVertex
 		vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.size
 		return vertexDescriptor
@@ -72,7 +72,7 @@ class ColorRenderer: Renderer {
 		renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .one
 		renderPipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
 		renderPipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
-		
+
 		let renderPipelineState = try! self.device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
 		return renderPipelineState
 	}()
@@ -91,7 +91,7 @@ class ColorRenderer: Renderer {
 		encoder.setRenderPipelineState(self.renderPipelineState)
 		encoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, at: 0)
 		encoder.setVertexBuffer(uniformsBuffer, offset: 0, at: 1)
-		
+
 		encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexBuffer.count)
 
 		encoder.endEncoding()
@@ -129,7 +129,7 @@ extension RenderContext {
 
 
 	func render(triangles: [(ColorVertex, ColorVertex, ColorVertex)]) {
-		
+
 		let renderer: ColorRenderer = self.device.renderer()
 		let vertexes: [ColorVertex] = triangles.flatMap { [$0.0, $0.1, $0.2] }
 		if let vertexBuffer = renderer.vertexBuffer(for: vertexes) {

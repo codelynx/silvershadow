@@ -63,7 +63,7 @@ class RenderView: XView, MTKViewDelegate {
 	#if os(macOS)
 	override func layout() {
 		super.layout()
-		
+
 		self.sendSubview(toBack: self.mtkView)
 		self.bringSubview(toFront: self.drawView)
 		self.bringSubview(toFront: self.scrollView)
@@ -108,7 +108,7 @@ class RenderView: XView, MTKViewDelegate {
 		return scrollView
 	}()
 	#endif
-	
+
 	#if os(macOS)
 	private (set) lazy var scrollView: NSScrollView = {
 		let scrollView = NSScrollView(frame: self.bounds)
@@ -123,7 +123,7 @@ class RenderView: XView, MTKViewDelegate {
 		let clipView = FlippedClipView(frame: self.contentView.frame)
 		clipView.drawsBackground = false
 		clipView.backgroundColor = .clear
-		
+
 		scrollView.contentView = clipView // scrollView's contentView is NSClipView
 		scrollView.documentView = self.contentView
 		scrollView.contentView.postsBoundsChangedNotifications = true
@@ -141,9 +141,9 @@ class RenderView: XView, MTKViewDelegate {
 	#endif
 
 	#if os(macOS)
-	
+
 	var lastCall = Date()
-	
+
 	@objc func scrollContentDidChange(_ notification: Notification) {
 		Swift.print("since lastCall = \(-lastCall.timeIntervalSinceNow * 1000) ms")
 		self.lastCall = Date()
@@ -151,7 +151,7 @@ class RenderView: XView, MTKViewDelegate {
 		self.mtkView.setNeedsDisplay()
 	}
 	#endif
-	
+
 	private (set) lazy var drawView: RenderDrawView = {
 		let drawView = RenderDrawView(frame: self.bounds)
 		drawView.backgroundColor = XColor.clear
@@ -198,8 +198,8 @@ class RenderView: XView, MTKViewDelegate {
 	}
 	#endif
 
-	// 
-	
+	//
+
 	#if os(macOS)
 	override func draw(_ dirtyRect: NSRect) {
 		super.draw(dirtyRect)
@@ -214,10 +214,10 @@ class RenderView: XView, MTKViewDelegate {
 
 		let date = Date()
 		defer { Swift.print("RenderView: draw() ", -date.timeIntervalSinceNow * 1000, " ms") }
-	
+
 		self.semaphore.wait()
 		defer { self.semaphore.signal() }
-	
+
 		self.drawView.setNeedsDisplay()
 
 		guard let drawable = self.mtkView.currentDrawable else { return }
@@ -240,7 +240,7 @@ class RenderView: XView, MTKViewDelegate {
 			commandEncoder.endEncoding()
 			commandBuffer.commit()
 		}
-	
+
 		// setup render context
 		let transform = GLKMatrix4(self.drawingTransform)
 		renderPassDescriptor.colorAttachments[0].loadAction = .load
@@ -281,26 +281,26 @@ class RenderView: XView, MTKViewDelegate {
 		#endif
 		return transform
 	}
-	
+
 	func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
 	}
 
 	// MARK: -
-	
+
 	#if os(iOS)
 	var minimumNumberOfTouchesToScroll: Int {
 		get { return self.scrollView.panGestureRecognizer.minimumNumberOfTouches }
 		set { self.scrollView.panGestureRecognizer.minimumNumberOfTouches = newValue }
 	}
 	#endif
-	
+
 	#if os(iOS)
 	var scrollEnabled: Bool {
 		get { return self.scrollView.isScrollEnabled }
 		set { self.scrollView.isScrollEnabled = newValue }
 	}
 	#endif
-	
+
 	#if os(iOS)
 	var delaysContentTouches: Bool {
 		get { return self.scrollView.delaysContentTouches }
@@ -319,11 +319,11 @@ extension RenderView: UIScrollViewDelegate {
 	func scrollViewDidZoom(_ scrollView: UIScrollView) {
 		self.setNeedsDisplay()
 	}
-	
+
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
 		self.setNeedsDisplay()
 	}
-	
+
 }
 #endif
 

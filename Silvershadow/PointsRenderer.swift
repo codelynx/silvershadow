@@ -256,6 +256,6 @@ extension RenderContext {
         let renderer: PointsRenderer = self.device.renderer()
         renderer.render(context: self, texture: texture, points: points, width: width)
     }
-    
+
 }
 

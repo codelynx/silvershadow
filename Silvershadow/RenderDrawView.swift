@@ -73,7 +73,7 @@ class RenderDrawView: XView {
         #if os(iOS)
             UIGraphicsPopContext()
         #endif
-        
+
         context.restoreGState()
     }
 }

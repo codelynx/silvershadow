@@ -24,7 +24,7 @@ class ColorRectRenderable: Renderable {
 	}()
 	var frame: Rect
 	var color: XColor
-	
+
 	init?(device: MTLDevice, frame: Rect, color: XColor) {
 		self.device = device
 		self.frame = frame
@@ -54,7 +54,7 @@ class ColorTriangleRenderable: Renderable {
 		let vertices: [ColorVertex] = [ self.point1, self.point2, self.point3 ]
 		return self.renderer.vertexBuffer(for: vertices)!
 	}()
-	
+
 	init?(device: MTLDevice, point1: ColorVertex, point2: ColorVertex, point3: ColorVertex) {
 		self.device = device
 		self.point1 = point1

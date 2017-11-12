@@ -112,7 +112,7 @@ class RenderContext {
 	func makeCommandBuffer() -> MTLCommandBuffer {
 		return commandQueue.makeCommandBuffer()
 	}
-	
+
 	// MARK: -
 
 	func pushContext() {
@@ -121,7 +121,7 @@ class RenderContext {
 		self.current.renderPassDescriptor = copiedRenderpassDescriptor
 		self.contextStack.push(copiedState)
 	}
-	
+
 	func popContext() {
         guard let current = contextStack.pop() else { fatalError("cannot pop") }
         self.current = current
@@ -143,7 +143,7 @@ extension RenderContext {
 					.scaledBy(x: 1, y: -1)
 		context.concatenate(transform)
 		context.saveGState()
- 
+
 		#if os(iOS)
 		UIGraphicsPushContext(context)
 		#elseif os(macOS)

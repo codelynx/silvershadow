@@ -23,7 +23,7 @@ extension CGRect {
 		//	|				|
 		//	1				4
 		//	+2-------------3+
-	
+
 		let cornerRadius = min(size.width * 0.5, size.height * 0.5, cornerRadius)
 		let path = CGMutablePath()
 		path.move(to: minXmidY + CGPoint(x: 0, y: cornerRadius)) // (0)
@@ -101,7 +101,7 @@ extension CGSize {
 		let height = size.height * ratio
 		return CGSize(width: width, height: height)
 	}
-	
+
 	static func - (lhs: CGSize, rhs: CGSize) -> CGSize {
 		return CGSize(width: lhs.width - rhs.width, height: lhs.height - rhs.height)
 	}

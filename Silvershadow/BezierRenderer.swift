@@ -80,7 +80,7 @@ class BezierRenderer: Renderer {
 			self.y = Float16(y)
 			self.width = Float16(width)
 		}
-		
+
 		init(point: Point, width: Float) {
 			self.x = Float16(point.x)
 			self.y = Float16(point.y)
@@ -95,7 +95,7 @@ class BezierRenderer: Renderer {
 		var unused2: Float = 0
 		var unused3: Float = 0
 		var unused4: Float = 0
-		
+
 		init(transform: GLKMatrix4, zoomScale: Float) {
 			self.transform = transform
 			self.zoomScale = zoomScale
@@ -114,7 +114,7 @@ class BezierRenderer: Renderer {
 	var library: MTLLibrary {
 		return self.device.newDefaultLibrary()!
 	}
-	
+
 	lazy var computePipelineState: MTLComputePipelineState = {
 		let function = self.library.makeFunction(name: "bezier_kernel")!
 		return try! self.device.makeComputePipelineState(function: function)
@@ -205,9 +205,9 @@ class BezierRenderer: Renderer {
             }
         }
 	}
-	
+
 	// MARK: -
-	
+
 	#if os(iOS)
 	lazy var heap: XHeap = {
 		return self.device.makeHeap(size: 1024 * 1024 * 64) // ??
@@ -229,7 +229,7 @@ class BezierRenderer: Renderer {
 
 	let vertexCapacity = 40_000
 	let elementsCapacity = 4_000
-	
+
 	// MARK: -
 
 	func render(context: RenderContext, cgPaths: [CGPath]) {
@@ -268,7 +268,7 @@ class BezierRenderer: Renderer {
 		}
 
 
-		// now, elements are sprited 
+		// now, elements are sprited
 
 
 		var uniforms = Uniforms(transform: context.transform,
@@ -297,7 +297,7 @@ class BezierRenderer: Renderer {
 			let vertexBuffer = makeVertexBuffer(vertices: [], capacity: Int(vertexCount))
 
 			// build contiguous vertexes using computing shader from PathElement
-			
+
 			do {
 				let encoder = commandBuffer.makeComputeCommandEncoder()
 				encoder.pushDebugGroup("bezier - kernel")

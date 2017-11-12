@@ -28,7 +28,7 @@ class SampleCanvasScribbleLayer: CanvasLayer {
 
 	override func render(context: RenderContext) {
 		guard let device = self.device else { return }
-	
+
 		let bezierRenderer = device.renderer() as BezierRenderer
 
 		context.brushPattern = self.brushPatternTexture

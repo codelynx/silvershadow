@@ -42,7 +42,7 @@ class SampleScene: Scene {
 		(333.0, 642.5), (308.5, 644.0), (286.5, 644.5), (263.5, 644.5), (241.5, 642.5), (221.5, 637.0), (204.5, 631.5), (191.5, 625.5), (181.5, 621.0),
 		(174.5, 614.5)
 	]
-	
+
 	func samplePoints(_ transform: CGAffineTransform) -> [CGPoint] {
 		return self.samplePoints.map { CGPoint(x: $0.0, y: $0.1).applying(transform) }
 	}
@@ -67,7 +67,7 @@ class SampleScene: Scene {
 
 	override func didMove(to renderView: RenderView) {
 		super.didMove(to: renderView)
-		
+
 		self.renderView?.mtkView.isPaused = false
 	}
 
@@ -81,7 +81,7 @@ class SampleScene: Scene {
 		XColor.red.set()
 		let bezier = XBezierPath(ovalIn: self.bounds)
 		bezier.stroke()
-	
+
 		XColor.red.set()
 		XBezierPath(ovalIn: CGRect(0, 0, self.bounds.width * 0.5, self.bounds.height * 0.5)).stroke()
 */
@@ -93,7 +93,7 @@ class SampleScene: Scene {
 
 		let bezierRenderer = device.renderer() as BezierRenderer
 		bezierRenderer.render(context: context, cgPaths: [self.samplePath()])
-	
+
 		context.widthCGContext { (cgContext) in
             let paragraphStyle : NSMutableParagraphStyle = .makeParagraphStyle()
 			paragraphStyle.alignment = .center

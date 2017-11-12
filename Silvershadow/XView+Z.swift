@@ -52,5 +52,5 @@ extension XView {
 		}
 	}
 	#endif
-	
+
 }
