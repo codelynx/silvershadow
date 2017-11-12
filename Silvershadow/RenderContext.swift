@@ -136,7 +136,7 @@ extension RenderContext {
 		let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
 		guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: bytesPerRow,
 					space: colorSpace, bitmapInfo: bitmapInfo.rawValue) else { return }
-		context.clear(CGRect(0, 0, width, height))
+        context.clear(CGRect(size:contentSize))
 
 		let transform = CGAffineTransform.identity
 					.translatedBy(x: 0, y: contentSize.height)

@@ -35,9 +35,7 @@ class RenderDrawView: XView {
         super.setNeedsDisplay()
     }
 
-    #endif
-
-    #if os(macOS)
+    #elseif os(macOS)
     override func layout() {
         super.layout()
         self.wantsLayer = true

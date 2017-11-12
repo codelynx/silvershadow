@@ -69,9 +69,7 @@ class SampleCanvas: Canvas {
 		self.activePath = nil
 	}
 
-	#endif
-
-	#if os(iOS)
+	#elseif os(iOS)
 	var activeTouchPath: (touch: UITouch, path: CGMutablePath)?
 
 	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

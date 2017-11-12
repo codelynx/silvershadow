@@ -42,7 +42,7 @@ class RenderView: XView, MTKViewDelegate {
 			let contentSize = scene.contentSize
 			self.scrollView.contentSize = contentSize
 //			self.contentView.bounds = CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
-			let bounds = CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
+            let bounds = CGRect(size: contentSize)
 			let frame = self.scrollView.convert(bounds, to: self.contentView)
 			self.contentView.frame = frame
 		}
@@ -56,9 +56,8 @@ class RenderView: XView, MTKViewDelegate {
 		self.contentView.autoresizingMask = [.flexibleRightMargin, .flexibleBottomMargin]
 		self.setNeedsDisplay()
 	}
-	#endif
 
-	#if os(macOS)
+	#elseif os(macOS)
 	override func layout() {
 		super.layout()
 
@@ -102,9 +101,8 @@ class RenderView: XView, MTKViewDelegate {
 		self.contentView.frame = self.bounds
 		return scrollView
 	}()
-	#endif
 
-	#if os(macOS)
+	#elseif os(macOS)
 	private (set) lazy var scrollView: NSScrollView = {
 		let scrollView = NSScrollView(frame: self.bounds)
 		scrollView.hasVerticalScroller = true
