@@ -126,8 +126,8 @@ class RenderView: XView, MTKViewDelegate {
 		scrollView.contentView.postsBoundsChangedNotifications = true
 
 		// posting notification when zoomed, scrolled or resized
-		typealias T = RenderView
-		NotificationCenter.default.addObserver(self, selector: #selector(T.scrollContentDidChange),
+
+		NotificationCenter.default.addObserver(self, selector: #selector(RenderView.scrollContentDidChange),
 					name: .NSViewBoundsDidChange, object: nil)
 		scrollView.allowsMagnification = true
 		scrollView.maxMagnification = 4
@@ -209,11 +209,10 @@ class RenderView: XView, MTKViewDelegate {
 
 		self.drawView.setNeedsDisplay()
 
-		guard let drawable = self.mtkView.currentDrawable else { return }
-		guard let renderPassDescriptor = self.mtkView.currentRenderPassDescriptor else { return }
-		guard let scene = self.scene else { return }
-		guard let commandQueue = self.commandQueue else { return }
-
+		guard let drawable = self.mtkView.currentDrawable,
+            let renderPassDescriptor = self.mtkView.currentRenderPassDescriptor,
+            let scene = self.scene,
+            let commandQueue = self.commandQueue else { return }
 
 		let rgba = self.scene?.backgroundColor.rgba ?? XRGBA(0.9, 0.9, 0.9, 1.0)
 		let clearColor = MTLClearColorMake(Double(rgba.r), Double(rgba.g), Double(rgba.b), Double(rgba.a))
