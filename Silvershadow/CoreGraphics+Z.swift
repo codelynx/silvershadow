@@ -11,6 +11,9 @@ import CoreGraphics
 
 
 extension CGRect {
+    init(size: CGSize) {
+        self.init(origin: .zero, size: size)
+    }
 
 	var cgPath: CGPath {
 		return CGPath(rect: self, transform: nil)

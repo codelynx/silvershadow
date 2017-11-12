@@ -10,13 +10,12 @@ import Foundation
 import MetalKit
 import GLKit
 
-
 class Scene {
 
 	let device: MTLDevice
 	var contentSize: CGSize
 
-	var backgroundColor: XColor = XColor.white {
+	var backgroundColor: XColor = .white {
 		didSet { self.setNeedsDisplay() }
 	}
 
@@ -26,7 +25,7 @@ class Scene {
 	weak var renderView: RenderView?
 
 	var bounds: CGRect {
-        return CGRect(origin: .zero, size: contentSize)
+        return CGRect(size: contentSize)
 	}
 
 	init?(device: MTLDevice, contentSize: CGSize) {

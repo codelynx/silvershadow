@@ -70,7 +70,7 @@ class RenderView: XView, MTKViewDelegate {
 
         let contentSize = scene?.contentSize ?? bounds.size
 
-        self.scrollView.documentView?.frame = CGRect(origin: .zero, size: contentSize)
+        self.scrollView.documentView?.frame = CGRect(size: contentSize)
 
 		self.contentView.translatesAutoresizingMaskIntoConstraints = false
 		self.contentView.autoresizingMask = [.viewMaxXMargin, /*.viewMinYMargin,*/ .viewMaxYMargin]
@@ -151,7 +151,7 @@ class RenderView: XView, MTKViewDelegate {
 
 	private (set) lazy var drawView: RenderDrawView = {
 		let drawView = RenderDrawView(frame: self.bounds)
-		drawView.backgroundColor = XColor.clear
+		drawView.backgroundColor = .clear
 		drawView.renderView = self
 		self.addSubviewToFit(drawView)
 		return drawView
@@ -160,7 +160,7 @@ class RenderView: XView, MTKViewDelegate {
 	private (set) lazy var contentView: RenderContentView = {
 		let renderableContentView = RenderContentView(frame: self.bounds)
 		renderableContentView.renderView = self
-		renderableContentView.backgroundColor = XColor.clear
+		renderableContentView.backgroundColor = .clear
 		renderableContentView.translatesAutoresizingMaskIntoConstraints = false
 		#if os(iOS)
 		renderableContentView.isUserInteractionEnabled = true

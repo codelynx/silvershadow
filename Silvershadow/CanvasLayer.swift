@@ -20,7 +20,7 @@ class CanvasLayer: Equatable {
 	var contentSize: CGSize? { return self.canvas?.contentSize }
 
 	var bounds: CGRect? {
-        return contentSize.map { CGRect(origin: .zero, size: $0) }
+        return contentSize.map { CGRect(size: $0) }
 	}
 
 	init() {
