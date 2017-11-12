@@ -150,7 +150,6 @@ extension XColor {
     var rgba: XRGBA {
         return .init(color: self)
     }
-
 }
 
 extension NSMutableParagraphStyle {
