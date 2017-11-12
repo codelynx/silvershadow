@@ -48,7 +48,7 @@ fragment float4 points_fragment(
 	sampler colorSampler [[ sampler(0) ]],
 	float2 texcoord [[ point_coord ]]
 ) {
-	
+
 	float4 color = colorTexture.sample(colorSampler, texcoord);
 	if (color.a < 0.1) {
 		discard_fragment();
