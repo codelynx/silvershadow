@@ -31,20 +31,18 @@ extension XView {
 	}
 
 	func setBorder(color: XColor?, width: CGFloat) {
-		#if os(iOS)
-		self.layer.borderWidth = width
-		self.layer.borderColor = color?.cgColor
-		#elseif os(macOS)
-		self.layer?.borderWidth = width
-		self.layer?.borderColor = color?.cgColor
-		#endif
+        #if os(macOS)
+        guard let layer = self.layer else { fatalError() }
+        #endif
+
+		layer.borderWidth = width
+		layer.borderColor = color?.cgColor
 	}
 
 	#if os(macOS)
 	var backgroundColor: NSColor? {
 		get {
-			guard let backgroundColor = self.layer?.backgroundColor else { return nil }
-			return NSColor(cgColor: backgroundColor)
+            return layer?.backgroundColor.flatMap { NSColor(cgColor: $0) }
 		}
 		set {
 			self.wantsLayer = true // ??
