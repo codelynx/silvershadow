@@ -68,13 +68,10 @@ class RenderView: XView, MTKViewDelegate {
 		self.bringSubview(toFront: self.drawView)
 		self.bringSubview(toFront: self.scrollView)
 
-		if let renderableScene = self.scene {
-			let contentSize = renderableScene.contentSize
-			self.scrollView.documentView?.frame = CGRect(0, 0, contentSize.width, contentSize.height)
-		}
-		else {
-			self.scrollView.documentView?.frame = CGRect(0, 0, self.bounds.width, self.bounds.height)
-		}
+        let contentSize = scene?.contentSize ?? bounds.size
+
+        self.scrollView.documentView?.frame = CGRect(origin: .zero, size: contentSize)
+
 		self.contentView.translatesAutoresizingMaskIntoConstraints = false
 		self.contentView.autoresizingMask = [.viewMaxXMargin, /*.viewMinYMargin,*/ .viewMaxYMargin]
 		self.setNeedsDisplay()
@@ -130,8 +127,8 @@ class RenderView: XView, MTKViewDelegate {
 
 		// posting notification when zoomed, scrolled or resized
 		typealias T = RenderView
-		NotificationCenter.default.addObserver(self, selector: #selector(T.scrollContentDidChange(_:)),
-					name: NSNotification.Name.NSViewBoundsDidChange, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(T.scrollContentDidChange),
+					name: .NSViewBoundsDidChange, object: nil)
 		scrollView.allowsMagnification = true
 		scrollView.maxMagnification = 4
 		scrollView.minMagnification = 1
@@ -268,7 +265,7 @@ class RenderView: XView, MTKViewDelegate {
 	}
 
 	var drawingTransform: CGAffineTransform {
-		guard let scene = self.scene else { return CGAffineTransform.identity }
+		guard let scene = self.scene else { return .identity }
 		let targetRect = contentView.convert(self.contentView.bounds, to: self.mtkView)
 		let transform0 = CGAffineTransform(translationX: 0, y: self.contentView.bounds.height).scaledBy(x: 1, y: -1)
 		let transform1 = scene.bounds.transform(to: targetRect)
