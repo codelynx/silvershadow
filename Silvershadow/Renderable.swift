@@ -6,18 +6,7 @@
 //	Copyright © 2016 Electricwoods LLC. All rights reserved.
 //
 
-
-#if os(iOS)
-import UIKit
-#elseif os(macOS)
-import Cocoa
-#endif
-
 import MetalKit
-import GLKit
-
-
-
 
 protocol Renderable: class {
 

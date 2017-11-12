@@ -36,12 +36,6 @@ import Accelerate
 
 extension MTLTexture {
 
-	#if os(iOS)
-	typealias XImage = UIImage
-	#elseif os(macOS)
-	typealias XImage = NSImage
-	#endif
-
 	var cgImage: CGImage? {
 
 		assert(pixelFormat == .bgra8Unorm)

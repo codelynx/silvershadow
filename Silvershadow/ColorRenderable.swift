@@ -9,8 +9,6 @@
 import Foundation
 import CoreGraphics
 import MetalKit
-import GLKit
-
 
 class ColorRectRenderable: Renderable {
 

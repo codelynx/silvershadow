@@ -10,7 +10,6 @@ import Foundation
 import MetalKit
 import GLKit
 
-
 typealias ColorVertex = ColorRenderer.Vertex
 
 class ColorRenderer: Renderer {

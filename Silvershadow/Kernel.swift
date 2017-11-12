@@ -8,8 +8,6 @@
 
 import Foundation
 import MetalKit
-import GLKit
-
 
 protocol Kernel: class {
 	var device: MTLDevice { get }

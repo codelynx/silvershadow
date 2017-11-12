@@ -8,7 +8,6 @@
 
 
 import MetalKit
-import GLKit
 
 extension MTLPixelFormat {
     static let `default` : MTLPixelFormat = .bgra8Unorm

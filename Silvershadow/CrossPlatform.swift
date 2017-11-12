@@ -78,42 +78,34 @@ typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
 
         func sendSubview(toBack: NSView) {
             var subviews = self.subviews
-            if let index = subviews.index(of: toBack) {
-                subviews.remove(at: index)
-                subviews.insert(toBack, at: 0)
-                self.subviews = subviews
-            }
+            guard let index = subviews.index(of: toBack) else { return }
+            subviews.remove(at: index)
+            subviews.insert(toBack, at: 0)
+            self.subviews = subviews
         }
 
         func bringSubview(toFront: NSView) {
             var subviews = self.subviews
-            if let index = subviews.index(of: toFront) {
-                subviews.remove(at: index)
-                subviews.append(toFront)
-                self.subviews = subviews
-            }
+            guard let index = subviews.index(of: toFront) else { return }
+            subviews.remove(at: index)
+            subviews.append(toFront)
+            self.subviews = subviews
         }
 
         func replaceSubview(subview: NSView, with other: NSView) {
             var subviews = self.subviews
-            if let index = subviews.index(of: subview) {
-                subviews.remove(at: index)
-                subviews.insert(other, at: index)
-                self.subviews = subviews
-            }
+            guard let index = subviews.index(of: subview) else { return }
+            subviews.remove(at: index)
+            subviews.insert(other, at: index)
+            self.subviews = subviews
         }
-
     }
 
     extension NSImage {
         // somehow OSX does not provide CGImage property
+
         var cgImage: CGImage? {
-            return tiffRepresentation.flatMap {
-                CGImageSourceCreateWithData($0 as CFData, nil).flatMap {
-                    guard CGImageSourceGetCount($0) > 0 else { return nil }
-                    return CGImageSourceCreateImageAtIndex($0, 0, nil)
-                }
-            }
+            return cgImage(forProposedRect: nil, context: nil, hints: nil)
         }
     }
 

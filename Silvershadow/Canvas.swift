@@ -6,10 +6,8 @@
 //	Copyright © 2016 Electricwoods LLC. All rights reserved.
 //
 
-import Foundation
 import MetalKit
 import GLKit
-
 
 #if os(iOS)
     import UIKit

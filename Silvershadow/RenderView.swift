@@ -15,8 +15,6 @@ import Cocoa
 import MetalKit
 import GLKit
 
-
-
 class RenderView: XView, MTKViewDelegate {
 
 	var scene: Scene? {
@@ -190,9 +188,6 @@ class RenderView: XView, MTKViewDelegate {
 		return true
 	}
 
-	override func draw(_ dirtyRect: NSRect) {
-		super.draw(dirtyRect)
-	}
 	#endif
 
 	// MARK: -
