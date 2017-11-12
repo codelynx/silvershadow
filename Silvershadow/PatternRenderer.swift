@@ -23,9 +23,19 @@ class PatternRenderer: Renderer {
 
 	// MARK: -
 
-	struct Vertex {
-		var x, y, z, w, u, v: Float
-	}
+    struct Vertex {
+        var x, y, z, w, u, v: Float
+        var padding: float2
+        init(x: Float, y: Float, z: Float, w: Float, u: Float, v: Float) {
+            self.x = x
+            self.y = y
+            self.z = z
+            self.w = w
+            self.u = u
+            self.v = v
+            self.padding = .init()
+        }
+    }
 
 	struct Uniforms {
 		var transform: GLKMatrix4
