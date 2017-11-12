@@ -8,7 +8,6 @@
 
 import Foundation
 
-typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
 
 #if os(iOS)
 
@@ -121,29 +120,35 @@ typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
         }
     }
 
-    extension NSColor {
-        var ciColor: CIColor {
-            return CIColor(cgColor: cgColor)
-        }
+#endif
+
+struct XRGBA {
+    let r,g,b,a: CGFloat
+
+    init(r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat) {
+        self.r = r
+        self.g = g
+        self.b = b
+        self.a = a
     }
 
-#endif
+    init(ciColor : CIColor) {
+        self.init(r: ciColor.red, g: ciColor.green, b: ciColor.blue, a: ciColor.alpha)
+    }
+
+    init() {
+        self.init(r: 0, g: 0, b: 0, a: 0)
+    }
+
+    init(color: XColor) {
+        self.init(ciColor: CIColor(color: color)!)
+    }
+}
 
 extension XColor {
 
     var rgba: XRGBA {
-        var (r, g, b, a) = (CGFloat(0), CGFloat(0), CGFloat(0), CGFloat(0))
-        #if os(iOS)
-            self.getRed(&r, green: &g, blue: &b, alpha: &a)
-            return (r, g, b, a)
-        #elseif os(macOS)
-            let ciColor = CIColor(color: self)!
-            return (ciColor.red, ciColor.green, ciColor.blue, ciColor.alpha)
-        #endif
-    }
-
-    convenience init(rgba: XRGBA) {
-        self.init(red: rgba.r, green: rgba.g, blue: rgba.b, alpha: rgba.a)
+        return .init(color: self)
     }
 
 }

@@ -281,7 +281,7 @@ class BezierRenderer: Renderer {
 
 		let shadingRenderPassDescriptor = MTLRenderPassDescriptor()
 		shadingRenderPassDescriptor.colorAttachments[0].texture = context.shadingTexture
-		shadingRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0)
+		shadingRenderPassDescriptor.colorAttachments[0].clearColor = .init()
 		shadingRenderPassDescriptor.colorAttachments[0].loadAction = .clear
 		shadingRenderPassDescriptor.colorAttachments[0].storeAction = .store
 

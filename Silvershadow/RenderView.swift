@@ -207,10 +207,10 @@ class RenderView: XView, MTKViewDelegate {
             let scene = self.scene,
             let commandQueue = self.commandQueue else { return }
 
-		let rgba = self.scene?.backgroundColor.rgba ?? XRGBA(0.9, 0.9, 0.9, 1.0)
-		let clearColor = MTLClearColorMake(Double(rgba.r), Double(rgba.g), Double(rgba.b), Double(rgba.a))
+        let rgba = self.scene?.backgroundColor.rgba ?? XRGBA(r: 0.9, g: 0.9, b: 0.9, a: 1.0)
+
 		renderPassDescriptor.colorAttachments[0].texture = drawable.texture // error on simulator target
-		renderPassDescriptor.colorAttachments[0].clearColor = clearColor
+        renderPassDescriptor.colorAttachments[0].clearColor = .init(color: rgba)
 		renderPassDescriptor.colorAttachments[0].loadAction = .clear
 		renderPassDescriptor.colorAttachments[0].storeAction = .store
 
