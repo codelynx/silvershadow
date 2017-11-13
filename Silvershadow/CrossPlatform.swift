@@ -8,7 +8,6 @@
 
 import Foundation
 
-typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
 
 #if os(iOS)
 
@@ -78,42 +77,34 @@ typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
 
         func sendSubview(toBack: NSView) {
             var subviews = self.subviews
-            if let index = subviews.index(of: toBack) {
-                subviews.remove(at: index)
-                subviews.insert(toBack, at: 0)
-                self.subviews = subviews
-            }
+            guard let index = subviews.index(of: toBack) else { return }
+            subviews.remove(at: index)
+            subviews.insert(toBack, at: 0)
+            self.subviews = subviews
         }
 
         func bringSubview(toFront: NSView) {
             var subviews = self.subviews
-            if let index = subviews.index(of: toFront) {
-                subviews.remove(at: index)
-                subviews.append(toFront)
-                self.subviews = subviews
-            }
+            guard let index = subviews.index(of: toFront) else { return }
+            subviews.remove(at: index)
+            subviews.append(toFront)
+            self.subviews = subviews
         }
 
         func replaceSubview(subview: NSView, with other: NSView) {
             var subviews = self.subviews
-            if let index = subviews.index(of: subview) {
-                subviews.remove(at: index)
-                subviews.insert(other, at: index)
-                self.subviews = subviews
-            }
+            guard let index = subviews.index(of: subview) else { return }
+            subviews.remove(at: index)
+            subviews.insert(other, at: index)
+            self.subviews = subviews
         }
-
     }
 
     extension NSImage {
         // somehow OSX does not provide CGImage property
+
         var cgImage: CGImage? {
-            return tiffRepresentation.flatMap {
-                CGImageSourceCreateWithData($0 as CFData, nil).flatMap {
-                    guard CGImageSourceGetCount($0) > 0 else { return nil }
-                    return CGImageSourceCreateImageAtIndex($0, 0, nil)
-                }
-            }
+            return cgImage(forProposedRect: nil, context: nil, hints: nil)
         }
     }
 
@@ -123,35 +114,46 @@ typealias XRGBA = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
         }
     }
 
-    extension NSColor {
-        var ciColor: CIColor {
-            return CIColor(cgColor: cgColor)
+    extension NSScrollView {
+        var zoomScale : CGFloat {
+            return magnification
         }
     }
-    
+
 #endif
 
+struct XRGBA {
+    let r,g,b,a: CGFloat
+
+    init(r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat) {
+        self.r = r
+        self.g = g
+        self.b = b
+        self.a = a
+    }
+
+    init(ciColor : CIColor) {
+        self.init(r: ciColor.red, g: ciColor.green, b: ciColor.blue, a: ciColor.alpha)
+    }
+
+    init() {
+        self.init(r: 0, g: 0, b: 0, a: 0)
+    }
+
+    init(color: XColor) {
+        self.init(ciColor: CIColor(color: color)!)
+    }
+}
+
 extension XColor {
-    
+
     var rgba: XRGBA {
-        var (r, g, b, a) = (CGFloat(0), CGFloat(0), CGFloat(0), CGFloat(0))
-        #if os(iOS)
-            self.getRed(&r, green: &g, blue: &b, alpha: &a)
-            return (r, g, b, a)
-        #elseif os(macOS)
-            let ciColor = CIColor(color: self)!
-            return (ciColor.red, ciColor.green, ciColor.blue, ciColor.alpha)
-        #endif
+        return .init(color: self)
     }
-    
-    convenience init(rgba: XRGBA) {
-        self.init(red: rgba.r, green: rgba.g, blue: rgba.b, alpha: rgba.a)
-    }
-    
 }
 
 extension NSMutableParagraphStyle {
-    
+
     static func makeParagraphStyle() -> NSMutableParagraphStyle {
         #if os(iOS)
             return NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle

@@ -112,7 +112,7 @@ class RenderContext {
 	func makeCommandBuffer() -> MTLCommandBuffer {
 		return commandQueue.makeCommandBuffer()
 	}
-	
+
 	// MARK: -
 
 	func pushContext() {
@@ -121,7 +121,7 @@ class RenderContext {
 		self.current.renderPassDescriptor = copiedRenderpassDescriptor
 		self.contextStack.push(copiedState)
 	}
-	
+
 	func popContext() {
         guard let current = contextStack.pop() else { fatalError("cannot pop") }
         self.current = current
@@ -136,14 +136,14 @@ extension RenderContext {
 		let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
 		guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: bytesPerRow,
 					space: colorSpace, bitmapInfo: bitmapInfo.rawValue) else { return }
-		context.clear(CGRect(0, 0, width, height))
+        context.clear(CGRect(size:contentSize))
 
 		let transform = CGAffineTransform.identity
 					.translatedBy(x: 0, y: contentSize.height)
 					.scaledBy(x: 1, y: -1)
 		context.concatenate(transform)
 		context.saveGState()
- 
+
 		#if os(iOS)
 		UIGraphicsPushContext(context)
 		#elseif os(macOS)

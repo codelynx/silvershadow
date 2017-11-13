@@ -60,11 +60,11 @@ kernel void bezier_kernel(
 	float2 p3 = element.p3;
 	float w1 = float(element.width1);
 	float w2 = float(element.width2);
-	
+
 //	Vertex v = Vertex(p0, float(element.numberOfVertexes));
 //	outVertexes[0] = v;
 //	return;
-	
+
 	switch (element.type) {
 	case PathElementTypeLineTo:
 		for (int index = 0 ; index < numberOfVertexes ; index++) {
@@ -128,7 +128,7 @@ vertex VertexOut bezier_vertex(
 ) {
 	VertexIn inVertex = vertices[vid];
 	VertexOut outVertex;
-	
+
 	outVertex.position = uniforms.transform * float4(float2(inVertex.position), 0.0, 1.0);
 	outVertex.pointSize = vertices->width_unused[0] * uniforms.zoomScale;
 	return outVertex;
@@ -141,7 +141,7 @@ fragment float4 bezier_fragment(
 
 	texture2d<float, access::sample> patternTexture [[ texture(1) ]],
 	sampler patternSampler [[ sampler(1) ]],
-	
+
 	float2 texcoord [[ point_coord ]]
 ) {
 	float4 shapeColor = shapeTexture.sample(shapeSampler, texcoord);

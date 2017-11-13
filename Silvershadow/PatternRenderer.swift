@@ -8,7 +8,6 @@
 
 import Foundation
 import CoreGraphics
-import Metal
 import MetalKit
 import GLKit
 import simd
@@ -24,9 +23,19 @@ class PatternRenderer: Renderer {
 
 	// MARK: -
 
-	struct Vertex {
-		var x, y, z, w, u, v: Float
-	}
+    struct Vertex {
+        var x, y, z, w, u, v: Float
+        var padding: float2
+        init(x: Float, y: Float, z: Float, w: Float, u: Float, v: Float) {
+            self.x = x
+            self.y = y
+            self.z = z
+            self.w = w
+            self.u = u
+            self.v = v
+            self.padding = .init()
+        }
+    }
 
 	struct Uniforms {
 		var transform: GLKMatrix4
@@ -35,7 +44,7 @@ class PatternRenderer: Renderer {
 	}
 
 	let device: MTLDevice
-	
+
 
 	required init(device: MTLDevice) {
 		self.device = device
@@ -70,7 +79,7 @@ class PatternRenderer: Renderer {
 		vertexDescriptor.attributes[1].offset = 0
 		vertexDescriptor.attributes[1].format = .float2
 		vertexDescriptor.attributes[1].bufferIndex = 0
-		
+
 		vertexDescriptor.layouts[0].stepFunction = .perVertex
 		vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.size
 		return vertexDescriptor
@@ -110,7 +119,7 @@ class PatternRenderer: Renderer {
 	func vertexBuffer(for rect: Rect) -> VertexBuffer<Vertex>? {
 		return VertexBuffer(device: device, vertices: vertices(for: rect))
 	}
-	
+
 	func texture(of image: XImage) -> MTLTexture? {
 		guard let cgImage: CGImage = image.cgImage else { return nil }
 		var options: [String : NSObject] = [MTKTextureLoaderOptionSRGB: false as NSNumber]
@@ -119,7 +128,7 @@ class PatternRenderer: Renderer {
 		}
 		return try? device.textureLoader.newTexture(with: cgImage, options: options)
 	}
-	
+
 	// MARK: -
 
 
@@ -132,7 +141,7 @@ class PatternRenderer: Renderer {
 			self.device.makeBuffer(length: MemoryLayout<Uniforms>.size, options: [.storageModeShared])
 		]
 	}()
-	
+
 	let rectangularVertexCount = 6
 
 	lazy var rectVertexTripleBuffer: [MTLBuffer] = {
@@ -143,7 +152,7 @@ class PatternRenderer: Renderer {
 			self.device.makeBuffer(length: len, options: [.storageModeShared])
 		]
 	}()
-	
+
 	var tripleBufferIndex = 0
 
 	func renderPattern(context: RenderContext, in rect: Rect) {
@@ -165,7 +174,7 @@ class PatternRenderer: Renderer {
 		let commandBuffer = context.makeCommandBuffer()
 		let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: context.renderPassDescriptor)
 		encoder.pushDebugGroup("pattern filling")
-		
+
 		encoder.setRenderPipelineState(self.renderPipelineState)
 
 		encoder.setFrontFacing(.clockwise)

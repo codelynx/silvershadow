@@ -8,15 +8,13 @@
 
 import Foundation
 import MetalKit
-import GLKit
-
 
 class Scene {
 
 	let device: MTLDevice
 	var contentSize: CGSize
 
-	var backgroundColor: XColor = XColor.white {
+	var backgroundColor: XColor = .white {
 		didSet { self.setNeedsDisplay() }
 	}
 
@@ -26,9 +24,9 @@ class Scene {
 	weak var renderView: RenderView?
 
 	var bounds: CGRect {
-        return CGRect(origin: .zero, size: contentSize)
+        return CGRect(size: contentSize)
 	}
-	
+
 	init?(device: MTLDevice, contentSize: CGSize) {
 		self.device = device
 		self.contentSize = contentSize
@@ -45,20 +43,19 @@ class Scene {
 	private (set) var beingUpdated: Bool = false
 
 	func setNeedsUpdate() {
-		if self.beingUpdated == false {
-			self.beingUpdated = true
-			if let semaphore = self.renderView?.semaphore {
-				semaphore.wait()
-				defer { semaphore.signal() }
-				self.update()
-			}
-			else {
-				self.update()
-			}
-			self.beingUpdated = false
-		}
+        guard !self.beingUpdated else { return }
+        self.beingUpdated = true
+        if let semaphore = self.renderView?.semaphore {
+            semaphore.wait()
+            defer { semaphore.signal() }
+            self.update()
+        }
+        else {
+            self.update()
+        }
+        self.beingUpdated = false
 	}
-	
+
 	func setNeedsDisplay() {
 		self.renderView?.setNeedsDisplay()
 	}
@@ -87,42 +84,33 @@ class Scene {
 		guard let contentView = self.renderView?.contentView else { return nil }
 		return touch.location(in: contentView)
 	}
-	#endif
+    func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    }
 
-	#if os(macOS)
+    func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+    }
+
+    func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    }
+
+    func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+    }
+
+	#elseif os(macOS)
 	func locationInScene(_ event: NSEvent) -> CGPoint? {
         return renderView?.contentView.convert(event.locationInWindow, from: nil)
 	}
-	#endif
+    func mouseDown(with event: NSEvent) {
+    }
 
-	// MARK: -
+    func mouseMoved(with event: NSEvent) {
+    }
 
-	#if os(iOS)
-	func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-	}
-	
-	func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-	}
-	
-	func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-	}
-	
-	func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-	}
-	#endif
+    func mouseDragged(with event: NSEvent) {
+    }
 
-	#if os(macOS)
-	func mouseDown(with event: NSEvent) {
-	}
-	
-	func mouseMoved(with event: NSEvent) {
-	}
-	
-	func mouseDragged(with event: NSEvent) {
-	}
-	
-	func mouseUp(with event: NSEvent) {
-	}
+    func mouseUp(with event: NSEvent) {
+    }
 	#endif
 
 }

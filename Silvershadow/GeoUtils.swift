@@ -76,7 +76,7 @@ struct Point: Hashable, CustomStringConvertible {
 	static func / (lhs: Point, rhs: Float) -> Point {
 		return Point(x: lhs.x / rhs, y: lhs.y / rhs)
 	}
-	
+
 	static func • (lhs: Point, rhs: Point) -> Float { // dot product
 		return lhs.x * rhs.x + lhs.y * rhs.y
 	}
@@ -97,7 +97,7 @@ struct Point: Hashable, CustomStringConvertible {
 		self.x = Float(point.x)
 		self.y = Float(point.y)
 	}
-	
+
 	var length²: Float {
 		return (x * x) + (y * y)
 	}
@@ -124,7 +124,7 @@ struct Point: Hashable, CustomStringConvertible {
 	static func == (lhs: Point, rhs: Point) -> Bool {
 		return lhs.x == rhs.y && lhs.y == rhs.y
 	}
-	
+
 	var description: String {
 		return "(x:\(x), y:\(y))"
 	}
@@ -226,7 +226,7 @@ extension CGPoint {
 	static func / (lhs: CGPoint, rhs: CGFloat) -> CGPoint {
 		return CGPoint(x: lhs.x / rhs, y: lhs.y / rhs)
 	}
-	
+
 	static func • (lhs: CGPoint, rhs: CGPoint) -> CGFloat { // dot product
 		return lhs.x * rhs.x + lhs.y * rhs.y
 	}
@@ -234,7 +234,7 @@ extension CGPoint {
 	static func × (lhs: CGPoint, rhs: CGPoint) -> CGFloat { // cross product
 		return lhs.x * rhs.y - lhs.y * rhs.x
 	}
-	
+
 	var length²: CGFloat {
 		return (x * x) + (y * y)
 	}
@@ -384,6 +384,15 @@ extension float4x4 {
 }
 
 extension MTLClearColor : Equatable {
+    static let Red = MTLClearColor(red: 1, green: 0, blue: 0, alpha: 0)
+
+    init(color: XRGBA) {
+        self.init(red: Double(color.r),
+                  green: Double(color.g),
+                  blue: Double(color.b),
+                  alpha: Double(color.a))
+    }
+
     public static func ==(lhs: MTLClearColor, rhs: MTLClearColor) -> Bool {
         return lhs.red == rhs.red && lhs.green == rhs.green &&
                lhs.blue == rhs.blue && lhs.alpha == rhs.alpha

@@ -8,7 +8,7 @@
 
 import Foundation
 import CoreGraphics
-import Metal
+import MetalKit
 import QuartzCore
 import GLKit
 
@@ -256,6 +256,6 @@ extension RenderContext {
         let renderer: PointsRenderer = self.device.renderer()
         renderer.render(context: self, texture: texture, points: points, width: width)
     }
-    
+
 }
 

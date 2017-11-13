@@ -8,9 +8,6 @@
 
 import Foundation
 import MetalKit
-import GLKit
-
-
 
 extension MTLDevice {
 

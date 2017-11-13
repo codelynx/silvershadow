@@ -6,10 +6,8 @@
 //	Copyright © 2016 Electricwoods LLC. All rights reserved.
 //
 
-import Foundation
 import MetalKit
 import GLKit
-
 
 #if os(iOS)
     import UIKit
@@ -92,14 +90,9 @@ class Canvas: Scene {
         let commandQueue = subcomandQueue
         let canvasTexture = self.canvasTexture
 
-        //		let backgroundColor = XColor(rgba: self.backgroundColor.rgba)
-        //		let rgba = backgroundColor.rgba
-        let (r, g, b, a) = (Double(1), Double(0), Double(0), Double(0))
-
-        //
         let renderPassDescriptor = MTLRenderPassDescriptor()
         renderPassDescriptor.colorAttachments[0].texture = canvasTexture
-        renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(r, g, b, a)
+        renderPassDescriptor.colorAttachments[0].clearColor = .Red
         renderPassDescriptor.colorAttachments[0].storeAction = .store
 
         // clear canvas texture
@@ -117,7 +110,7 @@ class Canvas: Scene {
 
         let subrenderPassDescriptor = MTLRenderPassDescriptor()
         subrenderPassDescriptor.colorAttachments[0].texture = subtexture
-        subrenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor()
+        subrenderPassDescriptor.colorAttachments[0].clearColor = .init()
         subrenderPassDescriptor.colorAttachments[0].storeAction = .store
 
 
@@ -190,7 +183,7 @@ class Canvas: Scene {
 
         let subrenderPassDescriptor = MTLRenderPassDescriptor()
         subrenderPassDescriptor.colorAttachments[0].texture = subtexture
-        subrenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor()
+        subrenderPassDescriptor.colorAttachments[0].clearColor = .init()
         subrenderPassDescriptor.colorAttachments[0].loadAction = .clear
         subrenderPassDescriptor.colorAttachments[0].storeAction = .store
 

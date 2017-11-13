@@ -12,11 +12,8 @@ import UIKit
 import Cocoa
 #endif
 
-import Metal
 import MetalKit
 import GLKit
-
-
 
 class RenderView: XView, MTKViewDelegate {
 
@@ -45,7 +42,7 @@ class RenderView: XView, MTKViewDelegate {
 			let contentSize = scene.contentSize
 			self.scrollView.contentSize = contentSize
 //			self.contentView.bounds = CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
-			let bounds = CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
+            let bounds = CGRect(size: contentSize)
 			let frame = self.scrollView.convert(bounds, to: self.contentView)
 			self.contentView.frame = frame
 		}
@@ -59,23 +56,19 @@ class RenderView: XView, MTKViewDelegate {
 		self.contentView.autoresizingMask = [.flexibleRightMargin, .flexibleBottomMargin]
 		self.setNeedsDisplay()
 	}
-	#endif
 
-	#if os(macOS)
+	#elseif os(macOS)
 	override func layout() {
 		super.layout()
-		
+
 		self.sendSubview(toBack: self.mtkView)
 		self.bringSubview(toFront: self.drawView)
 		self.bringSubview(toFront: self.scrollView)
 
-		if let renderableScene = self.scene {
-			let contentSize = renderableScene.contentSize
-			self.scrollView.documentView?.frame = CGRect(0, 0, contentSize.width, contentSize.height)
-		}
-		else {
-			self.scrollView.documentView?.frame = CGRect(0, 0, self.bounds.width, self.bounds.height)
-		}
+        let contentSize = scene?.contentSize ?? bounds.size
+
+        self.scrollView.documentView?.frame = CGRect(size: contentSize)
+
 		self.contentView.translatesAutoresizingMaskIntoConstraints = false
 		self.contentView.autoresizingMask = [.viewMaxXMargin, /*.viewMinYMargin,*/ .viewMaxYMargin]
 		self.setNeedsDisplay()
@@ -108,9 +101,8 @@ class RenderView: XView, MTKViewDelegate {
 		self.contentView.frame = self.bounds
 		return scrollView
 	}()
-	#endif
-	
-	#if os(macOS)
+
+	#elseif os(macOS)
 	private (set) lazy var scrollView: NSScrollView = {
 		let scrollView = NSScrollView(frame: self.bounds)
 		scrollView.hasVerticalScroller = true
@@ -124,27 +116,25 @@ class RenderView: XView, MTKViewDelegate {
 		let clipView = FlippedClipView(frame: self.contentView.frame)
 		clipView.drawsBackground = false
 		clipView.backgroundColor = .clear
-		
+
 		scrollView.contentView = clipView // scrollView's contentView is NSClipView
 		scrollView.documentView = self.contentView
 		scrollView.contentView.postsBoundsChangedNotifications = true
 
 		// posting notification when zoomed, scrolled or resized
-		typealias T = RenderView
-		NotificationCenter.default.addObserver(self, selector: #selector(T.scrollContentDidChange(_:)),
-					name: NSNotification.Name.NSViewBoundsDidChange, object: nil)
+
+		NotificationCenter.default.addObserver(self, selector: #selector(RenderView.scrollContentDidChange),
+					name: .NSViewBoundsDidChange, object: nil)
 		scrollView.allowsMagnification = true
 		scrollView.maxMagnification = 4
 		scrollView.minMagnification = 1
 
 		return scrollView
 	}()
-	#endif
 
-	#if os(macOS)
-	
+
 	var lastCall = Date()
-	
+
 	@objc func scrollContentDidChange(_ notification: Notification) {
 		Swift.print("since lastCall = \(-lastCall.timeIntervalSinceNow * 1000) ms")
 		self.lastCall = Date()
@@ -152,10 +142,10 @@ class RenderView: XView, MTKViewDelegate {
 		self.mtkView.setNeedsDisplay()
 	}
 	#endif
-	
+
 	private (set) lazy var drawView: RenderDrawView = {
 		let drawView = RenderDrawView(frame: self.bounds)
-		drawView.backgroundColor = XColor.clear
+		drawView.backgroundColor = .clear
 		drawView.renderView = self
 		self.addSubviewToFit(drawView)
 		return drawView
@@ -164,7 +154,7 @@ class RenderView: XView, MTKViewDelegate {
 	private (set) lazy var contentView: RenderContentView = {
 		let renderableContentView = RenderContentView(frame: self.bounds)
 		renderableContentView.renderView = self
-		renderableContentView.backgroundColor = XColor.clear
+		renderableContentView.backgroundColor = .clear
 		renderableContentView.translatesAutoresizingMaskIntoConstraints = false
 		#if os(iOS)
 		renderableContentView.isUserInteractionEnabled = true
@@ -191,20 +181,11 @@ class RenderView: XView, MTKViewDelegate {
 		self.mtkView.setNeedsDisplay()
 		self.drawView.setNeedsDisplay()
 	}
-	#endif
 
-	#if os(macOS)
-	override var isFlipped: Bool {
+    override var isFlipped: Bool {
 		return true
 	}
-	#endif
 
-	// 
-	
-	#if os(macOS)
-	override func draw(_ dirtyRect: NSRect) {
-		super.draw(dirtyRect)
-	}
 	#endif
 
 	// MARK: -
@@ -215,22 +196,21 @@ class RenderView: XView, MTKViewDelegate {
 
 		let date = Date()
 		defer { Swift.print("RenderView: draw() ", -date.timeIntervalSinceNow * 1000, " ms") }
-	
+
 		self.semaphore.wait()
 		defer { self.semaphore.signal() }
-	
+
 		self.drawView.setNeedsDisplay()
 
-		guard let drawable = self.mtkView.currentDrawable else { return }
-		guard let renderPassDescriptor = self.mtkView.currentRenderPassDescriptor else { return }
-		guard let scene = self.scene else { return }
-		guard let commandQueue = self.commandQueue else { return }
+		guard let drawable = self.mtkView.currentDrawable,
+            let renderPassDescriptor = self.mtkView.currentRenderPassDescriptor,
+            let scene = self.scene,
+            let commandQueue = self.commandQueue else { return }
 
+        let rgba = self.scene?.backgroundColor.rgba ?? XRGBA(r: 0.9, g: 0.9, b: 0.9, a: 1.0)
 
-		let rgba = self.scene?.backgroundColor.rgba ?? XRGBA(0.9, 0.9, 0.9, 1.0)
-		let clearColor = MTLClearColorMake(Double(rgba.r), Double(rgba.g), Double(rgba.b), Double(rgba.a))
 		renderPassDescriptor.colorAttachments[0].texture = drawable.texture // error on simulator target
-		renderPassDescriptor.colorAttachments[0].clearColor = clearColor
+        renderPassDescriptor.colorAttachments[0].clearColor = .init(color: rgba)
 		renderPassDescriptor.colorAttachments[0].loadAction = .clear
 		renderPassDescriptor.colorAttachments[0].storeAction = .store
 
@@ -241,7 +221,7 @@ class RenderView: XView, MTKViewDelegate {
 			commandEncoder.endEncoding()
 			commandBuffer.commit()
 		}
-	
+
 		// setup render context
 		let transform = GLKMatrix4(self.drawingTransform)
 		renderPassDescriptor.colorAttachments[0].loadAction = .load
@@ -261,15 +241,11 @@ class RenderView: XView, MTKViewDelegate {
 	}
 
 	var zoomScale: CGFloat {
-		#if os(iOS)
 		return scrollView.zoomScale
-		#elseif os(macOS)
-		return scrollView.magnification
-		#endif
 	}
 
 	var drawingTransform: CGAffineTransform {
-		guard let scene = self.scene else { return CGAffineTransform.identity }
+		guard let scene = self.scene else { return .identity }
 		let targetRect = contentView.convert(self.contentView.bounds, to: self.mtkView)
 		let transform0 = CGAffineTransform(translationX: 0, y: self.contentView.bounds.height).scaledBy(x: 1, y: -1)
 		let transform1 = scene.bounds.transform(to: targetRect)
@@ -282,27 +258,23 @@ class RenderView: XView, MTKViewDelegate {
 		#endif
 		return transform
 	}
-	
+
 	func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
 	}
 
 	// MARK: -
-	
+
 	#if os(iOS)
 	var minimumNumberOfTouchesToScroll: Int {
 		get { return self.scrollView.panGestureRecognizer.minimumNumberOfTouches }
 		set { self.scrollView.panGestureRecognizer.minimumNumberOfTouches = newValue }
 	}
-	#endif
-	
-	#if os(iOS)
+
 	var scrollEnabled: Bool {
 		get { return self.scrollView.isScrollEnabled }
 		set { self.scrollView.isScrollEnabled = newValue }
 	}
-	#endif
-	
-	#if os(iOS)
+
 	var delaysContentTouches: Bool {
 		get { return self.scrollView.delaysContentTouches }
 		set { self.scrollView.delaysContentTouches = newValue }
@@ -320,14 +292,13 @@ extension RenderView: UIScrollViewDelegate {
 	func scrollViewDidZoom(_ scrollView: UIScrollView) {
 		self.setNeedsDisplay()
 	}
-	
+
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
 		self.setNeedsDisplay()
 	}
-	
+
 }
 #endif
-
 
 #if os(macOS)
 class FlippedClipView: NSClipView {

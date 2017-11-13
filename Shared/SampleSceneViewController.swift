@@ -29,12 +29,5 @@ class SampleSceneViewController: XViewController {
 		self.renderView.scene = self.sampleScene
 	}
 
-	#if os(macOS)
-	override var representedObject: Any? {
-		didSet {
-		}
-	}
-	#endif
-
 }
 

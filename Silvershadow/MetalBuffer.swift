@@ -8,7 +8,6 @@
 
 import Foundation
 import MetalKit
-import GLKit
 
 
 #if os(iOS)

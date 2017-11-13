@@ -8,7 +8,6 @@
 
 import Foundation
 import MetalKit
-import GLKit
 
 
 class SampleCanvas: Canvas {
@@ -21,7 +20,7 @@ class SampleCanvas: Canvas {
 
 		let backdropLayer = SampleCanvasBackdropLayer()
 		self.addLayer(backdropLayer)
-		
+
 		// having problem of compositing layers, so comment out this part for now
 		self.addLayer(drawingLayer)
 	}
@@ -33,7 +32,7 @@ class SampleCanvas: Canvas {
 	override func didMove(to renderView: RenderView) {
 		super.didMove(to: renderView)
 		self.overlayCanvasLayer = interactiveLayer
-		
+
 		self.interactiveLayer.name = "overlay"
 		self.drawingLayer.name = "drawing"
 	}
@@ -70,11 +69,9 @@ class SampleCanvas: Canvas {
 		self.activePath = nil
 	}
 
-	#endif
-	
-	#if os(iOS)
+	#elseif os(iOS)
 	var activeTouchPath: (touch: UITouch, path: CGMutablePath)?
-	
+
 	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 		if let touch = touches.first, touches.count == 1, let location = self.locationInScene(touch) {
 			let activePath = CGMutablePath()
@@ -83,7 +80,7 @@ class SampleCanvas: Canvas {
 			self.activeTouchPath = (touch, activePath)
 		}
 	}
-	
+
 	override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
 		if let (touch, activePath) = self.activeTouchPath, touches.contains(touch) {
 			if let event = event, let coalescedTouches = event.coalescedTouches(for: touch) {
@@ -96,7 +93,7 @@ class SampleCanvas: Canvas {
 			self.setNeedsDisplay()
 		}
 	}
-	
+
 	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
 		if let (touch, activePath) = self.activeTouchPath, touches.contains(touch) {
 			if let event = event, let coalescedTouches = event.coalescedTouches(for: touch) {
@@ -112,14 +109,14 @@ class SampleCanvas: Canvas {
 			self.setNeedsDisplay()
 		}
 	}
-	
+
 	override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
 		self.interactiveLayer.strokePaths = []
 		self.setNeedsUpdate()
 		self.setNeedsDisplay()
 		self.activeTouchPath = nil
 	}
-	
+
 	#endif
 
 }
