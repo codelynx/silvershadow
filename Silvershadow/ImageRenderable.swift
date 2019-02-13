@@ -16,21 +16,21 @@ import GLKit
 //
 
 class ImageRenderable: Renderable {
-
+	
 	typealias RendererType = ImageRenderer
-
+	
 	let device: MTLDevice
-    var transform : GLKMatrix4 = .identity
-
+	var transform : GLKMatrix4 = .identity
+	
 	var image: XImage
 	var frame: Rect
 	let texture: MTLTexture
-
+	
 	lazy var vertexBuffer: VertexBuffer<ImageVertex> = {
 		let vertexes = self.renderer.vertices(for: self.frame)
 		return self.renderer.vertexBuffer(for: vertexes)!
 	}()
-
+	
 	init?(device: MTLDevice, image: XImage, frame: Rect) {
 		guard let texture = device.texture(of: image) else { return nil }
 		self.device = device
@@ -38,10 +38,10 @@ class ImageRenderable: Renderable {
 		self.frame = frame
 		self.texture = texture
 	}
-
+	
 	func render(context: RenderContext) {
 		self.renderer.renderTexture(context: context, texture: texture, in: frame)
 	}
-
+	
 }
 

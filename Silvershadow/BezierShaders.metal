@@ -1,9 +1,9 @@
 //
-//  BezierKernel.metal
-//  Silvershadow
+//	BezierKernel.metal
+//	Silvershadow
 //
-//  Created by Kaz Yoshikawa on 1/7/17.
-//  Copyright © 2017 Electricwoods LLC. All rights reserved.
+//	Created by Kaz Yoshikawa on 1/7/17.
+//	Copyright © 2017 Electricwoods LLC. All rights reserved.
 //
 
 #include <metal_stdlib>

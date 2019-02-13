@@ -11,22 +11,22 @@ import CoreGraphics
 
 
 extension CGRect {
-    init(size: CGSize) {
-        self.init(origin: .zero, size: size)
-    }
-
+	init(size: CGSize) {
+		self.init(origin: .zero, size: size)
+	}
+	
 	var cgPath: CGPath {
 		return CGPath(rect: self, transform: nil)
 	}
-
+	
 	func cgPath(cornerRadius: CGFloat) -> CGPath {
-
+		
 		//	+7-------------6+
 		//	0				5
 		//	|				|
 		//	1				4
 		//	+2-------------3+
-
+		
 		let cornerRadius = min(size.width * 0.5, size.height * 0.5, cornerRadius)
 		let path = CGMutablePath()
 		path.move(to: minXmidY + CGPoint(x: 0, y: cornerRadius)) // (0)
@@ -41,19 +41,19 @@ extension CGRect {
 		path.closeSubpath()
 		return path
 	}
-
+	
 	var minXminY: CGPoint { return CGPoint(x: minX, y: minY) }
 	var midXminY: CGPoint { return CGPoint(x: midX, y: minY) }
 	var maxXminY: CGPoint { return CGPoint(x: maxX, y: minY) }
-
+	
 	var minXmidY: CGPoint { return CGPoint(x: minX, y: midY) }
 	var midXmidY: CGPoint { return CGPoint(x: midX, y: midY) }
 	var maxXmidY: CGPoint { return CGPoint(x: maxX, y: midY) }
-
+	
 	var minXmaxY: CGPoint { return CGPoint(x: minX, y: maxY) }
 	var midXmaxY: CGPoint { return CGPoint(x: midX, y: maxY) }
 	var maxXmaxY: CGPoint { return CGPoint(x: maxX, y: maxY) }
-
+	
 	func aspectFill(_ size: CGSize) -> CGRect {
 		let result: CGRect
 		let margin: CGFloat
@@ -71,7 +71,7 @@ extension CGRect {
 		}
 		return result
 	}
-
+	
 	func aspectFit(_ size: CGSize) -> CGRect {
 		let widthRatio = self.size.width / size.width
 		let heightRatio = self.size.height / size.height
@@ -82,7 +82,7 @@ extension CGRect {
 		let ymargin = (self.size.height - height) / 2.0
 		return CGRect(x: minX + xmargin, y: minY + ymargin, width: width, height: height)
 	}
-
+	
 	func transform(to rect: CGRect) -> CGAffineTransform {
 		var t = CGAffineTransform.identity
 		t = t.translatedBy(x: -minX, y: -minY)
@@ -91,11 +91,11 @@ extension CGRect {
 		t = t.translatedBy(x: rect.minX * width / rect.width, y: rect.minY * height / rect.height)
 		return t
 	}
-
+	
 }
 
 extension CGSize {
-
+	
 	func aspectFit(_ size: CGSize) -> CGSize {
 		let widthRatio = self.width / size.width
 		let heightRatio = self.height / size.height
@@ -104,7 +104,7 @@ extension CGSize {
 		let height = size.height * ratio
 		return CGSize(width: width, height: height)
 	}
-
+	
 	static func - (lhs: CGSize, rhs: CGSize) -> CGSize {
 		return CGSize(width: lhs.width - rhs.width, height: lhs.height - rhs.height)
 	}
@@ -112,10 +112,10 @@ extension CGSize {
 
 
 extension CGAffineTransform {
-
+	
 	static func * (lhs: CGAffineTransform, rhs: CGAffineTransform) -> CGAffineTransform {
 		return lhs.concatenating(rhs)
 	}
-
+	
 }
 

@@ -1,6 +1,6 @@
 //
-//  PatternShaders.metal
-//  Silvershadow
+//	PatternShaders.metal
+//	Silvershadow
 //
 //	Created by Kaz Yoshikawa on 12/22/15.
 //	Copyright © 2016 Electricwoods LLC. All rights reserved.

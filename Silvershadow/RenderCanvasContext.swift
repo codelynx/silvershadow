@@ -1,9 +1,9 @@
 //
-//  RenderCanvasContext.swift
-//  Silvershadow
+//	RenderCanvasContext.swift
+//	Silvershadow
 //
-//  Created by Kaz Yoshikawa on 2/19/17.
-//  Copyright © 2017 Electricwoods LLC. All rights reserved.
+//	Created by Kaz Yoshikawa on 2/19/17.
+//	Copyright © 2017 Electricwoods LLC. All rights reserved.
 //
 
 import Foundation

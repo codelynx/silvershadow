@@ -1,9 +1,9 @@
 //
-//  Kernel.swift
-//  Silvershadow
+//	Kernel.swift
+//	Silvershadow
 //
-//  Created by Kaz Yoshikawa on 12/30/16.
-//  Copyright © 2016 Electricwoods LLC. All rights reserved.
+//	Created by Kaz Yoshikawa on 12/30/16.
+//	Copyright © 2016 Electricwoods LLC. All rights reserved.
 //
 
 import Foundation
@@ -17,18 +17,18 @@ protocol Kernel: class {
 
 extension Kernel {
 	var library: MTLLibrary {
-		return self.device.newDefaultLibrary()!
+		return self.device.makeDefaultLibrary()!
 	}
 }
 
 final class KernelRegistry : DictLike<String, Kernel> { }
 
 final class KernelMap : NSMapTable<MTLDevice, KernelRegistry> {
-    static let shared = KernelMap.weakToStrongObjects()
+	static let shared = KernelMap.weakToStrongObjects()
 }
 
 extension MTLDevice {
-
+	
 	func kernel<T: Kernel>() -> T {
 		let key = NSStringFromClass(T.self)
 		let registry = KernelMap.shared.object(forKey: self) ?? KernelRegistry()
@@ -37,5 +37,5 @@ extension MTLDevice {
 		KernelMap.shared.setObject(registry, forKey: self)
 		return renderer as! T
 	}
-
+	
 }

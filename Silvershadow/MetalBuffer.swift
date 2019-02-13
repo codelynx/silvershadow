@@ -22,12 +22,12 @@ typealias XHeap = MTLDevice
 //
 
 class MetalBuffer<T> {
-
+	
 	let heap: XHeap
 	var buffer: MTLBuffer
 	var count: Int
 	var capacity: Int
-
+	
 	init(heap: XHeap, vertices: [T]? = nil, capacity: Int? = nil) {
 		self.heap = heap
 		let count = vertices?.count ?? 0
@@ -36,7 +36,7 @@ class MetalBuffer<T> {
 		let length = MemoryLayout<T>.stride * capacity
 		self.count = count
 		self.capacity = capacity
-		let buffer = self.heap.makeBuffer(length: length, options: [.storageModeShared])
+		let buffer = self.heap.makeBuffer(length: length, options: [.storageModeShared])!
 		if let vertices = vertices {
 			let destinationArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(buffer.contents()))
 			let destinationArray = UnsafeMutableBufferPointer<T>(start: destinationArrayPtr, count: vertices.count)
@@ -44,11 +44,11 @@ class MetalBuffer<T> {
 		}
 		self.buffer = buffer
 	}
-
+	
 	deinit {
-//		buffer.setPurgeableState(.empty)
+		//		buffer.setPurgeableState(.empty)
 	}
-
+	
 	func append(_ items: [T]) {
 		assert(buffer.storageMode == .shared)
 		if self.count + items.count < self.capacity {
@@ -61,22 +61,22 @@ class MetalBuffer<T> {
 		else {
 			let count = self.count
 			let length = MemoryLayout<T>.stride * (count + items.count)
-			let buffer = self.heap.makeBuffer(length: length, options: [.storageModeShared])
+			let buffer = self.heap.makeBuffer(length: length, options: [.storageModeShared])!
 			let sourceArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(self.buffer.contents()))
 			let sourceArray = UnsafeMutableBufferPointer<T>(start: sourceArrayPtr, count: count)
 			let destinationArrayPtr = UnsafeMutablePointer<T>(OpaquePointer(buffer.contents()))
 			let destinationArray = UnsafeMutableBufferPointer<T>(start: destinationArrayPtr, count: count + items.count)
-
+			
 			(0 ..< count).forEach { destinationArray[$0] = sourceArray[$0] }
 			(0 ..< items.count).forEach { destinationArray[count + $0] = items[$0] }
-
+			
 			self.count = count + items.count
 			self.capacity = self.count
-
+			
 			self.buffer = buffer
 		}
 	}
-
+	
 	func set(_ items: [T]) {
 		assert(buffer.storageMode == .shared)
 		if items.count < self.capacity {
@@ -87,18 +87,22 @@ class MetalBuffer<T> {
 		}
 		else {
 			let bytes = MemoryLayout<T>.size * items.count
+			#if os(iOS)
 			let buffer = self.heap.makeBuffer(bytes: items, length: bytes, options: [.storageModeShared])
+			#elseif os(macOS)
+			let buffer = self.heap.makeBuffer(bytes: items, length: bytes, options: [.storageModeShared])!
+			#endif
 			self.count = items.count
 			self.capacity = items.count
 			self.buffer = buffer
 		}
 	}
-
+	
 	var items: [T] {
 		let vertexArray = UnsafeMutablePointer<T>(OpaquePointer(self.buffer.contents()))
 		return (0 ..< count).map { vertexArray[$0] }
 	}
-
+	
 	subscript(index: Int) -> T {
 		get {
 			assert(buffer.storageMode == .shared)
@@ -113,11 +117,11 @@ class MetalBuffer<T> {
 			itemsArray[index] = newValue
 		}
 	}
-
+	
 	var item: T {
 		get { return self[0] }
 		set { self[0] = newValue }
 	}
-
+	
 }
 

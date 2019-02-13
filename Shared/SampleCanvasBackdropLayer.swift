@@ -11,18 +11,18 @@ import MetalKit
 
 
 class SampleCanvasBackdropLayer: CanvasLayer {
-
+	
 	lazy var imageRenderable: ImageRenderable? = {
 		guard let device = self.device else { return nil }
 		guard let image = XImage(named: "Grid") else { fatalError("not found") }
 		return ImageRenderable(device: device, image: image, frame: Rect(0, 0, 2048, 1024))!
 	}()
-
+	
 	lazy var brushPatternTexture: MTLTexture! = {
 		return self.device?.texture(of: XImage(named: "test")!)!
 	}()
-
-
+	
+	
 	var samplePoints: [(CGFloat, CGFloat)] = [
 		(342.0, 611.5), (328.0, 616.0), (319.0, 616.0), (307.5, 617.5), (293.5, 619.5), (278.5, 620.5), (262.0, 621.5), (246.5, 621.5), (230.5, 621.5),
 		(212.0, 619.5), (195.0, 615.5), (179.5, 610.0), (165.0, 603.0), (151.0, 595.0), (138.0, 585.5), (127.0, 575.0), (117.0, 564.0), (109.0, 552.0),
@@ -33,11 +33,11 @@ class SampleCanvasBackdropLayer: CanvasLayer {
 		(333.0, 642.5), (308.5, 644.0), (286.5, 644.5), (263.5, 644.5), (241.5, 642.5), (221.5, 637.0), (204.5, 631.5), (191.5, 625.5), (181.5, 621.0),
 		(174.5, 614.5)
 	]
-
+	
 	func samplePoints(_ transform: CGAffineTransform) -> [CGPoint] {
 		return self.samplePoints.map { CGPoint(x: $0.0, y: $0.1).applying(transform) }
 	}
-
+	
 	func samplePath(_ transform: CGAffineTransform = .identity) -> CGPath {
 		let cgPath = CGMutablePath()
 		var lastPoint: CGPoint?
@@ -53,16 +53,16 @@ class SampleCanvasBackdropLayer: CanvasLayer {
 		}
 		return cgPath
 	}
-
+	
 	override func render(context: RenderContext) {
 		guard let device = self.device else { return }
-
+		
 		self.imageRenderable?.render(context: context)
-
+		
 		let bezierRenderer = device.renderer() as BezierRenderer
 		context.brushPattern = self.brushPatternTexture
 		bezierRenderer.render(context: context, cgPaths: [self.samplePath()])
 	}
-
+	
 }
 

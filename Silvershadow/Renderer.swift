@@ -10,7 +10,7 @@
 import MetalKit
 
 extension MTLPixelFormat {
-    static let `default` : MTLPixelFormat = .bgra8Unorm
+	static let `default` : MTLPixelFormat = .bgra8Unorm
 }
 
 protocol Renderer: class {
@@ -21,17 +21,17 @@ protocol Renderer: class {
 
 extension Renderer {
 	var library: MTLLibrary {
-		return self.device.newDefaultLibrary()!
+		return self.device.makeDefaultLibrary()!
 	}
 }
 
 
 class DictLike<Key : Hashable, Value> {
-    private var content : [Key: Value] = [:]
-    subscript(key: Key) -> Value? {
-        get { return content[key] }
-        set { content[key] = newValue }
-    }
+	private var content : [Key: Value] = [:]
+	subscript(key: Key) -> Value? {
+		get { return content[key] }
+		set { content[key] = newValue }
+	}
 }
 
 final class RendererRegistry : DictLike<String, Renderer> { }
@@ -41,11 +41,11 @@ func aligned(length: Int, alignment: Int) -> Int {
 }
 
 final class RenderMap : NSMapTable<MTLDevice, RendererRegistry> {
-    static let shared = RenderMap.weakToStrongObjects()
+	static let shared = RenderMap.weakToStrongObjects()
 }
 
 extension MTLDevice {
-
+	
 	func renderer<T: Renderer>() -> T {
 		let key = NSStringFromClass(T.self)
 		let registry = RenderMap.shared.object(forKey: self) ?? RendererRegistry()
@@ -54,6 +54,6 @@ extension MTLDevice {
 		RenderMap.shared.setObject(registry, forKey: self)
 		return renderer as! T
 	}
-
+	
 }
 

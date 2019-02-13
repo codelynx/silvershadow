@@ -17,20 +17,20 @@ import MetalKit
 
 
 class SampleScene: Scene {
-
+	
 	lazy var colorTriangle: ColorTriangleRenderable? = {
 		let pt1 = ColorRenderer.Vertex(x: 0, y: 0, z: 0, w: 1, r: 1, g: 0, b: 0, a: 0.5)
 		let pt2 = ColorRenderer.Vertex(x: 1024, y: 1024, z: 0, w: 1, r: 0, g: 1, b: 0, a: 0.5)
 		let pt3 = ColorRenderer.Vertex(x: 2048, y: 0, z: 0, w: 1, r: 0, g: 0, b: 1, a: 0.5)
 		return ColorTriangleRenderable(device: self.device, point1: pt1, point2: pt2, point3: pt3)
 	}()
-
+	
 	lazy var image1Texture: MTLTexture = {
 		return self.device.texture(of: XImage(named: "BlueMarble")!)!
 	}()
-
+	
 	// MRAK: -
-
+	
 	var samplePoints: [(CGFloat, CGFloat)] = [
 		(342.0, 611.5), (328.0, 616.0), (319.0, 616.0), (307.5, 617.5), (293.5, 619.5), (278.5, 620.5), (262.0, 621.5), (246.5, 621.5), (230.5, 621.5),
 		(212.0, 619.5), (195.0, 615.5), (179.5, 610.0), (165.0, 603.0), (151.0, 595.0), (138.0, 585.5), (127.0, 575.0), (117.0, 564.0), (109.0, 552.0),
@@ -41,11 +41,11 @@ class SampleScene: Scene {
 		(333.0, 642.5), (308.5, 644.0), (286.5, 644.5), (263.5, 644.5), (241.5, 642.5), (221.5, 637.0), (204.5, 631.5), (191.5, 625.5), (181.5, 621.0),
 		(174.5, 614.5)
 	]
-
+	
 	func samplePoints(_ transform: CGAffineTransform) -> [CGPoint] {
 		return self.samplePoints.map { CGPoint(x: $0.0, y: $0.1).applying(transform) }
 	}
-
+	
 	func samplePath(_ transform: CGAffineTransform = .identity) -> CGPath {
 		let cgPath = CGMutablePath()
 		var lastPoint: CGPoint?
@@ -61,52 +61,52 @@ class SampleScene: Scene {
 		}
 		return cgPath
 	}
-
+	
 	// MARK: -
-
+	
 	override func didMove(to renderView: RenderView) {
 		super.didMove(to: renderView)
-
+		
 		self.renderView?.mtkView.isPaused = false
 	}
-
+	
 	override func draw(in context: CGContext) {
-/*
+		/*
 		context.saveGState()
 		context.setFillColor(XColor.orange.cgColor)
 		context.strokeEllipse(in: self.bounds.insetBy(dx: 100, dy: 100))
 		context.restoreGState()
-
+		
 		XColor.red.set()
 		let bezier = XBezierPath(ovalIn: self.bounds)
 		bezier.stroke()
-
+		
 		XColor.red.set()
 		XBezierPath(ovalIn: CGRect(0, 0, self.bounds.width * 0.5, self.bounds.height * 0.5)).stroke()
-*/
+		*/
 	}
-
+	
 	override func render(in context: RenderContext) {
 		context.render(texture: self.image1Texture, in: Rect(0, 0, 2048, 1024))
 		self.colorTriangle?.render(context: context)
-
+		
 		let bezierRenderer = device.renderer() as BezierRenderer
 		bezierRenderer.render(context: context, cgPaths: [self.samplePath()])
-
+		
 		context.widthCGContext { (cgContext) in
-            let paragraphStyle : NSMutableParagraphStyle = .makeParagraphStyle()
+			let paragraphStyle : NSMutableParagraphStyle = .makeParagraphStyle()
 			paragraphStyle.alignment = .center
 			let attributes = [
-				NSFontAttributeName: XFont.boldSystemFont(ofSize: 32),
-				NSForegroundColorAttributeName: XColor.white,
-				NSParagraphStyleAttributeName: paragraphStyle
+				convertFromNSAttributedStringKey(NSAttributedString.Key.font): XFont.boldSystemFont(ofSize: 32),
+				convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): XColor.white,
+				convertFromNSAttributedStringKey(NSAttributedString.Key.paragraphStyle): paragraphStyle
 			]
 			let formatter = DateFormatter()
 			formatter.dateFormat = "HH:mm:ss"
-			(formatter.string(from: Date()) as NSString).draw(at: CGPoint(x: 758, y: 320), withAttributes: attributes)
+			(formatter.string(from: Date()) as NSString).draw(at: CGPoint(x: 758, y: 320), withAttributes: convertToOptionalNSAttributedStringKeyDictionary(attributes))
 		}
 	}
-
+	
 	#if os(macOS)
 	override func mouseDown(with event: NSEvent) {
 		Swift.print("mouseDown:")
@@ -115,6 +115,17 @@ class SampleScene: Scene {
 		}
 	}
 	#endif
-
+	
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
+	return input.rawValue
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
+}

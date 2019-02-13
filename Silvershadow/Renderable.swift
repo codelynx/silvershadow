@@ -9,12 +9,12 @@
 import MetalKit
 
 protocol Renderable: class {
-
+	
 	associatedtype RendererType: Renderer
 	var device: MTLDevice { get }
 	var renderer: RendererType { get }
 	func render(context: RenderContext)
-
+	
 }
 
 

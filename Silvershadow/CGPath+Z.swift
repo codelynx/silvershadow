@@ -1,6 +1,6 @@
 //
-//  CGPath+Z.swift [swift3.0]
-//  ZKit
+//	CGPath+Z.swift [swift3.0]
+//	ZKit
 //
 //	The MIT License (MIT)
 //
@@ -39,15 +39,15 @@ public enum PathElement {
 	case quadCurveTo(CGPoint, CGPoint)
 	case curveTo(CGPoint, CGPoint, CGPoint)
 	case closeSubpath
-
+	
 	//
 	//	operator ==
 	//
-
+	
 	static public func ==(lhs: PathElement, rhs: PathElement) -> Bool {
 		switch (lhs, rhs) {
 		case let (.moveTo(l), .moveTo(r)),
-		     let (.lineTo(l), .lineTo(r)):
+			 let (.lineTo(l), .lineTo(r)):
 			return l == r
 		case let (.quadCurveTo(l), .quadCurveTo(r)):
 			return l == r
@@ -67,14 +67,14 @@ public enum PathElement {
 //
 
 public extension CGPath {
-
+	
 	private class Elements {
 		var pathElements = [PathElement]()
 	}
-
+	
 	var pathElements: [PathElement] {
 		var elements = Elements()
-
+		
 		self.apply(info: &elements) { (info, element) -> () in
 			guard let infoPointer = UnsafeMutablePointer<Elements>(OpaquePointer(info)) else { return }
 			switch element.pointee.type {
@@ -97,7 +97,7 @@ public extension CGPath {
 				infoPointer.pointee.pathElements.append(.closeSubpath)
 			}
 		}
-
+		
 		let pathelements = elements.pathElements
 		return pathelements
 	}
@@ -109,11 +109,11 @@ public extension CGPath {
 //
 
 extension CGPath {
-
+	
 	static func quadraticCurveLength(_ p0: CGPoint, _ p1: CGPoint, _ p2: CGPoint) -> CGFloat {
-
+		
 		// cf. http://www.malczak.linuxpl.com/blog/quadratic-bezier-curve-length/
-
+		
 		let a = CGPoint(p0.x - 2 * p1.x + p2.x, p0.y - 2 * p1.y + p2.y)
 		let b = CGPoint(2 * p1.x - 2 * p0.x, 2 * p1.y - 2 * p0.y)
 		let A = 4 * (a.x * a.x + a.y * a.y)
@@ -127,23 +127,23 @@ extension CGPath {
 		let L = (A_32 * Sabc + A_2 * B * (Sabc - C_2) + (4 * C * A - B * B) * log((2 * A_2 + BA + Sabc) / (BA + C_2))) / (4 * A_32)
 		return L.isNaN ? 0 : L
 	}
-
+	
 	static func approximateCubicCurveLength(_ p0: CGPoint, _ p1: CGPoint, _ p2: CGPoint, _ p3: CGPoint) -> CGFloat {
 		let n = 32
 		var length: CGFloat = 0
 		var point: CGPoint? = nil
 		for i in 0 ..< n {
 			let t = CGFloat(i) / CGFloat(n)
-
+			
 			let q1 = p0 + (p1 - p0) * t
 			let q2 = p1 + (p2 - p1) * t
 			let q3 = p2 + (p3 - p2) * t
-
+			
 			let r1 = q1 + (q2 - q1) * t
 			let r2 = q2 + (q3 - q2) * t
-
+			
 			let s = r1 + (r2 - r1) * t
-
+			
 			if let point = point {
 				length += (point - s).length
 			}
@@ -151,7 +151,7 @@ extension CGPath {
 		}
 		return length
 	}
-
+	
 }
 
 

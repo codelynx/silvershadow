@@ -37,7 +37,7 @@
 
 
 extension Sequence {
-
+	
 	@discardableResult
 	func pair<T>(_ closure: (Self.Iterator.Element, Self.Iterator.Element) -> T ) -> [T] {
 		var results = [T]()
@@ -51,7 +51,7 @@ extension Sequence {
 		}
 		return results
 	}
-
+	
 }
 
 
