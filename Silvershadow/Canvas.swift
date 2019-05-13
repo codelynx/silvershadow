@@ -229,7 +229,7 @@ class Canvas: Scene {
 
 extension RangeReplaceableCollection where Iterator.Element : Equatable {
 	mutating func remove(_ element: Iterator.Element) -> Index? {
-		return index(of: element).map { self.remove(at: $0); return $0 }
+		return firstIndex(of: element).map { self.remove(at: $0); return $0 }
 	}
 }
 

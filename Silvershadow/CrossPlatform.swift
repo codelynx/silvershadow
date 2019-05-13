@@ -58,6 +58,7 @@ extension NSBezierPath {
 			case .lineTo: path.addLine(to: points[0])
 			case .curveTo: path.addCurve(to: points[2], control1: points[0], control2: points[1])
 			case .closePath: path.closeSubpath()
+			@unknown default: break
 			}
 		}
 		return path
@@ -77,7 +78,7 @@ extension NSView {
 	
 	func sendSubview(toBack: NSView) {
 		var subviews = self.subviews
-		guard let index = subviews.index(of: toBack) else { return }
+		guard let index = subviews.firstIndex(of: toBack) else { return }
 		subviews.remove(at: index)
 		subviews.insert(toBack, at: 0)
 		self.subviews = subviews
@@ -85,7 +86,7 @@ extension NSView {
 	
 	func bringSubview(toFront: NSView) {
 		var subviews = self.subviews
-		guard let index = subviews.index(of: toFront) else { return }
+		guard let index = subviews.firstIndex(of: toFront) else { return }
 		subviews.remove(at: index)
 		subviews.append(toFront)
 		self.subviews = subviews
@@ -93,7 +94,7 @@ extension NSView {
 	
 	func replaceSubview(subview: NSView, with other: NSView) {
 		var subviews = self.subviews
-		guard let index = subviews.index(of: subview) else { return }
+		guard let index = subviews.firstIndex(of: subview) else { return }
 		subviews.remove(at: index)
 		subviews.insert(other, at: index)
 		self.subviews = subviews

@@ -119,8 +119,11 @@ struct Point: Hashable, CustomStringConvertible {
 		return atan2(self.y - from.y, self.x - from.x)
 	}
 	
-	var hashValue: Int { return self.x.hashValue &- self.y.hashValue }
-	
+	func hash(into hasher: inout Hasher) {
+	 	hasher.combine(self.x)
+	 	hasher.combine(self.y)
+	 }
+
 	static func == (lhs: Point, rhs: Point) -> Bool {
 		return lhs.x == rhs.y && lhs.y == rhs.y
 	}

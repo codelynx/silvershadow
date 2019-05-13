@@ -95,6 +95,8 @@ public extension CGPath {
 				infoPointer.pointee.pathElements.append(.curveTo(pt1, pt2, pt3))
 			case .closeSubpath:
 				infoPointer.pointee.pathElements.append(.closeSubpath)
+			@unknown default:
+				break
 			}
 		}
 		
