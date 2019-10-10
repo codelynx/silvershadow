@@ -25,7 +25,7 @@ class PatternRenderer: Renderer {
 	
 	struct Vertex {
 		var x, y, z, w, u, v: Float
-		var padding: float2
+		var padding: SIMD2<Float>
 		init(x: Float, y: Float, z: Float, w: Float, u: Float, v: Float) {
 			self.x = x
 			self.y = y
@@ -39,8 +39,8 @@ class PatternRenderer: Renderer {
 	
 	struct Uniforms {
 		var transform: GLKMatrix4
-		var contentSize: float2
-		var patternSize: float2
+		var contentSize: SIMD2<Float>
+		var patternSize: SIMD2<Float>
 	}
 	
 	let device: MTLDevice
@@ -161,8 +161,9 @@ class PatternRenderer: Renderer {
 		let uniformsBuffer = uniformTripleBuffer[tripleBufferIndex]
 		let uniformsBufferPtr = UnsafeMutablePointer<Uniforms>(OpaquePointer(uniformsBuffer.contents()))
 		uniformsBufferPtr.pointee.transform = context.transform
-		uniformsBufferPtr.pointee.contentSize = float2(Float(context.deviceSize.width), Float(context.deviceSize.height))
-		uniformsBufferPtr.pointee.patternSize = float2(Float(context.brushPattern.width), Float(context.brushPattern.height))
+		
+		uniformsBufferPtr.pointee.contentSize = SIMD2<Float>(Float(context.deviceSize.width), Float(context.deviceSize.height))
+		uniformsBufferPtr.pointee.patternSize = SIMD2<Float>(Float(context.brushPattern.width), Float(context.brushPattern.height))
 		
 		let vertexes = self.vertices(for: rect)
 		assert(vertexes.count == rectangularVertexCount)

@@ -356,6 +356,7 @@
 					CCF349561E0F996F00EF1312 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = 2P97EM4L4N;
+						LastSwiftMigration = 1110;
 						ProvisioningStyle = Automatic;
 					};
 					CCF3496D1E0F999400EF1312 = {
@@ -368,10 +369,9 @@
 			};
 			buildConfigurationList = CCF349501E0F994000EF1312 /* Build configuration list for PBXProject "Silvershadow" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
@@ -689,7 +689,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -738,7 +738,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};

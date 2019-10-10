@@ -25,7 +25,7 @@ struct Uniforms {
 };
 
 vertex VertexOut color_vertex(
-	device VertexIn * vertices [[ buffer(0) ]],
+	const device VertexIn * vertices [[ buffer(0) ]],
 	constant Uniforms & uniforms [[ buffer(1) ]],
 	uint vid [[ vertex_id ]]
 ) {

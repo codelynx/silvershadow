@@ -25,7 +25,7 @@ class ImageRenderer: Renderer {
 	
 	struct Vertex {
 		var x, y, z, w, u, v: Float
-		var padding: float2
+		var padding: SIMD2<Float>
 		init(x: Float, y: Float, z: Float, w: Float, u: Float, v: Float) {
 			self.x = x
 			self.y = y

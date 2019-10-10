@@ -353,21 +353,33 @@ func * (l: GLKMatrix4, r: GLKVector2) -> GLKVector2 {
 	return GLKVector2Make(vector4.x, vector4.y)
 }
 
-extension float2 {
+extension SIMD2 {
 	init(_ vector: GLKVector2) {
-		self = unsafeBitCast(vector, to: float2.self)
+		var value = SIMD2<Scalar>()
+		value.x = vector.x as! Scalar
+		value.y = vector.y as! Scalar
+		self = value
 	}
 }
 
-extension float3 {
+extension SIMD3 {
 	init(_ vector: GLKVector3) {
-		self = unsafeBitCast(vector, to: float3.self)
+		var value = SIMD3<Scalar>()
+		value.x = vector.x as! Scalar
+		value.y = vector.y as! Scalar
+		value.z = vector.z as! Scalar
+		self = value
 	}
 }
 
-extension float4 {
+extension SIMD4 {
 	init(_ vector: GLKVector4) {
-		self = unsafeBitCast(vector, to: float4.self)
+		var value = SIMD4<Scalar>()
+		value.x = vector.x as! Scalar
+		value.y = vector.y as! Scalar
+		value.z = vector.z as! Scalar
+		value.w = vector.w as! Scalar
+		self = value
 	}
 }
 

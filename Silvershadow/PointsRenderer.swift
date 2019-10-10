@@ -95,7 +95,7 @@ class PointsRenderer: Renderer {
 		vertexDescriptor.attributes[0].format = .float2
 		vertexDescriptor.attributes[0].bufferIndex = 0
 		
-		vertexDescriptor.attributes[1].offset = MemoryLayout<float2>.size
+		vertexDescriptor.attributes[1].offset = MemoryLayout<SIMD2<Float>>.size
 		vertexDescriptor.attributes[1].format = .float2
 		vertexDescriptor.attributes[1].bufferIndex = 0
 		
